@@ -383,17 +383,6 @@ public:
 
 // FORWARD LIST FACET
 
-template <typename T>
-class forward_list_facet
-{
-public:
-    using value_type = T;
-
-protected:
-// TODO: here...
-};
-
-
 template <typename T, typename VoidPtr = void*>
 class forward_list_facet
 {
