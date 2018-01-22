@@ -139,8 +139,8 @@ struct forward_node_traits
     using iter_node_pointer = begin_node_pointer;
     using non_iter_node_pointer = typename std::conditional<
         std::is_same<iter_node_pointer, node_pointer>::value,
-        node_pointer,
-        begin_node_pointer
+        begin_node_pointer,
+        node_pointer
     >::type;
 
     static
@@ -481,14 +481,14 @@ protected:
         return std::pointer_traits<begin_node_pointer>::pointer_to(r);
     }
 
-    begin_node_pointer&
+    node_pointer&
     begin_pointer()
     noexcept
     {
         return before_begin_pointer()->next_;
     }
 
-    begin_node_pointer&
+    node_pointer&
     begin_pointer()
     const noexcept
     {
@@ -533,6 +533,8 @@ protected:
     {
         std::swap(begin_pointer(), x.begin_pointer());
     }
+
+    template <typename, typename> friend class forward_list;
 
 public:
     using value_type = T;
@@ -966,7 +968,10 @@ operator<=(
 // FORWARD LIST
 
 
-template <typename T, typename Allocator>
+template <
+    typename T,
+    typename Allocator = std::allocator<T>
+>
 class forward_list
 {
 public:
@@ -1005,13 +1010,16 @@ protected:
 
 public:
     // Constructors
-    forward_list() noexcept = default;
+    forward_list()
+    noexcept:
+        data_(facet_type())
+    {}
 
     explicit
     forward_list(
         const allocator_type& alloc
     ):
-        data_(node_allocator(alloc))
+        data_(facet_type(), node_allocator(alloc))
     {}
 
     explicit
@@ -1038,7 +1046,7 @@ public:
         insert_after(cbefore_begin(), n, v);
     }
 
-    template <typename InputIter, enable_input_iterator_t<InputIter>* = nullptr>
+    template <typename InputIter, enable_input_iterable_t<InputIter>* = nullptr>
     forward_list(
         InputIter f,
         InputIter l
@@ -1046,7 +1054,7 @@ public:
         forward_list(f, l, allocator_type())
     {}
 
-    template <typename InputIter, enable_input_iterator_t<InputIter>* = nullptr>
+    template <typename InputIter, enable_input_iterable_t<InputIter>* = nullptr>
     forward_list(
         InputIter f,
         InputIter l,
@@ -1167,7 +1175,7 @@ public:
         }
     }
 
-    template <typename InputIter, enable_input_iterator_t<InputIter>* = nullptr>
+    template <typename InputIter, enable_input_iterable_t<InputIter>* = nullptr>
     void
     assign(
         InputIter f,
@@ -1380,7 +1388,7 @@ public:
         return iterator(r);
     }
 
-    template <typename InputIter, enable_input_iterator_t<InputIter>* = nullptr>
+    template <typename InputIter, enable_input_iterable_t<InputIter>* = nullptr>
     iterator
     insert_after(
         const_iterator p,

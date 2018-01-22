@@ -16,7 +16,7 @@ PyCPP attempts to fully separate memory allocation from container data, to erase
 
 Consider I have an interface, which takes a `std::map<int, int>`, processes this data, and returns some value of success or failure. Only, this method is prohibitively large, or due to intellectual property reasons, I do not wish to make it a public header.
 
-``cpp
+```cpp
 class Processor
 {
     void call(const std::map<int, int>& m);
