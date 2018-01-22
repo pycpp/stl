@@ -31,6 +31,82 @@
  *
  *      template <typename T>
  *      using is_trivially_move_assignable = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_copyable = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_constructible = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_default_constructible = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_copy_constructible = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_move_constructible = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_assignable = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_copy_assignable = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_move_assignable = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_copyable_t = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_constructible_t = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_default_constructible_t = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_copy_constructible_t = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_move_constructible_t = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_assignable_t = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_copy_assignable_t = implementation-defined;
+ *
+ *      template <typename T, typename R = void>
+ *      using enable_trivially_move_assignable_t = implementation-defined;
+ *
+ *      #ifdef HAVE_CPP14
+ *
+ *      template <typename T>
+ *      constexpr bool is_trivially_copyable_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool is_trivially_constructible_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool is_trivially_default_constructible_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool is_trivially_copy_constructible_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool is_trivially_move_constructible_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool is_trivially_assignable_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool is_trivially_copy_assignable_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool is_trivially_move_assignable_v = implementation-defined;
+ *
+ *      #endif
  */
 
 #pragma once
@@ -88,5 +164,89 @@ using std::is_trivially_copy_assignable;
 using std::is_trivially_move_assignable;
 
 #endif                                      // CPP11_PARTIAL_TYPE_TRAITS
+
+// SFINAE
+// ------
+
+// ENABLE IF
+
+template <typename T, typename R = void>
+using enable_trivially_copyable = std::enable_if<is_trivially_copyable<T>::value, R>;
+
+template <typename T, typename R = void>
+using enable_trivially_constructible = std::enable_if<is_trivially_constructible<T>::value, R>;
+
+template <typename T, typename R = void>
+using enable_trivially_default_constructible = std::enable_if<is_trivially_default_constructible<T>::value, R>;
+
+template <typename T, typename R = void>
+using enable_trivially_copy_constructible = std::enable_if<is_trivially_copy_constructible<T>::value, R>;
+
+template <typename T, typename R = void>
+using enable_trivially_move_constructible = std::enable_if<is_trivially_move_constructible<T>::value, R>;
+
+template <typename T, typename R = void>
+using enable_trivially_assignable = std::enable_if<is_trivially_assignable<T>::value, R>;
+
+template <typename T, typename R = void>
+using enable_trivially_copy_assignable = std::enable_if<is_trivially_copy_assignable<T>::value, R>;
+
+template <typename T, typename R = void>
+using enable_trivially_move_assignable = std::enable_if<is_trivially_move_assignable<T>::value, R>;
+
+template <typename T, typename R = void>
+using enable_trivially_copyable_t = typename enable_trivially_copyable<T, R>::type;
+
+template <typename T, typename R = void>
+using enable_trivially_constructible_t = typename enable_trivially_constructible<T, R>::type;
+
+template <typename T, typename R = void>
+using enable_trivially_default_constructible_t = typename enable_trivially_default_constructible<T, R>::type;
+
+template <typename T, typename R = void>
+using enable_trivially_copy_constructible_t = typename enable_trivially_copy_constructible<T, R>::type;
+
+template <typename T, typename R = void>
+using enable_trivially_move_constructible_t = typename enable_trivially_move_constructible<T, R>::type;
+
+template <typename T, typename R = void>
+using enable_trivially_assignable_t = typename enable_trivially_assignable<T, R>::type;
+
+template <typename T, typename R = void>
+using enable_trivially_copy_assignable_t = typename enable_trivially_copy_assignable<T, R>::type;
+
+template <typename T, typename R = void>
+using enable_trivially_move_assignable_t = typename enable_trivially_move_assignable<T, R>::type;
+
+#ifdef HAVE_CPP14
+
+// SFINAE
+// ------
+
+template <typename T>
+constexpr bool is_trivially_copyable_v = is_trivially_copyable<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_constructible_v = is_trivially_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_default_constructible_v = is_trivially_default_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_copy_constructible_v = is_trivially_copy_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_move_constructible_v = is_trivially_move_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_assignable_v = is_trivially_assignable<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_copy_assignable_v = is_trivially_copy_assignable<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_move_assignable_v = is_trivially_move_assignable<T>::value;
+
+#endif              // HAVE_CPP14
 
 PYCPP_END_NAMESPACE

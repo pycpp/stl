@@ -30,8 +30,9 @@
 #include <pycpp/stl/container/compressed_pair.h>
 #include <pycpp/stl/memory/allocator_destructor.h>
 #include <pycpp/stl/memory/allocator_traits.h>
-#include <forward_list>
-#include <type_traits>
+#include <pycpp/stl/type_traits/is_iterator.h>
+#include <initializer_list>
+#include <utility>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -191,8 +192,8 @@ class forward_list_iterator
         ptr_(traits::as_iter_node(p))
     {}
 
-    template <typename, typename> friend class forward_list_facet;
-    //template <typename, typename> friend class forward_list;
+    template <typename, typename, typename, typename> friend class forward_list_facet;
+    template <typename, typename> friend class forward_list;
     template <typename> friend class forward_list_const_iterator;
 
 public:
@@ -311,8 +312,8 @@ struct forward_list_const_iterator
         ptr_(traits::as_iter_node(p))
     {}
 
-    template <typename, typename> friend class forward_list_facet;
-    //template <typename, typename> friend class forward_list;
+    template <typename, typename, typename, typename> friend class forward_list_facet;
+    template <typename, typename> friend class forward_list;
 
 public:
     using iterator_category = std::forward_iterator_tag;
@@ -402,11 +403,7 @@ protected:
 
     begin_node before_begin_;
 
-    forward_list_facet()
-    noexcept:
-        before_begin_(begin_node())
-    {}
-
+    // Pointer
     begin_node_pointer
     before_begin_pointer()
     noexcept
@@ -422,18 +419,57 @@ protected:
         return std::pointer_traits<begin_node_pointer>::pointer_to(r);
     }
 
-    begin_node_pointer
+    begin_node_pointer&
     begin_pointer()
     noexcept
     {
         return before_begin_pointer()->next_;
     }
 
-    begin_node_pointer
+    begin_node_pointer&
     begin_pointer()
     const noexcept
     {
         return before_begin_pointer()->next_;
+    }
+
+    // Constructors
+    forward_list_facet()
+    noexcept:
+        before_begin_(begin_node())
+    {}
+
+    forward_list_facet(const forward_list_facet&) = delete;
+
+    forward_list_facet(
+        forward_list_facet&& x
+    )
+    noexcept:
+        before_begin_(std::move(x.before_begin_))
+    {
+        x.begin_pointer() = nullptr;
+    }
+
+    // Assignment
+    forward_list_facet& operator=(const forward_list_facet&) = delete;
+
+    forward_list_facet&
+    operator=(
+        forward_list_facet&& x
+    )
+    {
+        swap(x);
+        return *this;
+    }
+
+    // Modifiers
+    void
+    swap(
+        forward_list_facet& x
+    )
+    noexcept
+    {
+        std::swap(begin_pointer(), x.begin_pointer());
     }
 
 public:
@@ -553,7 +589,8 @@ public:
     template <typename Compare>
     void
     merge(
-        forward_list_facet&& x, _Compare comp
+        forward_list_facet&& x,
+        Compare comp
     )
     {
         merge(x, std::move(comp));
@@ -680,7 +717,7 @@ public:
                 p = f;
                 f = t;
             }
-            before_begin_pointer() = p;
+            begin_pointer() = p;
         }
     }
 
@@ -691,12 +728,13 @@ public:
     }
 
     template <typename Compare>
-    void sort(
+    void
+    sort(
         Compare comp
     )
     {
         difference_type d = std::distance(begin(), end());
-        before_begin_pointer() = sort_list(before_begin_pointer(), d, comp);
+        begin_pointer() = sort_list(before_begin_pointer(), d, comp);
     }
 
 private:
@@ -753,6 +791,9 @@ private:
     static
     node_pointer
     sort_list(
+        node_pointer f1,
+        difference_type d,
+        Compare& comp
     )
     {
         switch (d)
@@ -789,7 +830,7 @@ operator==(
     const forward_list_facet<T, VoidPtr, Size, DiffT>& y
 )
 {
-    using list_type = forward_list forward_list<T, VoidPtr, Size, DiffT>;
+    using list_type = forward_list_facet<T, VoidPtr, Size, DiffT>;
     using iterator_type = typename list_type::const_iterator;
 
     iterator_type ix = x.begin();
@@ -859,137 +900,6 @@ operator<=(
 {
     return !(y < x);
 }
-
-// FORWARD LIST BASE
-
-// TODO: remove the base...
-template <typename T, typename Allocator>
-class forward_list_base
-{
-//protected:
-//    using value_type = T;
-//    using allocator_type = Allocator;
-//    using alloc_traits = allocator_traits<allocator_type>;
-//    using void_pointer = typename alloc_traits::void_pointer;
-//    using node = forward_list_node<value_type, void_pointer>;
-//    using begin_node = typename begin_node_of<value_type, void_pointer>::type;
-//    using node_allocator = typename alloc_traits::template rebind_alloc<node>;
-//    using node_traits = allocator_traits<node_allocator>;
-//    using node_pointer = typename node_traits::pointer;
-//    using begin_node_allocator = typename alloc_traits::template rebind_alloc<begin_node>;
-//    using begin_node_traits = allocator_traits<begin_node_allocator>;
-//    using begin_node_pointer = typename begin_node_traits::pointer;
-//
-//    compressed_pair<begin_node, node_allocator> before_begin_;
-//
-//    begin_node_pointer before_begin_impl() noexcept
-//    {
-//        return std::pointer_traits<begin_node_pointer>::pointer_to(get<0>(before_begin_));
-//    }
-//
-//    begin_node_pointer before_begin_impl() const noexcept
-//    {
-//        return std::pointer_traits<begin_node_pointer>::pointer_to(const_cast<begin_node&>(get<0>(before_begin_)));
-//    }
-//
-//    node_allocator& alloc() noexcept
-//    {
-//        return get<1>(before_begin_);
-//    }
-//
-//    const node_allocator& alloc() const noexcept
-//    {
-//        return get<1>(before_begin_);
-//    }
-//
-//    using iterator = forward_list_iterator<node_pointer>;
-//    using const_iterator = forward_list_const_iterator<node_pointer>;
-//
-//    forward_list_base() noexcept:
-//        before_begin_(begin_node())
-//    {}
-//
-//    forward_list_base(const allocator_type& alloc):
-//        before_begin_(begin_node(), node_allocator(alloc))
-//    {}
-//
-//public:
-//    forward_list_base(const forward_list_base&) = delete;
-//    forward_list_base& operator=(const forward_list_base&) = delete;
-//
-//    forward_list_base(forward_list_base&& x) noexcept:
-//        before_begin_(std::move(x.before_begin_))
-//    {
-//        x.before_begin_impl()->next_ = nullptr;
-//    }
-//
-//    forward_list_base(forward_list_base&& x, const allocator_type& alloc):
-//        before_begin_(begin_node(), node_allocator(alloc))
-//    {
-//        if (alloc() == x.alloc()) {
-//            before_begin_impl()->next_ = x.before_begin_impl()->next_;
-//            x.before_begin_impl()->next_ = nullptr;
-//        }
-//    }
-//
-//    ~forward_list_base()
-//    {
-//        clear();
-//    }
-//
-//protected:
-//    void copy_assign_alloc(const forward_list_base& x)
-//    {
-//        constexpr bool propagate = node_traits::propagate_on_container_copy_assignment::value;
-//        copy_assign_alloc(x, std::integral_constant<bool, propagate>());
-//    }
-//
-//    void move_assign_alloc(forward_list_base& x) noexcept
-//    {
-//        constexpr bool propagate = node_traits::propagate_on_container_move_assignment::value;
-//        move_assign_alloc(x, std::integral_constant<bool, propagate>());
-//    }
-//
-//public:
-//    void swap(forward_list_base& x) noexcept
-//    {
-//        std::swap(alloc(), x.alloc());
-//        std::swap(before_begin_impl()->next_, x.before_begin_impl()->next_);
-//    }
-//
-//protected:
-//    void clear() noexcept
-//    {
-//        node_allocator& a = alloc();
-//        for (node_pointer p = before_begin_impl()->next_; p != nullptr;) {
-//            node_pointer next = p->next_;
-//            node_traits::destroy(a, std::addressof(p->value_));
-//            node_traits::deallocate(a, p, 1);
-//            p = next;
-//        }
-//        before_begin_impl()->next_ = nullptr;
-//    }
-//
-//private:
-//    void copy_assign_alloc(const forward_list_base& x, std::true_type)
-//    {
-//        if (alloc() != x.alloc()) {
-//            clear();
-//        }
-//        alloc() = x.alloc();
-//    }
-//
-//    void copy_assign_alloc(const forward_list_base&, std::false_type)
-//    {}
-//
-//    void move_assign_alloc(forward_list_base& x, std::true_type) noexcept
-//    {
-//        alloc() = std::move(x.alloc());
-//    }
-//
-//    void move_assign_alloc(forward_list_base&, std::false_type) noexcept
-//    {}
-};
 
 // FORWARD LIST
 
@@ -1066,37 +976,474 @@ public:
         insert_after(cbefore_begin(), n, v);
     }
 
-    // TODO: here
+    template <typename InputIter, enable_input_iterator_t<InputIter>* = nullptr>
+    forward_list(
+        InputIter f,
+        InputIter l
+    ):
+        forward_list(f, l, allocator_type())
+    {}
 
-//public:
+    template <typename InputIter, enable_input_iterator_t<InputIter>* = nullptr>
+    forward_list(
+        InputIter f,
+        InputIter l,
+        const allocator_type& alloc
+    ):
+        forward_list(alloc)
+    {
+        insert_after(cbefore_begin(), f, l);
+    }
 
 
-//
+    forward_list(
+        const forward_list& x
+    ):
+        forward_list(x, allocator_type(node_traits::select_on_container_copy_construction(x.alloc())))
+    {}
 
-//
-//    // Constructors
+    forward_list(
+        const forward_list& x,
+        const allocator_type& alloc
+    ):
+        forward_list(alloc)
+    {
+        insert_after(cbefore_begin(), x.begin(), x.end());
+    }
 
-//
-//    explicit forward_list(size_type n, const allocator_type& alloc):
-//        base(alloc)
-//    {
-//        if (n > 0) {
-//            node_allocator& alloc = base::__alloc();
-//            using deleter = allocator_destructor<node_allocator>;
-//            std::unique_ptr<node, deleter> h(nullptr, deleter(alloc, 1));
-//            for (begin_node_pointer p = base::before_begin_impl(); n > 0; --n, p = p->next_as_begin()) {
-//                h.reset(node_traits::allocate(alloc, 1));
-//                node_traits::construct(alloc, std::addressof(h->value_));
-//                h->next_ = nullptr;
-//                p->next_ = h.release();
-//            }
-//        }
-//    }
-//
-//    forward_list(size_type n, const value_type& v);
-//    forward_list(size_type n, const value_type& v, const allocator_type& alloc);
+    forward_list(
+        forward_list&& x
+    ):
+        data_(std::move(x.facet()))
+    {}
+
+    forward_list(
+        forward_list&& x,
+        const allocator_type& alloc
+    ):
+        forward_list(alloc)
+    {
+        if (alloc != x.alloc()) {
+            using iter = std::move_iterator<iterator>;
+            insert_after(cbefore_begin(), iter(x.begin()), iter(x.end()));
+        } else {
+            swap(facet(), x.facet());
+        }
+    }
+
+    forward_list(
+        std::initializer_list<value_type> il
+    )
+    {
+        insert_after(cbefore_begin(), il.begin(), il.end());
+    }
+
+    forward_list(
+        std::initializer_list<value_type> il,
+        const allocator_type& alloc
+    ):
+        forward_list(alloc)
+    {
+        insert_after(cbefore_begin(), il.begin(), il.end());
+    }
+
+    // Assignment
+    forward_list&
+    operator=(
+        const forward_list& x
+    )
+    {
+        if (this != &x) {
+            copy_assign_alloc(x);
+            assign(x.begin(), x.end());
+        }
+        return *this;
+    }
+
+    forward_list&
+    operator=(
+        forward_list&& x
+    )
+    noexcept
+    {
+        move_assign(x);
+        return *this;
+    }
+
+    forward_list&
+    operator=(
+        std::initializer_list<value_type> il
+    )
+    {
+        assign(il.begin(), il.end());
+        return *this;
+    }
+
+    // Destructors
+    ~forward_list()
+    {
+        clear();
+    }
+
+    // Assign
+    void
+    assign(
+        size_type n,
+        const value_type& v
+    )
+    {
+        iterator i = before_begin();
+        iterator j = std::next(i);
+        iterator e = end();
+        for (; j != e && n > 0; --n, ++i, ++j) {
+            *j = v;
+        }
+        if (j == e) {
+            insert_after(i, n, v);
+        } else {
+            erase_after(i, e);
+        }
+    }
+
+    template <typename InputIter, enable_input_iterator_t<InputIter>* = nullptr>
+    void
+    assign(
+        InputIter f,
+        InputIter l
+    )
+    {
+        iterator i = before_begin();
+        iterator j = std::next(i);
+        iterator e = end();
+        for (; j != e && f != l; ++i, (void) ++j, ++f) {
+            *j = *f;
+        }
+        if (j == e) {
+            insert_after(i, f, l);
+        } else {
+            erase_after(i, e);
+        }
+    }
+
+    void
+    assign(
+        std::initializer_list<T> il
+    )
+    {
+        assign(il.begin(), il.end());
+    }
+
+    // Observers
+    allocator_type
+    get_allocator()
+    const noexcept
+    {
+        return allocator_type(alloc());
+    }
+
+    // Element access
+    reference
+    front()
+    {
+        return facet().front();
+    }
+
+    const_reference
+    front()
+    const
+    {
+        return facet().front();
+    }
+
+    // Iterators
+    iterator
+    before_begin()
+    noexcept
+    {
+        return facet().before_begin();
+    }
+
+    const_iterator
+    before_begin()
+    const noexcept
+    {
+        return facet().before_begin();
+    }
+
+    const_iterator
+    cbefore_begin()
+    const noexcept
+    {
+        return facet().cbefore_begin();
+    }
+
+    iterator
+    begin()
+    noexcept
+    {
+        return facet().begin();
+    }
+
+    const_iterator
+    begin()
+    const noexcept
+    {
+        return facet().begin();
+    }
+
+    const_iterator
+    cbegin()
+    const noexcept
+    {
+        return facet().cbegin();
+    }
+
+    iterator
+    end()
+    noexcept
+    {
+        return facet().end();
+    }
+
+    const_iterator
+    end()
+    const noexcept
+    {
+        return facet().end();
+    }
+
+    const_iterator
+    cend()
+    const noexcept
+    {
+        return facet().cend();
+    }
+
+    // Capacity
+    bool
+    empty()
+    const noexcept
+    {
+        return facet().empty();
+    }
+
+    size_type
+    max_size()
+    const noexcept
+    {
+        return facet().max_size();
+    }
+
+    // Modifiers
+    void
+    clear()
+    noexcept
+    {
+        node_allocator& a = alloc();
+        for (node_pointer p = facet().begin_pointer(); p != nullptr;) {
+            node_pointer next = p->next_;
+            node_traits::destroy(a, std::addressof(p->value_));
+            node_traits::deallocate(a, p, 1);
+            p = next;
+        }
+        facet().begin_pointer() = nullptr;
+    }
+
+    // TODO:::::::
+    // insert_after
+    // emplace_after
+    // erase_after
+
+    void
+    push_front(
+        const value_type& v
+    )
+    {
+        node_allocator& a = alloc();
+        using deleter = allocator_destructor<node_allocator>;
+        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, std::addressof(h->value_), v);
+        h->next_ = facet().begin_pointer();
+        facet().begin_pointer() = h.release();
+    }
+
+    void
+    push_front(
+        value_type&& v
+    )
+    {
+        emplace_front(std::forward<value_type>(v));
+    }
+
+    template <typename ... Ts>
+    reference
+    emplace_front(
+        Ts&&... ts
+    )
+    {
+        node_allocator& a = alloc();
+        using deleter = allocator_destructor<node_allocator>;
+        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, std::addressof(h->value_), std::forward<Ts>(ts)...);
+        h->next_ = facet().begin_pointer();
+        facet().begin_pointer() = h.release();
+        return facet().begin_pointer()->value_;
+    }
+
+    void
+    pop_front()
+    {
+        node_allocator& a = alloc();
+        node_pointer p = facet().begin_pointer();
+        facet().begin_pointer() = p->next_;
+        node_traits::destroy(a, std::addressof(p->value_));
+        node_traits::deallocate(a, p, 1);
+    }
+
+    void
+    resize(
+        size_type n
+    )
+    {
+        resize(n, value_type());
+    }
+
+    void
+    resize(
+        size_type n,
+        const value_type& v
+    )
+    {
+        size_type sz = 0;
+        iterator p = before_begin();
+        iterator i = begin();
+        iterator e = end();
+        for (; i != e && sz < n; ++p, ++i, ++sz)
+            ;
+        if (i != e) {
+            erase_after(p, e);
+        } else {
+            n -= sz;
+            if (n > 0) {
+                node_allocator& a = alloc();
+                using deleter = allocator_destructor<node_allocator>;
+                std::unique_ptr<node, deleter> h(nullptr, deleter(a, 1));
+                for (begin_node_pointer ptr = p.get_begin(); n > 0; --n, ptr = ptr->next_as_begin()) {
+                    h.reset(node_traits::allocate(a, 1));
+                    node_traits::construct(a, std::addressof(h->value_), v);
+                    h->next_ = nullptr;
+                    ptr->next_ = h.release();
+                }
+            }
+        }
+    }
+
+    void
+    swap(
+        forward_list& x
+    )
+    noexcept
+    {
+        std::swap(alloc(), x.alloc());
+        std::swap(facet(), x.facet());
+    }
 
     // Operations
+    void
+    merge(
+        forward_list&& x
+    )
+    {
+        facet().merge(std::move(x.facet()));
+    }
+
+    template <typename Compare>
+    void
+    merge(
+        forward_list&& x,
+        Compare comp
+    )
+    {
+        facet().merge(std::move(x.facet()), std::move(comp));
+    }
+
+    void
+    merge(
+        forward_list& x
+    )
+    {
+        facet().merge(x.facet());
+    }
+
+    template <typename Compare>
+    void
+    merge(
+        forward_list& x,
+        Compare comp
+    )
+    {
+        facet().merge(x.facet(), std::move(comp));
+    }
+
+    void
+    splice_after(
+        const_iterator p,
+        forward_list&& x
+    )
+    {
+        facet().splice_after(p, std::move(x.facet()));
+    }
+
+    void
+    splice_after(
+        const_iterator p,
+        forward_list&& x,
+        const_iterator i
+    )
+    {
+        facet().splice_after(p, std::move(x.facet()), i);
+    }
+
+    void
+    splice_after(
+        const_iterator p,
+        forward_list&& x,
+        const_iterator f,
+        const_iterator l
+    )
+    {
+        facet().splice_after(p, std::move(x.facet()), f, l);
+    }
+
+    void
+    splice_after(
+        const_iterator p,
+        forward_list& x
+    )
+    {
+        facet().splice_after(p, x.facet());
+    }
+
+    void
+    splice_after(
+        const_iterator p,
+        forward_list& x,
+        const_iterator i
+    )
+    {
+        facet().splice_after(p, x.facet(), i);
+    }
+
+    void
+    splice_after(
+        const_iterator p,
+        forward_list& x,
+        const_iterator f,
+        const_iterator l
+    )
+    {
+        facet().splice_after(p, x.facet(), f, l);
+    }
 
     void
     remove(
@@ -1114,7 +1461,29 @@ public:
         Predicate pred
     )
     {
-        // TODO: implemnet...
+        iterator e = end();
+        for (iterator i = before_begin(); i.__get_begin()->next_ != nullptr;)
+        {
+            if (pred(i.get_begin()->next_->value_)) {
+                iterator j = std::next(i, 2);
+                for (; j != e && pred(*j); ++j)
+                    ;
+                erase_after(i, j);
+                if (j == e) {
+                    break;
+                }
+                i = j;
+            } else {
+                ++i;
+            }
+        }
+    }
+
+    void
+    reverse()
+    noexcept
+    {
+        facet().reverse();
     }
 
     void
@@ -1129,7 +1498,30 @@ public:
         Predicate pred
     )
     {
-        // TODO: implemnet...
+        for (iterator i = begin(), e = end(); i != e;) {
+            iterator j = std::next(i);
+            for (; j != e && pred(*i, *j); ++j)
+                ;
+            if (i.get_begin()->next_ != j.get_unsafe_node_pointer()) {
+                erase_after(i, j);
+            }
+            i = j;
+        }
+    }
+
+    void
+    sort()
+    {
+        facet().sort();
+    }
+
+    template <typename Compare>
+    void
+    sort(
+        Compare comp
+    )
+    {
+        facet().sort(std::move(comp));
     }
 
     // Facet
@@ -1149,7 +1541,183 @@ public:
 
 private:
     compressed_pair<facet_type, node_allocator> data_;
+
+    // Allocator
+    node_allocator&
+    alloc()
+    noexcept
+    {
+        return get<1>(data_);
+    }
+
+    const node_allocator&
+    alloc()
+    const noexcept
+    {
+        return get<1>(data_);
+    }
+
+    // Copy Assign Alloc
+    void
+    copy_assign_alloc(
+        const forward_list& x,
+        std::true_type
+    )
+    {
+        if (alloc() != x.alloc()) {
+            clear();
+        }
+        alloc() = x.alloc();
+    }
+
+    void
+    copy_assign_alloc(
+        const forward_list&,
+        std::false_type
+    )
+    {}
+
+    void
+    copy_assign_alloc(
+        const forward_list& x
+    )
+    {
+        constexpr bool propagate = node_traits::propagate_on_container_copy_assignment::value;
+        copy_assign_alloc(x, std::integral_constant<bool, propagate>());
+    }
+
+    // Move Assign Alloc
+    void
+    move_assign_alloc(
+        forward_list& x,
+        std::true_type
+    )
+    noexcept
+    {
+        alloc() = std::move(x.alloc());
+    }
+
+    void
+    move_assign_alloc(
+        forward_list&,
+        std::false_type
+    )
+    noexcept
+    {}
+
+    void
+    move_assign_alloc(
+        forward_list& x
+    )
+    noexcept
+    {
+        constexpr bool propagate = node_traits::propagate_on_container_move_assignment::value;
+        move_assign_alloc(x, std::integral_constant<bool, propagate>());
+    }
+
+    // Move Assign
+    void
+    move_assign(
+        forward_list& x,
+        std::true_type
+    )
+    {
+        clear();
+        move_assign_alloc(x);
+        facet().begin_pointer() = x.facet().begin_pointer();
+        x.facet().begin_pointer() = nullptr;
+    }
+
+    void
+    move_assign(
+        forward_list& x,
+        std::false_type
+    )
+    {
+        if (alloc() == x.alloc()) {
+            move_assign(x, std::true_type());
+        } else {
+            using iter = std::move_iterator<iterator>;
+            assign(iter(x.begin()), iter(x.end()));
+        }
+    }
+
+    void
+    move_assign(
+        forward_list& x
+    )
+    {
+        constexpr bool propagate = node_traits::propagate_on_container_move_assignment::value;
+        move_assign(x, std::integral_constant<bool, propagate>());
+    }
 };
+
+
+template <typename T, typename Allocator>
+inline
+bool
+operator==(
+    const forward_list<T, Allocator>& x,
+    const forward_list<T, Allocator>& y
+)
+{
+    return x.facet() == y.facet();
+}
+
+template <typename T, typename Allocator>
+inline
+bool
+operator!=(
+    const forward_list<T, Allocator>& x,
+    const forward_list<T, Allocator>& y
+)
+{
+    return x.facet() != y.facet();
+}
+
+template <typename T, typename Allocator>
+inline
+bool
+operator<(
+    const forward_list<T, Allocator>& x,
+    const forward_list<T, Allocator>& y
+)
+{
+    return x.facet() < y.facet();
+}
+
+template <typename T, typename Allocator>
+inline
+bool
+operator>(
+    const forward_list<T, Allocator>& x,
+    const forward_list<T, Allocator>& y
+)
+{
+    return x.facet() > y.facet();
+}
+
+template <typename T, typename Allocator>
+inline
+bool
+operator>=(
+    const forward_list<T, Allocator>& x,
+    const forward_list<T, Allocator>& y
+)
+{
+    return x.facet() >= y.facet();
+}
+
+template <typename T, typename Allocator>
+inline
+bool
+operator<=(
+    const forward_list<T, Allocator>& x,
+    const forward_list<T, Allocator>& y
+)
+{
+    return x.facet() <= y.facet();
+}
 
 }   /* stl_detail */
 

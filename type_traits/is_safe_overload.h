@@ -25,11 +25,22 @@
  *  \synopsis
  *      template <bool RemoveReference, typename T, typename ... Ts>
  *      struct is_safe_overload;
+ *
+ *      template <bool RemoveReference, typename T, typename ... Ts>
+ *      using enable_safe_overload = implementation-defined;
+ *
+ *      #ifdef HAVE_CPP14
+ *
+ *      template <bool RemoveReference, typename T, typename ... Ts>
+ *      constexpr bool is_safe_overload_v = implementation-defined;
+ *
+ *      #endif
  */
 
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/preprocessor/compiler.h>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
@@ -37,9 +48,10 @@ PYCPP_BEGIN_NAMESPACE
 // SFINAE
 // ------
 
+// TYPE
 
 // By default, the overload is safe.
-template <bool, typename, typename...>
+template <bool, typename, typename ...>
 struct is_safe_overload_impl
 {
     using type = std::true_type;
@@ -92,5 +104,25 @@ struct is_safe_overload_impl<RemoveReference, Class, T, Ts...>
 template <bool RemoveReference, typename T, typename ... Ts>
 struct is_safe_overload: is_safe_overload_impl<RemoveReference, T, Ts...>::type
 {};
+
+// ENABLE IF
+
+template <bool RemoveReference, typename T, typename ... Ts>
+using enable_safe_overload = typename std::enable_if<
+    is_safe_overload<RemoveReference, T, Ts...>::value
+>::type;
+
+template <bool RemoveReference, typename T, typename ... Ts>
+using enable_safe_overload_t = typename enable_safe_overload<RemoveReference, T, Ts...>::type;
+
+#ifdef HAVE_CPP14
+
+// SFINAE
+// ------
+
+template <bool RemoveReference, typename T, typename ... Ts>
+constexpr bool is_safe_overload_v = is_safe_overload<RemoveReference, T, Ts...>::value;
+
+#endif              // HAVE_CPP14
 
 PYCPP_END_NAMESPACE
