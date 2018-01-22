@@ -25,8 +25,11 @@
  *          using iterator = implementation-defined;
  *          using const_iterator = implementation-defined;
  *
+ *          // Element access
  *          reference front();
  *          const_reference front() const;
+ *
+ *          // Iterators
  *          iterator before_begin() noexcept;
  *          const_iterator before_begin() const noexcept;
  *          const_iterator cbefore_begin() const noexcept;
@@ -36,12 +39,12 @@
  *          iterator end() noexcept;
  *          const_iterator end() const noexcept;
  *          const_iterator cend() const noexcept;
+ *
+ *          // Capacity
  *          bool empty() const noexcept;
  *          size_type max_size() const noexcept;
  *          // TODO: continue
  *      };
- *
- *
  *
  *      template <
  *          typename T,
@@ -60,9 +63,29 @@
  *          using const_pointer = implementation-defined;
  *          using iterator = implementation-defined;
  *          using const_iterator = implementation-defined;
- *      };
  *
- *  TODO: finish the synopsis
+ *          // Constructors
+ *
+ *          // Element access
+ *          reference front();
+ *          const_reference front() const;
+ *
+ *          // Iterators
+ *          iterator before_begin() noexcept;
+ *          const_iterator before_begin() const noexcept;
+ *          const_iterator cbefore_begin() const noexcept;
+ *          iterator begin() noexcept;
+ *          const_iterator begin() const noexcept;
+ *          const_iterator cbegin() const noexcept;
+ *          iterator end() noexcept;
+ *          const_iterator end() const noexcept;
+ *          const_iterator cend() const noexcept;
+ *
+ *          // Capacity
+ *          bool empty() const noexcept;
+ *          size_type max_size() const noexcept;
+ *          // TODO: continue
+ *      };
  */
 
 
