@@ -20,8 +20,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <memory>
+#include <pycpp/stl/memory/allocator_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
