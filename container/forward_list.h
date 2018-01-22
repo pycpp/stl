@@ -6,19 +6,58 @@
  *  \brief STL forward_list with allocator erasure from iterators.
  *
  *  \synopsis
- *      # TODO: iterator....
+ *       template <
+ *          typename T,
+ *          typename VoidPtr = void*,
+ *          typename Size = size_t,
+ *          typename DiffT = std::ptrdiff_t
+ *      >
+ *      class forward_list_facet
+ *      {
+ *      public:
+ *          using value_type = T;
+ *          using reference = value_type&;
+ *          using const_reference = const value_type&;
+ *          using pointer = implementation-defined;
+ *          using const_pointer = implementation-defined;
+ *          using size_type = Size;
+ *          using difference_type = DiffT;
+ *          using iterator = implementation-defined;
+ *          using const_iterator = implementation-defined;
  *
- *      template <typename T, typename Allocator = std::allocator<T>>
+ *          reference front();
+ *          const_reference front() const;
+ *          iterator before_begin() noexcept;
+ *          const_iterator before_begin() const noexcept;
+ *          const_iterator cbefore_begin() const noexcept;
+ *          iterator begin() noexcept;
+ *          const_iterator begin() const noexcept;
+ *          const_iterator cbegin() const noexcept;
+ *          iterator end() noexcept;
+ *          const_iterator end() const noexcept;
+ *          const_iterator cend() const noexcept;
+ *          bool empty() const noexcept;
+ *          size_type max_size() const noexcept;
+ *          // TODO: continue
+ *      };
+ *
+ *
+ *
+ *      template <
+ *          typename T,
+ *          typename Allocator = std::allocator<T>
+ *      >
  *      class forward_list
  *      {
+ *      public:
  *          using value_type = T;
  *          using allocator_type = Allocator;
  *          using reference = value_type&;
  *          using const_reference = const value_type&;
- *          using size_type = typename alloc_traits::size_type;
- *          using difference_type = typename alloc_traits::difference_type;
- *          using pointer = typename alloc_traits::pointer;
- *          using const_pointer = typename alloc_traits::const_pointer;
+ *          using size_type = implementation-defined;
+ *          using difference_type = implementation-defined;
+ *          using pointer = implementation-defined;
+ *          using const_pointer = implementation-defined;
  *          using iterator = implementation-defined;
  *          using const_iterator = implementation-defined;
  *      };
@@ -1249,10 +1288,176 @@ public:
         facet().begin_pointer() = nullptr;
     }
 
-    // TODO:::::::
-    // insert_after
-    // emplace_after
-    // erase_after
+    iterator
+    insert_after(
+        const_iterator p,
+        value_type&& v
+    )
+    {
+        begin_node_pointer const r = p.get_begin();
+        node_allocator& a = alloc();
+        using deleter = allocator_destructor<node_allocator>;
+        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, std::addressof(h->value_), std::move(v));
+        h->next_ = r->next_;
+        r->next_ = h.release();
+        return iterator(r->next_);
+    }
+
+    iterator
+    insert_after(
+        const_iterator p,
+        const value_type& v
+    )
+    {
+        begin_node_pointer const r = p.get_begin();
+        node_allocator& a = alloc();
+        using deleter = allocator_destructor<node_allocator>;
+        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, std::addressof(h->value_), v);
+        h->next_ = r->next_;
+        r->next_ = h.release();
+        return iterator(r->next_);
+    }
+
+    iterator
+    insert_after(
+        const_iterator p,
+        size_type n,
+        const value_type& v
+    )
+    {
+        begin_node_pointer r = p.get_begin();
+        if (n > 0) {
+            node_allocator& a = alloc();
+            using deleter = allocator_destructor<node_allocator>;
+            std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+            node_traits::construct(a, std::addressof(h->value_), v);
+            node_pointer first = h.release();
+            node_pointer last = first;
+            try {
+                for (--n; n != 0; --n, last = last->next_) {
+                    h.reset(node_traits::allocate(a, 1));
+                    node_traits::construct(a, std::addressof(h->value_), v);
+                    last->next_ = h.release();
+                }
+            } catch (...) {
+                while (first != nullptr) {
+                    node_pointer next = first->next_;
+                    node_traits::destroy(a, std::addressof(first->value_));
+                    node_traits::deallocate(a, first, 1);
+                    first = next;
+                }
+                throw;
+            }
+            last->next_ = r->next_;
+            r->next_ = first;
+            r = static_cast<begin_node_pointer>(last);
+        }
+        return iterator(r);
+    }
+
+    template <typename InputIter, enable_input_iterator_t<InputIter>* = nullptr>
+    iterator
+    insert_after(
+        const_iterator p,
+        InputIter f,
+        InputIter l
+    )
+    {
+        begin_node_pointer r = p.get_begin();
+        if (f != l) {
+            node_allocator& a = alloc();
+            using deleter = allocator_destructor<node_allocator>;
+            std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+            node_traits::construct(a, std::addressof(h->value_), *f);
+            node_pointer first = h.release();
+            node_pointer last = first;
+            try {
+                for (++f; f != l; ++f, ((void)(last = last->next_))) {
+                    h.reset(node_traits::allocate(a, 1));
+                    node_traits::construct(a, std::addressof(h->value_), *f);
+                    last->next_ = h.release();
+                }
+            } catch (...) {
+                while (first != nullptr) {
+                    node_pointer next = first->next_;
+                    node_traits::destroy(a, std::addressof(first->value_));
+                    node_traits::deallocate(a, first, 1);
+                    first = next;
+                }
+                throw;
+            }
+            last->next_ = r->next_;
+            r->next_ = first;
+            r = static_cast<begin_node_pointer>(last);
+        }
+        return iterator(r);
+    }
+
+    iterator
+    insert_after(
+        const_iterator p,
+        std::initializer_list<value_type> il
+    )
+    {
+        return insert_after(p, il.begin(), il.end());
+    }
+
+    template <typename ... Ts>
+    iterator
+    emplace_after(
+        const_iterator p,
+        Ts&&... ts
+    )
+    {
+        begin_node_pointer const r = p.get_begin();
+        node_allocator& a = alloc();
+        using deleter = allocator_destructor<node_allocator>;
+        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, std::addressof(h->value_), std::forward<Ts>(ts)...);
+        h->next_ = r->next_;
+        r->next_ = h.release();
+        return iterator(r->next_);
+    }
+
+    iterator
+    erase_after(
+        const_iterator f
+    )
+    {
+        begin_node_pointer p = f.get_begin();
+        node_pointer n = p->next_;
+        p->next_ = n->next_;
+        node_allocator& a = alloc();
+        node_traits::destroy(a, std::addressof(n->value_));
+        node_traits::deallocate(a, n, 1);
+        return iterator(p->next_);
+    }
+
+    iterator
+    erase_after(
+        const_iterator f,
+        const_iterator l
+    )
+    {
+        node_pointer e = l.get_unsafe_node_pointer();
+        if (f != l) {
+            begin_node_pointer bp = f.get_begin();
+            node_pointer n = bp->next_;
+            if (n != e) {
+                bp->next_ = e;
+                node_allocator& a = alloc();
+                do {
+                    node_pointer tmp = n->next_;
+                    node_traits::destroy(a, std::addressof(n->value_));
+                    node_traits::deallocate(a, n, 1);
+                    n = tmp;
+                } while (n != e);
+            }
+        }
+        return iterator(e);
+    }
 
     void
     push_front(
@@ -1462,7 +1667,7 @@ public:
     )
     {
         iterator e = end();
-        for (iterator i = before_begin(); i.__get_begin()->next_ != nullptr;)
+        for (iterator i = before_begin(); i.get_begin()->next_ != nullptr;)
         {
             if (pred(i.get_begin()->next_->value_)) {
                 iterator j = std::next(i, 2);
