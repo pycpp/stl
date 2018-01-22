@@ -17,8 +17,6 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-namespace stl_detail
-{
 // FUNCTIONS
 // ---------
 
@@ -44,7 +42,5 @@ noexcept
 {
     return to_raw_pointer(p.operator->());
 }
-
-}   /* stl_detail */
 
 PYCPP_END_NAMESPACE

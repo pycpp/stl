@@ -24,8 +24,6 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-namespace stl_detail
-{
 // OBJECTS
 // -------
 
@@ -62,7 +60,5 @@ public:
         alloc_traits::deallocate(alloc_, p, size_);
     }
 };
-
-}   /* stl_detail */
 
 PYCPP_END_NAMESPACE

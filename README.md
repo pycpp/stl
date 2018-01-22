@@ -36,3 +36,17 @@ By defining a subset of container methods, including the iterator interface, wit
 The type-erased containers are called "facets", to avoid any conflicts with `basic_string_view`. Although a complete erasure of the allocator is impossible from the facet, due to the possibility of using [shared memory to allocate items])(http://blog.nuggetwheat.org/index.php/2015/09/01/why-pointer_traits-was-introduced-in-c11/), passing a `void_pointer` is sufficient for facet operations. In most cases, `void_pointer` will be equivalent to `void*` regardless of the allocator, allowing both the facet and the container's iterator to be used interchangeably regardless of the allocator.
 
 // TODO: continue`
+
+
+## Progress
+
+// TODO: remove this section
+
+Finished:
+    type_traits.h
+        - Unittests
+    memory.h
+        - Unittests
+
+Working on:
+    - typeinfo

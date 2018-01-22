@@ -23,7 +23,7 @@
  *      template <typename T>
  *      using is_trivially_move_constructible = implementation-defined;
  *
- *      template <typename T>
+ *      template <typename T1, typename T2>
  *      using is_trivially_assignable = implementation-defined;
  *
  *      template <typename T>
@@ -47,7 +47,7 @@
  *      template <typename T, typename R = void>
  *      using enable_trivially_move_constructible = implementation-defined;
  *
- *      template <typename T, typename R = void>
+ *      template <typename T1, typename T2, typename R = void>
  *      using enable_trivially_assignable = implementation-defined;
  *
  *      template <typename T, typename R = void>
@@ -71,7 +71,7 @@
  *      template <typename T, typename R = void>
  *      using enable_trivially_move_constructible_t = implementation-defined;
  *
- *      template <typename T, typename R = void>
+ *      template <typename T1, typename T2, typename R = void>
  *      using enable_trivially_assignable_t = implementation-defined;
  *
  *      template <typename T, typename R = void>
@@ -97,7 +97,7 @@
  *      template <typename T>
  *      constexpr bool is_trivially_move_constructible_v = implementation-defined;
  *
- *      template <typename T>
+ *      template <typename T1, typename T2>
  *      constexpr bool is_trivially_assignable_v = implementation-defined;
  *
  *      template <typename T>
@@ -143,8 +143,12 @@ using is_trivially_copy_constructible = std::is_trivial<T>;
 template <typename T>
 using is_trivially_move_constructible = std::is_trivial<T>;
 
-template <typename T>
-using is_trivially_assignable = std::is_trivial<T>;
+template <typename T1, typename T2>
+using is_trivially_assignable = std::integral_constant<
+    bool,
+    std::is_trivial<T1>::value,
+    std::is_trivial<T2>::value
+>;
 
 template <typename T>
 using is_trivially_copy_assignable = std::is_trivial<T>;
@@ -185,8 +189,8 @@ using enable_trivially_copy_constructible = std::enable_if<is_trivially_copy_con
 template <typename T, typename R = void>
 using enable_trivially_move_constructible = std::enable_if<is_trivially_move_constructible<T>::value, R>;
 
-template <typename T, typename R = void>
-using enable_trivially_assignable = std::enable_if<is_trivially_assignable<T>::value, R>;
+template <typename T1, typename T2, typename R = void>
+using enable_trivially_assignable = std::enable_if<is_trivially_assignable<T1, T2>::value, R>;
 
 template <typename T, typename R = void>
 using enable_trivially_copy_assignable = std::enable_if<is_trivially_copy_assignable<T>::value, R>;
@@ -209,8 +213,8 @@ using enable_trivially_copy_constructible_t = typename enable_trivially_copy_con
 template <typename T, typename R = void>
 using enable_trivially_move_constructible_t = typename enable_trivially_move_constructible<T, R>::type;
 
-template <typename T, typename R = void>
-using enable_trivially_assignable_t = typename enable_trivially_assignable<T, R>::type;
+template <typename T1, typename T2, typename R = void>
+using enable_trivially_assignable_t = typename enable_trivially_assignable<T1, T2, R>::type;
 
 template <typename T, typename R = void>
 using enable_trivially_copy_assignable_t = typename enable_trivially_copy_assignable<T, R>::type;
@@ -238,8 +242,8 @@ constexpr bool is_trivially_copy_constructible_v = is_trivially_copy_constructib
 template <typename T>
 constexpr bool is_trivially_move_constructible_v = is_trivially_move_constructible<T>::value;
 
-template <typename T>
-constexpr bool is_trivially_assignable_v = is_trivially_assignable<T>::value;
+template <typename T1, typename T2>
+constexpr bool is_trivially_assignable_v = is_trivially_assignable<T1, T2>::value;
 
 template <typename T>
 constexpr bool is_trivially_copy_assignable_v = is_trivially_copy_assignable<T>::value;

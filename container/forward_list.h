@@ -48,7 +48,7 @@
  *
  *      template <
  *          typename T,
- *          typename Allocator = std::allocator<T>
+ *          typename Allocator = allocator<T>
  *      >
  *      class forward_list
  *      {
@@ -90,16 +90,15 @@
 
 
 #include <pycpp/stl/container/compressed_pair.h>
-#include <pycpp/stl/memory/allocator_destructor.h>
-#include <pycpp/stl/memory/allocator_traits.h>
-#include <pycpp/stl/type_traits/is_iterator.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/type_traits.h>
 #include <initializer_list>
 #include <utility>
+// TODO: need functional
+// TODO: remove std::
 
 PYCPP_BEGIN_NAMESPACE
 
-namespace stl_detail
-{
 // FORWARD
 // -------
 
@@ -128,20 +127,20 @@ struct forward_list_node_value_type<forward_list_node<T, VoidPtr>>
 template <typename NodePtr>
 struct forward_node_traits
 {
-    using node = typename std::remove_cv<
-        typename std::pointer_traits<NodePtr>::element_type
-    >::type;
+    using node = remove_cv_t<
+        typename pointer_traits<NodePtr>::element_type
+    >;
     using node_value_type = typename forward_list_node_value_type<node>::type;
     using node_pointer = NodePtr;
     using begin_node = forward_begin_node<NodePtr>;
-    using begin_node_pointer = typename std::pointer_traits<NodePtr>::template rebind<begin_node>;
-    using void_pointer = typename std::pointer_traits<NodePtr>::template rebind<void>;
+    using begin_node_pointer = typename pointer_traits<NodePtr>::template rebind<begin_node>;
+    using void_pointer = typename pointer_traits<NodePtr>::template rebind<void>;
     using iter_node_pointer = begin_node_pointer;
-    using non_iter_node_pointer = typename std::conditional<
-        std::is_same<iter_node_pointer, node_pointer>::value,
+    using non_iter_node_pointer = conditional_t<
+        is_same<iter_node_pointer, node_pointer>::value,
         begin_node_pointer,
         node_pointer
-    >::type;
+    >;
 
     static
     iter_node_pointer
@@ -168,7 +167,7 @@ template <typename NodePtr>
 struct forward_begin_node
 {
     using pointer = NodePtr;
-    using begin_node_pointer = typename std::pointer_traits<NodePtr>::template rebind<forward_begin_node>;
+    using begin_node_pointer = typename pointer_traits<NodePtr>::template rebind<forward_begin_node>;
 
     pointer next_;
 
@@ -190,7 +189,7 @@ template <typename T, typename VoidPtr>
 struct begin_node_of
 {
     using type = forward_begin_node<
-        typename std::pointer_traits<VoidPtr>::template rebind<forward_list_node<T, VoidPtr>>
+        typename pointer_traits<VoidPtr>::template rebind<forward_list_node<T, VoidPtr>>
     >;
 };
 
@@ -262,8 +261,8 @@ public:
     using iterator_category = std::forward_iterator_tag;
     using value_type = typename traits::node_value_type;
     using reference = value_type&;
-    using difference_type = typename std::pointer_traits<node_pointer>::difference_type;
-    using pointer = typename std::pointer_traits<node_pointer>::template rebind<value_type>;
+    using difference_type = typename pointer_traits<node_pointer>::difference_type;
+    using pointer = typename pointer_traits<node_pointer>::template rebind<value_type>;
 
     forward_list_iterator()
     noexcept:
@@ -281,7 +280,7 @@ public:
     operator->()
     const
     {
-        return std::pointer_traits<pointer>::pointer_to(get_unsafe_node_pointer()->value_);
+        return pointer_traits<pointer>::pointer_to(get_unsafe_node_pointer()->value_);
     }
 
     forward_list_iterator&
@@ -325,7 +324,7 @@ public:
 template <typename NodeConstPtr>
 struct forward_list_const_iterator
 {
-    static_assert((!std::is_const<typename std::pointer_traits<NodeConstPtr>::element_type>::value), "");
+    static_assert((!is_const<typename pointer_traits<NodeConstPtr>::element_type>::value), "");
     using NodePtr = NodeConstPtr;
     using traits = forward_node_traits<NodePtr>;
     using node = typename traits::node;
@@ -381,8 +380,8 @@ public:
     using iterator_category = std::forward_iterator_tag;
     using value_type = typename traits::node_value_type;
     using reference = value_type&;
-    using difference_type = typename std::pointer_traits<node_pointer>::difference_type;
-    using pointer = typename std::pointer_traits<node_pointer>::template rebind<const value_type>;
+    using difference_type = typename pointer_traits<node_pointer>::difference_type;
+    using pointer = typename pointer_traits<node_pointer>::template rebind<const value_type>;
 
     forward_list_const_iterator()
     noexcept:
@@ -407,7 +406,7 @@ public:
     operator->()
     const
     {
-        return std::pointer_traits<pointer>::pointer_to(get_unsafe_node_pointer()->value_);
+        return pointer_traits<pointer>::pointer_to(get_unsafe_node_pointer()->value_);
     }
 
     forward_list_const_iterator&
@@ -460,8 +459,8 @@ protected:
     using void_pointer = VoidPtr;
     using node = forward_list_node<T, void_pointer>;
     using begin_node = typename begin_node_of<T, void_pointer>::type;
-    using node_pointer = typename std::pointer_traits<void_pointer>::template rebind<node>;
-    using begin_node_pointer = typename std::pointer_traits<void_pointer>::template rebind<begin_node>;
+    using node_pointer = typename pointer_traits<void_pointer>::template rebind<node>;
+    using begin_node_pointer = typename pointer_traits<void_pointer>::template rebind<begin_node>;
 
     begin_node before_begin_;
 
@@ -470,7 +469,7 @@ protected:
     before_begin_pointer()
     noexcept
     {
-        return std::pointer_traits<begin_node_pointer>::pointer_to(before_begin_);
+        return pointer_traits<begin_node_pointer>::pointer_to(before_begin_);
     }
 
     begin_node_pointer
@@ -478,7 +477,7 @@ protected:
     const noexcept
     {
         begin_node& r = const_cast<begin_node&>(before_begin_);
-        return std::pointer_traits<begin_node_pointer>::pointer_to(r);
+        return pointer_traits<begin_node_pointer>::pointer_to(r);
     }
 
     node_pointer&
@@ -496,11 +495,6 @@ protected:
     }
 
     // Constructors
-    forward_list_facet()
-    noexcept:
-        before_begin_(begin_node())
-    {}
-
     forward_list_facet(const forward_list_facet&) = delete;
 
     forward_list_facet(
@@ -540,12 +534,18 @@ public:
     using value_type = T;
     using reference = value_type&;
     using const_reference = const value_type&;
-    using pointer = typename std::pointer_traits<void_pointer>::template rebind<value_type>;
-    using const_pointer = typename std::pointer_traits<void_pointer>::template rebind<const value_type>;
+    using pointer = typename pointer_traits<void_pointer>::template rebind<value_type>;
+    using const_pointer = typename pointer_traits<void_pointer>::template rebind<const value_type>;
     using size_type = Size;
     using difference_type = DiffT;
     using iterator = forward_list_iterator<node_pointer>;
     using const_iterator = forward_list_const_iterator<node_pointer>;
+
+    // Constructors
+    forward_list_facet()
+    noexcept:
+        before_begin_(begin_node())
+    {}
 
     // Element access
     reference
@@ -970,7 +970,7 @@ operator<=(
 
 template <
     typename T,
-    typename Allocator = std::allocator<T>
+    typename Allocator = allocator<T>
 >
 class forward_list
 {
@@ -994,7 +994,7 @@ public:
 
 protected:
     static_assert(
-        std::is_same<typename allocator_type::value_type, value_type>::value,
+        is_same<typename allocator_type::value_type, value_type>::value,
         "Allocator::value_type must be same type as value_type"
     );
 
@@ -1012,14 +1012,14 @@ public:
     // Constructors
     forward_list()
     noexcept:
-        data_(facet_type())
+        data_()
     {}
 
     explicit
     forward_list(
         const allocator_type& alloc
     ):
-        data_(facet_type(), node_allocator(alloc))
+        data_(node_allocator(alloc))
     {}
 
     explicit
@@ -1103,7 +1103,8 @@ public:
 
     forward_list(
         std::initializer_list<value_type> il
-    )
+    ):
+        forward_list()
     {
         insert_after(cbefore_begin(), il.begin(), il.end());
     }
@@ -1312,7 +1313,7 @@ public:
         node_allocator& a = alloc();
         for (node_pointer p = facet().begin_pointer(); p != nullptr;) {
             node_pointer next = p->next_;
-            node_traits::destroy(a, std::addressof(p->value_));
+            node_traits::destroy(a, addressof(p->value_));
             node_traits::deallocate(a, p, 1);
             p = next;
         }
@@ -1328,8 +1329,8 @@ public:
         begin_node_pointer const r = p.get_begin();
         node_allocator& a = alloc();
         using deleter = allocator_destructor<node_allocator>;
-        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-        node_traits::construct(a, std::addressof(h->value_), std::move(v));
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, addressof(h->value_), std::move(v));
         h->next_ = r->next_;
         r->next_ = h.release();
         return iterator(r->next_);
@@ -1344,8 +1345,8 @@ public:
         begin_node_pointer const r = p.get_begin();
         node_allocator& a = alloc();
         using deleter = allocator_destructor<node_allocator>;
-        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-        node_traits::construct(a, std::addressof(h->value_), v);
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, addressof(h->value_), v);
         h->next_ = r->next_;
         r->next_ = h.release();
         return iterator(r->next_);
@@ -1362,20 +1363,20 @@ public:
         if (n > 0) {
             node_allocator& a = alloc();
             using deleter = allocator_destructor<node_allocator>;
-            std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-            node_traits::construct(a, std::addressof(h->value_), v);
+            unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+            node_traits::construct(a, addressof(h->value_), v);
             node_pointer first = h.release();
             node_pointer last = first;
             try {
                 for (--n; n != 0; --n, last = last->next_) {
                     h.reset(node_traits::allocate(a, 1));
-                    node_traits::construct(a, std::addressof(h->value_), v);
+                    node_traits::construct(a, addressof(h->value_), v);
                     last->next_ = h.release();
                 }
             } catch (...) {
                 while (first != nullptr) {
                     node_pointer next = first->next_;
-                    node_traits::destroy(a, std::addressof(first->value_));
+                    node_traits::destroy(a, addressof(first->value_));
                     node_traits::deallocate(a, first, 1);
                     first = next;
                 }
@@ -1400,20 +1401,20 @@ public:
         if (f != l) {
             node_allocator& a = alloc();
             using deleter = allocator_destructor<node_allocator>;
-            std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-            node_traits::construct(a, std::addressof(h->value_), *f);
+            unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+            node_traits::construct(a, addressof(h->value_), *f);
             node_pointer first = h.release();
             node_pointer last = first;
             try {
                 for (++f; f != l; ++f, ((void)(last = last->next_))) {
                     h.reset(node_traits::allocate(a, 1));
-                    node_traits::construct(a, std::addressof(h->value_), *f);
+                    node_traits::construct(a, addressof(h->value_), *f);
                     last->next_ = h.release();
                 }
             } catch (...) {
                 while (first != nullptr) {
                     node_pointer next = first->next_;
-                    node_traits::destroy(a, std::addressof(first->value_));
+                    node_traits::destroy(a, addressof(first->value_));
                     node_traits::deallocate(a, first, 1);
                     first = next;
                 }
@@ -1445,8 +1446,8 @@ public:
         begin_node_pointer const r = p.get_begin();
         node_allocator& a = alloc();
         using deleter = allocator_destructor<node_allocator>;
-        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-        node_traits::construct(a, std::addressof(h->value_), std::forward<Ts>(ts)...);
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, addressof(h->value_), std::forward<Ts>(ts)...);
         h->next_ = r->next_;
         r->next_ = h.release();
         return iterator(r->next_);
@@ -1461,7 +1462,7 @@ public:
         node_pointer n = p->next_;
         p->next_ = n->next_;
         node_allocator& a = alloc();
-        node_traits::destroy(a, std::addressof(n->value_));
+        node_traits::destroy(a, addressof(n->value_));
         node_traits::deallocate(a, n, 1);
         return iterator(p->next_);
     }
@@ -1481,7 +1482,7 @@ public:
                 node_allocator& a = alloc();
                 do {
                     node_pointer tmp = n->next_;
-                    node_traits::destroy(a, std::addressof(n->value_));
+                    node_traits::destroy(a, addressof(n->value_));
                     node_traits::deallocate(a, n, 1);
                     n = tmp;
                 } while (n != e);
@@ -1497,8 +1498,8 @@ public:
     {
         node_allocator& a = alloc();
         using deleter = allocator_destructor<node_allocator>;
-        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-        node_traits::construct(a, std::addressof(h->value_), v);
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, addressof(h->value_), v);
         h->next_ = facet().begin_pointer();
         facet().begin_pointer() = h.release();
     }
@@ -1519,8 +1520,8 @@ public:
     {
         node_allocator& a = alloc();
         using deleter = allocator_destructor<node_allocator>;
-        std::unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-        node_traits::construct(a, std::addressof(h->value_), std::forward<Ts>(ts)...);
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        node_traits::construct(a, addressof(h->value_), std::forward<Ts>(ts)...);
         h->next_ = facet().begin_pointer();
         facet().begin_pointer() = h.release();
         return facet().begin_pointer()->value_;
@@ -1532,7 +1533,7 @@ public:
         node_allocator& a = alloc();
         node_pointer p = facet().begin_pointer();
         facet().begin_pointer() = p->next_;
-        node_traits::destroy(a, std::addressof(p->value_));
+        node_traits::destroy(a, addressof(p->value_));
         node_traits::deallocate(a, p, 1);
     }
 
@@ -1563,10 +1564,10 @@ public:
             if (n > 0) {
                 node_allocator& a = alloc();
                 using deleter = allocator_destructor<node_allocator>;
-                std::unique_ptr<node, deleter> h(nullptr, deleter(a, 1));
+                unique_ptr<node, deleter> h(nullptr, deleter(a, 1));
                 for (begin_node_pointer ptr = p.get_begin(); n > 0; --n, ptr = ptr->next_as_begin()) {
                     h.reset(node_traits::allocate(a, 1));
-                    node_traits::construct(a, std::addressof(h->value_), v);
+                    node_traits::construct(a, addressof(h->value_), v);
                     h->next_ = nullptr;
                     ptr->next_ = h.release();
                 }
@@ -1797,7 +1798,7 @@ private:
     void
     copy_assign_alloc(
         const forward_list& x,
-        std::true_type
+        true_type
     )
     {
         if (alloc() != x.alloc()) {
@@ -1809,7 +1810,7 @@ private:
     void
     copy_assign_alloc(
         const forward_list&,
-        std::false_type
+        false_type
     )
     {}
 
@@ -1819,14 +1820,14 @@ private:
     )
     {
         constexpr bool propagate = node_traits::propagate_on_container_copy_assignment::value;
-        copy_assign_alloc(x, std::integral_constant<bool, propagate>());
+        copy_assign_alloc(x, integral_constant<bool, propagate>());
     }
 
     // Move Assign Alloc
     void
     move_assign_alloc(
         forward_list& x,
-        std::true_type
+        true_type
     )
     noexcept
     {
@@ -1836,7 +1837,7 @@ private:
     void
     move_assign_alloc(
         forward_list&,
-        std::false_type
+        false_type
     )
     noexcept
     {}
@@ -1848,14 +1849,14 @@ private:
     noexcept
     {
         constexpr bool propagate = node_traits::propagate_on_container_move_assignment::value;
-        move_assign_alloc(x, std::integral_constant<bool, propagate>());
+        move_assign_alloc(x, integral_constant<bool, propagate>());
     }
 
     // Move Assign
     void
     move_assign(
         forward_list& x,
-        std::true_type
+        true_type
     )
     {
         clear();
@@ -1867,11 +1868,11 @@ private:
     void
     move_assign(
         forward_list& x,
-        std::false_type
+        false_type
     )
     {
         if (alloc() == x.alloc()) {
-            move_assign(x, std::true_type());
+            move_assign(x, true_type());
         } else {
             using iter = std::move_iterator<iterator>;
             assign(iter(x.begin()), iter(x.end()));
@@ -1884,7 +1885,7 @@ private:
     )
     {
         constexpr bool propagate = node_traits::propagate_on_container_move_assignment::value;
-        move_assign(x, std::integral_constant<bool, propagate>());
+        move_assign(x, integral_constant<bool, propagate>());
     }
 };
 
@@ -1954,7 +1955,5 @@ operator<=(
 {
     return x.facet() <= y.facet();
 }
-
-}   /* stl_detail */
 
 PYCPP_END_NAMESPACE
