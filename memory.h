@@ -10,7 +10,6 @@
 #include <pycpp/stl/memory/allocator.h>
 #include <pycpp/stl/memory/allocator_destructor.h>
 #include <pycpp/stl/memory/allocator_traits.h>
-#include <pycpp/stl/memory/byte.h>
 #include <pycpp/stl/memory/destroy.h>
 #include <pycpp/stl/memory/make_shared.h>
 #include <pycpp/stl/memory/make_unique.h>
@@ -21,8 +20,8 @@
 #include <pycpp/stl/memory/to_address.h>
 #include <pycpp/stl/memory/uninitialized.h>
 #include <pycpp/stl/memory/uses_allocator.h>
-#include <cstddef>
-#include <cstdlib>
+#include <pycpp/stl/cstddef.h>
+#include <pycpp/stl/cstdlib.h>
 
 PYCPP_BEGIN_NAMESPACE
 

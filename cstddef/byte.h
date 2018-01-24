@@ -9,6 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <cstddef>
 
 PYCPP_BEGIN_NAMESPACE
 

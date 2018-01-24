@@ -292,6 +292,12 @@ Finished:
     - typeinfo.h
     - typeindex.h
     - bitset.h
+    - cstddef.h
+    - cfloat.h
+    - cstdint.h
+    - cinttypes.h
+    - climits.h
+    - limits.h
     - 
     - memory.h
         - Unittests
@@ -311,4 +317,7 @@ Working on:
     - iomanip
     - ios
     - iosfwd
-
+    - utility.h
+        - chars
+            - Implementation
+            - Unittests

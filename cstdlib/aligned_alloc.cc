@@ -13,7 +13,7 @@ PYCPP_BEGIN_NAMESPACE
 
 // ALIGNED ALLOC
 
-#if !defined(HAVE_CPP17) && !defined(HAVE_ALIGNED_ALLOC)    // !CPP17
+#if !defined(HAVE_CPP17) && !defined(HAVE_ALIGNED_ALLOC)    // !CPP17 && !HAVE_ALIGNED_ALLOC
 
 #if defined(HAVE_MSVC)                                      // HAVE_MSVC
 
@@ -56,13 +56,13 @@ aligned_alloc(
     return std::malloc(size);
 }
 
-#endif                                                      // HAVE_ALIGNED_ALLOC
+#endif                                                      // HAVE_MSVC
 
-#endif                                                      // !CPP17
+#endif                                                      // !CPP17 && !HAVE_ALIGNED_ALLOC
 
 // ALIGNED FREE
 
-#ifdef HAVE_ALIGNED_ALLOC                                   // HAVE_ALIGNED_ALLOC
+#if defined(HAVE_CPP17) || defined(HAVE_ALIGNED_ALLOC)      // HAVE_CPP17 || HAVE_ALIGNED_ALLOC
 
 void
 aligned_free(
