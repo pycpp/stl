@@ -67,7 +67,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)             // CPP20
+#if defined(HAVE_CPP17)             // CPP17
 
 using std::is_invocable;
 using std::is_invocable_r;

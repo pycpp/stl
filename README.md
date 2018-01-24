@@ -298,6 +298,7 @@ Finished:
     - cinttypes.h
     - climits.h
     - limits.h
+    - tuple.h
     - 
     - memory.h
         - Unittests
@@ -317,6 +318,34 @@ Working on:
     - iomanip
     - ios
     - iosfwd
+    - functional.h
+        - bit_not
+            - Unittests
+        - boyer_moore_horspool_searcher
+            - Unittests
+        - boyer_moore_searcher
+            - Unittests
+        - default_searcher
+            - Unittests
+        - equal_to
+            - Unittests
+        - not_equal_to
+            - Unittests
+        - greater
+            - Unittests
+        - less
+            - Unittests
+        - greater_equal
+            - Unittests
+        - less_equal
+            - Unittests
+        - hash
+            - Unittests
+        - invoke
+            - Unittests
+        - not_fn
+            - Unittests
+        - WORK ON IT!
     - utility.h
         - chars
             - Implementation
