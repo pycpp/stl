@@ -4,6 +4,8 @@
 
 - [Introduction](#introduction)
 - [Containers](#containers)
+- [CStdlib](#cstdlib)
+  - [CStdlib Extensions](#cstdlib-extensions)
 - [Functional](#functional)
 - [IOS](#ios)
   - [IOS Extensions](#ios-extensions)
@@ -47,6 +49,14 @@ By defining a subset of container methods, including the iterator interface, wit
 The type-erased containers are called "facets", to avoid any conflicts with `basic_string_view`. Although a complete erasure of the allocator is impossible from the facet, due to the possibility of using [shared memory to allocate items])(http://blog.nuggetwheat.org/index.php/2015/09/01/why-pointer_traits-was-introduced-in-c11/), passing a `void_pointer` is sufficient for facet operations. In most cases, `void_pointer` will be equivalent to `void*` regardless of the allocator, allowing both the facet and the container's iterator to be used interchangeably regardless of the allocator.
 
 // TODO: continue`
+
+## CStdlib
+
+## CStdlib Extensions
+
+**Aligned Free**
+
+On MSVC, you may not legally use `free` on `_aligned_malloc`, so a wrapper function `aligned_free` was introduced. This function must be used to free an memory allocated with `aligned_alloc`.
 
 ## Functional
 
@@ -265,6 +275,10 @@ static_assert(type_not<identity_t, false_type>::value, "");
 // TODO: remove this section
 
 Finished:
+    - csignal.h
+    - cstdlib.h
+    - csetjmp.h
+    - cstdarg.h
     - array.h
     - atomic.h
     - chrono.h
@@ -276,7 +290,9 @@ Finished:
     - ratio.h
     - type_traits.h
     - typeinfo.h
-    -
+    - typeindex.h
+    - bitset.h
+    - 
     - memory.h
         - Unittests
         - shared_ptr
