@@ -5,8 +5,13 @@
 - [Introduction](#introduction)
 - [Containers](#containers)
 - [Functional](#functional)
+- [IOS](#ios)
+  - [IOS Extensions](#ios-extensions)
+- [IOManip](#iomanip)
 - [Memory](#memory)
 - [Thread](#thread)
+- [Type Info](#type-info)
+  - [Type Info Extensions](#type-info-extensions)
 - [Type Traits](#type-traits)
   - [Type Trait Extensions](#type-trait-extensions)
 
@@ -48,11 +53,47 @@ The type-erased containers are called "facets", to avoid any conflicts with `bas
 // TODO: document
 // TODO: mention how slow std::hash can be...
 
+## IOS
+
+## IOS Extensions
+
+**Save Flags**
+
+Restore stream flags and fill to the initial settings when destroyed.
+
+```cpp
+#include <pycpp/stl/ios.h>
+#include <pycpp/stl/sstream.h>
+
+PYCPP_USING_NAMESPACE
+
+void call(stringstream& stream)
+{
+    save_flags<char_type, traits_type> sf(stream);
+    stream << std::hex;
+    stream << std::setfill('*');
+    stream << std::setw(10);
+    stream << 42 << '\n';
+}
+```
+
+## IOManip
+
+// TODO: document
+
 ## Memory
 
 // TODO: document
 
 ## Thread
+
+// TODO: document
+
+## Type Info
+
+### Type Info Extensions
+
+**Type Info Wrapper**
 
 // TODO: document
 
@@ -111,6 +152,20 @@ struct incomplete;
 
 static_assert(is_complete<int>::value, "");
 static_assert(!is_complete<incomplete>::value, "");
+```
+
+**Is Duration***
+
+Detect if type is `chrono::duration` type.
+
+```cpp
+#include <pycpp/stl/chrono.h>
+#include <pycpp/stl/type_traits.h>
+
+PYCPP_USING_NAMESPACE
+
+static_assert(is_duration<chrono::duration<int>>::value, "");
+static_assert(!is_duration<int>::value, "");
 ```
 
 **Is Iterator**
@@ -210,9 +265,19 @@ static_assert(type_not<identity_t, false_type>::value, "");
 // TODO: remove this section
 
 Finished:
-    type_traits.h
-        - Unittests
-    memory.h
+    - array.h
+    - atomic.h
+    - chrono.h
+    - complex.h
+    - execution.h
+    - future.h
+    - initializer_list.h
+    - iterator.h
+    - ratio.h
+    - type_traits.h
+    - typeinfo.h
+    -
+    - memory.h
         - Unittests
         - shared_ptr
         - construct_forward
@@ -227,5 +292,7 @@ Finished:
         - Unittests
 
 Working on:
-    - typeinfo
+    - iomanip
+    - ios
+    - iosfwd
 

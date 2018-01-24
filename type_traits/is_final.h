@@ -41,7 +41,7 @@ constexpr bool is_final_v = is_final<T>::value;
 // ------
 
 #if defined(HAVE_CLANG)             // HAVE_CLANG
-#   if __has_feature(is_final)
+#   if __has_extension(is_final)
 #       define PYCPP_IS_FINAL(T) __is_final(T)
 #   endif
 #elif defined(HAVE_GCC)             // HAVE_GCC
@@ -74,11 +74,6 @@ struct is_final: std::false_type
 {};
 
 #endif                              // PYCPP_IS_FINAL
-
-// CLEANUP
-// -------
-
-#undef PYCPP_IS_FINAL
 
 #endif                              // HAVE_CPP14
 

@@ -39,7 +39,7 @@ using std::is_aggregate;
 // ------
 
 #if defined(HAVE_CLANG)             // HAVE_CLANG
-#   if __has_feature(is_aggregate)
+#   if __has_extension(is_aggregate)
 #       define PYCPP_IS_AGGREGATE(T) __is_aggregate(T)
 #   endif
 #elif defined(HAVE_GNUC)            // HAVE_GNUC
@@ -68,11 +68,6 @@ struct is_aggregate: std::false_type
 {};
 
 #endif                              // PYCPP_IS_AGGREGATE
-
-// CLEANUP
-// -------
-
-#undef PYCPP_IS_AGGREGATE
 
 #endif                              // HAVE_CPP17
 
