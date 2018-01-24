@@ -26,6 +26,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <memory>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
@@ -40,16 +41,23 @@ template <typename T>
 class has_reallocate_impl
 {
 protected:
-    template <typename C> static char &test(
+    template <typename C>
+    static
+    char
+    &test(
         decltype(
             std::declval<C>().reallocate(
-                std::declval<typename C::value_type*>(),
-                std::declval<size_t>(),
-                std::declval<size_t>()
+                std::declval<typename std::allocator_traits<C>::pointer>(),
+                std::declval<typename std::allocator_traits<C>::size_type>(),
+                std::declval<typename std::allocator_traits<C>::size_type>()
             )
         )
     );
-    template <typename C> static long &test(...);
+
+    template <typename C>
+    static
+    long
+    &test(...);
 
 public:
     enum {
@@ -64,10 +72,10 @@ struct has_reallocate: std::integral_constant<bool, has_reallocate_impl<T>::valu
 // ENABLE IF
 
 template <typename T, typename R = void>
-using enable_reallocate = typename std::enable_if<
+using enable_reallocate = std::enable_if<
     has_reallocate<T>::value,
     R
->::type;
+>;
 
 template <typename T, typename R = void>
 using enable_reallocate_t = typename enable_reallocate<T, R>::type;

@@ -11,6 +11,7 @@
 #include <pycpp/stl/type_traits/endian.h>
 #include <pycpp/stl/type_traits/has_reallocate.h>
 #include <pycpp/stl/type_traits/is_aggregate.h>
+#include <pycpp/stl/type_traits/is_complete.h>
 #include <pycpp/stl/type_traits/is_final.h>
 #include <pycpp/stl/type_traits/is_invocable.h>
 #include <pycpp/stl/type_traits/is_iterator.h>

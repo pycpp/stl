@@ -85,18 +85,23 @@ struct is_safe_overload_impl
 template <bool RemoveReference, typename Class, typename T, typename ... Ts>
 struct is_safe_overload_impl<RemoveReference, Class, T, Ts...>
 {
+    using class_type = Class;
+    using overload_type = typename std::remove_cv<
+        typename std::conditional<
+            RemoveReference,
+            typename std::remove_reference<T>::type,
+            T
+        >::type
+    >::type;
+
+    // use std::is_same and std::is_base_of, since std::is_base_of
+    // fails for primitive types.
     using type = std::integral_constant<
         bool,
-        !std::is_base_of<
-            Class,
-            typename std::remove_cv<
-                typename std::conditional<
-                    RemoveReference,
-                    typename std::remove_reference<T>::type,
-                    T
-                >::type
-            >::type
-        >::value
+        !(
+            std::is_base_of<class_type, overload_type>::value ||
+            std::is_same<class_type, overload_type>::value
+        )
     >;
 };
 
@@ -108,9 +113,9 @@ struct is_safe_overload: is_safe_overload_impl<RemoveReference, T, Ts...>::type
 // ENABLE IF
 
 template <bool RemoveReference, typename T, typename ... Ts>
-using enable_safe_overload = typename std::enable_if<
+using enable_safe_overload = std::enable_if<
     is_safe_overload<RemoveReference, T, Ts...>::value
->::type;
+>;
 
 template <bool RemoveReference, typename T, typename ... Ts>
 using enable_safe_overload_t = typename enable_safe_overload<RemoveReference, T, Ts...>::type;

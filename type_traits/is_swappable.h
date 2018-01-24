@@ -1,3 +1,4 @@
+//  :copyright: (c) 2009-2017 LLVM Team.
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
@@ -20,28 +21,28 @@
  *      template <typename T>
  *      using is_nothrow_swappable = is_nothrow_swappable_with<T, T>;
  *
- *      template <typename T1, typename T2, typename R = void>
+ *      template <typename T1, typename T2>
  *      using enable_swappable_with = implementation-defined;
  *
- *      template <typename T1, typename T2, typename R = void>
+ *      template <typename T1, typename T2>
  *      using enable_nothrow_swappable_with = implementation-defined;
  *
- *      template <typename T, typename R = void>
+ *      template <typename T>
  *      using enable_swappable = implementation-defined;
  *
- *      template <typename T, typename R = void>
+ *      template <typename T>
  *      using enable_nothrow_swappable = implementation-defined;
  *
- *      template <typename T1, typename T2, typename R = void>
+ *      template <typename T1, typename T2>
  *      using enable_swappable_with_t = implementation-defined;
  *
- *      template <typename T1, typename T2, typename R = void>
+ *      template <typename T1, typename T2>
  *      using enable_nothrow_swappable_with_t = implementation-defined;
  *
- *      template <typename T, typename R = void>
+ *      template <typename T>
  *      using enable_swappable_t = implementation-defined;
  *
- *      template <typename T, typename R = void>
+ *      template <typename T>
  *      using enable_nothrow_swappable_t = implementation-defined;
  *
  *      #ifdef HAVE_CPP14
@@ -76,68 +77,178 @@ PYCPP_BEGIN_NAMESPACE
 // TYPE
 
 // Swappable (C++17 backport)
+
+// IS SWAPPABLE WITH
+
 template <typename T1, typename T2>
-struct is_swappable_with_impl
+struct is_swappable_with_adl
 {
-private:
-    template <typename U1, typename U2, typename = decltype(swap(std::declval<U1&>(), std::declval<U2&>()))>
+    // Try ADL
+    template <
+        typename L,
+        typename R,
+        typename = decltype(swap(std::declval<L>(), std::declval<R>()))
+    >
     static
     std::true_type
-    test(int);
+    test_swap(int);
 
-    template <typename U1, typename U2>
+    template <typename, typename>
     static
     std::false_type
-    test(...);
+    test_swap(...);
 
-public:
-    using type = decltype(test<T1, T2>(0));
+    using swap1 = decltype(test_swap<T1, T2>(0));
+    using swap2 = decltype(test_swap<T2, T1>(0));
+
+    static constexpr bool value = swap1::value && swap2::value;
 };
 
-template <typename T1, typename T2>
-using is_swappable_with = typename is_swappable_with_impl<T1, T2>::type;
 
-template <typename T1, typename T2, bool = is_swappable_with<T1, T2>::value>
-struct is_nothrow_swappable_with
+template <typename T1, typename T2>
+struct is_swappable_with_std
 {
-    static constexpr bool value = noexcept(swap(std::declval<T1&>(), std::declval<T2&>()));
+    // Try ADL
+    template <
+        typename L,
+        typename R,
+        typename = decltype(std::swap(std::declval<L>(), std::declval<R>()))
+    >
+    static
+    std::true_type
+    test_swap(int);
+
+    template <typename, typename>
+    static
+    std::false_type
+    test_swap(...);
+
+    using swap1 = decltype(test_swap<T1, T2>(0));
+    using swap2 = decltype(test_swap<T2, T1>(0));
+
+    static constexpr bool value = swap1::value && swap2::value;
+};
+
+
+template <
+    typename T1,
+    typename T2 = T1,
+    bool NotVoid = !std::is_void<T1>::value && !std::is_void<T2>::value
+>
+struct is_swappable_with_impl
+{
+    // check ADL or STD lookup, either works.
+    static constexpr bool value = (
+        is_swappable_with_adl<T1, T2>::value ||
+        is_swappable_with_std<T1, T2>::value
+    );
 };
 
 template <typename T1, typename T2>
-struct is_nothrow_swappable_with<T1, T2, false>: std::false_type
+struct is_swappable_with_impl<T1, T2, false>: std::false_type
 {};
 
-template <typename T>
-using is_swappable = is_swappable_with<T, T>;
+template <typename T1, typename T2>
+struct is_swappable_with: std::integral_constant<
+        bool,
+        is_swappable_with_impl<T1, T2>::value
+    >
+{};
+
+// IS NOTHROW SWAPPABLE WITH
+
+template <
+    typename T1,
+    typename T2,
+    bool AdlSwappable = is_swappable_with_adl<T1, T2>::value
+>
+struct is_nothrow_swappable_with_adl
+{
+    static constexpr bool value = (
+        noexcept(swap(std::declval<T1>(), std::declval<T2>())) &&
+        noexcept(swap(std::declval<T2>(), std::declval<T1>()))
+    );
+};
+
+template <typename T1, typename T2>
+struct is_nothrow_swappable_with_adl<T1, T2, false>: std::false_type
+{};
+
+template <
+    typename T1,
+    typename T2,
+    bool StdSwappable = is_swappable_with_std<T1, T2>::value
+>
+struct is_nothrow_swappable_with_std
+{
+    static constexpr bool value = (
+        noexcept(std::swap(std::declval<T1>(), std::declval<T2>())) &&
+        noexcept(std::swap(std::declval<T2>(), std::declval<T1>()))
+    );
+};
+
+template <typename T1, typename T2>
+struct is_nothrow_swappable_with_std<T1, T2, false>: std::false_type
+{};
+
+template <typename T1, typename T2, bool = is_swappable_with<T1, T2>::value>
+struct is_nothrow_swappable_with_impl
+{
+    // check ADL or STD lookup, either works.
+    static constexpr bool value = (
+        is_nothrow_swappable_with_adl<T1, T2>::value ||
+        is_nothrow_swappable_with_std<T1, T2>::value
+    );
+};
+
+template <typename T1, typename T2>
+struct is_nothrow_swappable_with_impl<T1, T2, false>: std::false_type
+{};
+
+template <typename T1, typename T2>
+struct is_nothrow_swappable_with: std::integral_constant<
+        bool,
+        is_nothrow_swappable_with_impl<T1, T2>::value
+    >
+{};
+
+// IS SWAPPABLE
 
 template <typename T>
-using is_nothrow_swappable = is_nothrow_swappable_with<T, T>;
+struct is_swappable: is_swappable_with<T&, T&>
+{};
+
+// IS NOTHROW SWAPPABLE
+
+template <typename T>
+struct is_nothrow_swappable: is_nothrow_swappable_with<T&, T&>
+{};
 
 // ENABLE IF
 
-template <typename T1, typename T2, typename R = void>
-using enable_swappable_with = std::enable_if<is_swappable_with<T1, T2>::value, R>;
+template <typename T1, typename T2>
+using enable_swappable_with = std::enable_if<is_swappable_with<T1, T2>::value>;
 
-template <typename T1, typename T2, typename R = void>
-using enable_nothrow_swappable_with = std::enable_if<is_nothrow_swappable_with<T1, T2>::value, R>;
+template <typename T1, typename T2>
+using enable_nothrow_swappable_with = std::enable_if<is_nothrow_swappable_with<T1, T2>::value>;
 
-template <typename T, typename R = void>
-using enable_swappable = std::enable_if<is_swappable<T>::value, R>;
+template <typename T>
+using enable_swappable = std::enable_if<is_swappable<T>::value>;
 
-template <typename T, typename R = void>
-using enable_nothrow_swappable = std::enable_if<is_nothrow_swappable<T>::value, R>;
+template <typename T>
+using enable_nothrow_swappable = std::enable_if<is_nothrow_swappable<T>::value>;
 
-template <typename T1, typename T2, typename R = void>
-using enable_swappable_with_t = typename enable_swappable_with<T1, T2, R>::type;
+template <typename T1, typename T2>
+using enable_swappable_with_t = typename enable_swappable_with<T1, T2>::type;
 
-template <typename T1, typename T2, typename R = void>
-using enable_nothrow_swappable_with_t = typename enable_nothrow_swappable_with<T1, T2, R>::type;
+template <typename T1, typename T2>
+using enable_nothrow_swappable_with_t = typename enable_nothrow_swappable_with<T1, T2>::type;
 
-template <typename T, typename R = void>
-using enable_swappable_t = typename enable_swappable<T, R>::type;
+template <typename T>
+using enable_swappable_t = typename enable_swappable<T>::type;
 
-template <typename T, typename R = void>
-using enable_nothrow_swappable_t = typename enable_nothrow_swappable<T, R>::type;
+template <typename T>
+using enable_nothrow_swappable_t = typename enable_nothrow_swappable<T>::type;
 
 #ifdef HAVE_CPP14
 

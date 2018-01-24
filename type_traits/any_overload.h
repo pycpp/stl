@@ -3,12 +3,12 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Not A Type definition.
+ *  \brief Type definition which accepts arguments passed to it.
  *
  *  \synopsis
- *      struct any_t
+ *      struct any_overload
  *      {
- *          any_t(...);;
+ *          any_overload(...);;
  *      };
  */
 
@@ -21,9 +21,9 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-struct any_t
+struct any_overload
 {
-    any_t(...);
+    any_overload(...);
 };
 
 PYCPP_END_NAMESPACE

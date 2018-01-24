@@ -12,10 +12,12 @@
 #include <pycpp/stl/memory/allocator_traits.h>
 #include <pycpp/stl/memory/byte.h>
 #include <pycpp/stl/memory/destroy.h>
+#include <pycpp/stl/memory/make_shared.h>
 #include <pycpp/stl/memory/make_unique.h>
 #include <pycpp/stl/memory/pointer_cast.h>
 #include <pycpp/stl/memory/pointer_traits.h>
 #include <pycpp/stl/memory/polymorphic_allocator.h>
+#include <pycpp/stl/memory/shared_ptr.h>
 #include <pycpp/stl/memory/to_address.h>
 #include <pycpp/stl/memory/uninitialized.h>
 #include <pycpp/stl/memory/uses_allocator.h>
@@ -29,17 +31,18 @@ PYCPP_BEGIN_NAMESPACE
 
 // Smart pointers
 using std::unique_ptr;
-using std::shared_ptr;
-using std::weak_ptr;
-using std::make_shared;
-using std::allocate_shared;
+// TODO: remove
+//using std::shared_ptr;
+//using std::weak_ptr;
+//using std::make_shared;
+//using std::allocate_shared;
 using std::get_deleter;
 using std::swap;
 
 // Helper classes
 using std::owner_less;
-using std::enable_shared_from_this;
-using std::bad_weak_ptr;
+//using std::enable_shared_from_this;
+//using std::bad_weak_ptr;
 using std::default_delete;
 
 // Allocators

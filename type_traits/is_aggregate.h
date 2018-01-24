@@ -7,7 +7,8 @@
  *
  *  \synopsis
  *      template <typename T>
- *      using is_aggregate = implementation-defined;
+ *      struct is_aggregate: implementation-defined
+ *      {};
  *
  *      #ifdef HAVE_CPP14
  *

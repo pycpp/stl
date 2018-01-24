@@ -169,6 +169,14 @@ template <typename T>
 struct not_: not_impl<T>
 {};
 
+#ifdef HAVE_CPP17       // CPP17
+
+using std::conjucation;
+using std::disjunction;
+using std::negation;
+
+#else                   // <=CPP14
+
 template <typename ... Ts>
 struct conjucation: map_and<Ts...>
 {};
@@ -180,6 +188,8 @@ struct disjunction: map_or<Ts...>
 template <typename T>
 struct negation: not_impl<T>
 {};
+
+#endif                  // CPP17
 
 #ifdef HAVE_CPP14
 

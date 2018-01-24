@@ -5,6 +5,10 @@
  *  \addtogroup PyCPP
  *  \brief `is_invocable*` backports for C++11.
  *
+ *  \warning The `is_nothrow_*` variants cannot  be effectively backported
+ *  prior to C++17, due to the omission of `noexcept` from the type
+ *  system.
+ *
  *  \synopsis
  *      template <typename F, typename ... Ts>
  *      struct invoke_result: implementation-defined
@@ -19,14 +23,6 @@
  *      {};
  *
  *      template <typename F, typename ... Ts>
- *      struct is_nothrow_invocable: implementation-defined
- *      {};
- *
- *      template <typename R, typename F, typename ... Ts>
- *      struct is_nothrow_invocable_r: implementation-defined
- *      {};
- *
- *      template <typename F, typename ... Ts>
  *      using invoke_result_t = implementation-defined;
  *
  *      #ifdef HAVE_CPP14
@@ -36,6 +32,18 @@
  *
  *      template <class R, typename F, typename ... Ts>
  *      constexpr bool is_invocable_r_v = implementation-defined;
+ *
+ *      #endif
+ *
+ *      #ifdef HAVE_CPP17
+ *
+ *      template <typename F, typename ... Ts>
+ *      struct is_nothrow_invocable: implementation-defined
+ *      {};
+ *
+ *      template <typename R, typename F, typename ... Ts>
+ *      struct is_nothrow_invocable_r: implementation-defined
+ *      {};
  *
  *      template <typename F, typename ... Ts>
  *      constexpr bool is_nothrow_invocable_v = implementation-defined;
@@ -48,8 +56,8 @@
 
 #pragma once
 
+#include <pycpp/stl/type_traits/any_overload.h>
 #include <pycpp/stl/type_traits/is_reference_wrapper.h>
-#include <pycpp/stl/type_traits/any_t.h>
 #include <pycpp/stl/type_traits/nat.h>
 #include <pycpp/preprocessor/compiler_traits.h>
 #include <type_traits>
@@ -83,10 +91,10 @@ using std::invoke_result_t;
 // ------
 
 template <typename ... Ts>
-auto invoke_impl(any_t, Ts&&... ts) -> nat;
+auto invoke_impl(any_overload, Ts&&... ts) -> nat;
 
 template <typename ... Ts>
-auto invoke_constexpr_impl(any_t, Ts&&... ts) -> nat;
+auto invoke_constexpr_impl(any_overload, Ts&&... ts) -> nat;
 
 // HELPERS
 // -------
@@ -339,56 +347,6 @@ struct invokable_r_impl
 template <typename F, typename ... Ts>
 using invokable_impl = invokable_r_impl<void, F, Ts...>;
 
-template <
-    bool IsInvokable,
-    bool IsCVVoid,
-    typename R,
-    typename F,
-    typename ... Ts
->
-struct nothrow_invokable_r_impl_base
-{
-    static const bool value = false;
-};
-
-template <
-    typename R,
-    typename F,
-    typename ... Ts
->
-struct nothrow_invokable_r_impl_base<true, false, R, F, Ts...>
-{
-    using self_t = nothrow_invokable_r_impl_base;
-
-    template <class _Tp>
-    static void test_noexcept(_Tp) noexcept;
-
-    static const bool value = noexcept(self_t::test_noexcept<R>(
-        invoke_impl(std::declval<F>(), std::declval<Ts>()...)
-    ));
-};
-
-template <typename R, typename F, typename ... Ts>
-struct nothrow_invokable_r_impl_base<true, true, R, F, Ts...>
-{
-    static const bool value = noexcept(
-        invoke_impl(std::declval<F>(), std::declval<Ts>()...)
-    );
-};
-
-template <typename R, typename F, typename ... Ts>
-using nothrow_invokable_r_impl = nothrow_invokable_r_impl_base<
-    invokable_r_impl<R, F, Ts...>::value,
-    std::is_void<R>::value,
-    R, F, Ts...
->;
-
-template <typename F, typename ... Ts>
-using nothrow_invokable_impl = nothrow_invokable_r_impl_base<
-    invokable_impl<F, Ts...>::value,
-    true, void, F, Ts...
->;
-
 template <typename F, typename ... Ts>
 struct invoke_of_impl: public std::enable_if<
         invokable_impl<F, Ts...>::value,
@@ -414,16 +372,6 @@ struct is_invocable_r:
 {};
 
 template <typename F, typename ... Ts>
-struct is_nothrow_invocable:
-    std::integral_constant<bool, nothrow_invokable_impl<F, Ts...>::value>
-{};
-
-template <typename R, typename F, typename ... Ts>
-struct is_nothrow_invocable_r:
-    std::integral_constant<bool, nothrow_invokable_r_impl<R, F, Ts...>::value>
-{};
-
-template <typename F, typename ... Ts>
 using invoke_result_t = typename invoke_result<F, Ts...>::type;
 
 // CLEANUP
@@ -444,12 +392,19 @@ constexpr bool is_invocable_v = std::is_invocable<F, Ts...>::value;
 template <class R, typename F, typename ... Ts>
 constexpr bool is_invocable_r_v = std::is_invocable_r<R, F, Ts...>::value;
 
+#endif                              // HAVE_CPP14
+
+#if defined(HAVE_CPP17)
+
+// SFINAE
+// ------
+
 template <typename F, typename ... Ts>
 constexpr bool is_nothrow_invocable_v = std::is_nothrow_invocable<F, Ts...>::value;
 
 template <class R, typename F, typename ... Ts>
 constexpr bool is_nothrow_invocable_r_v = std::is_nothrow_invocable_r<R, F, Ts...>::value;
 
-#endif                              // HAVE_CPP14
+#endif                              // HAVE_CPP17
 
 PYCPP_END_NAMESPACE

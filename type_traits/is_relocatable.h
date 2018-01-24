@@ -84,16 +84,16 @@ struct is_virtual_relocatable: std::false_type
 // ENABLE IF
 
 template <typename T, typename R = void>
-using enable_relocatable = typename std::enable_if<
+using enable_relocatable = std::enable_if<
     is_relocatable<T>::value,
     R
->::type;
+>;
 
 template <typename R = void>
-using enable_virtual_relocatable = typename std::enable_if<
+using enable_virtual_relocatable = std::enable_if<
     is_virtual_relocatable::value,
     R
->::type;
+>;
 
 template <typename T, typename R = void>
 using enable_relocatable_t = typename enable_relocatable<T, R>::type;
