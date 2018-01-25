@@ -299,6 +299,11 @@ Finished:
     - climits.h
     - limits.h
     - tuple.h
+    - scoped_allocator.h
+    - cassert.h
+    - stdexcept.h
+    - exception.h
+    - new.h
     - 
     - memory.h
         - Unittests
@@ -318,6 +323,7 @@ Working on:
     - iomanip
     - ios
     - iosfwd
+    - memory_resource.h
     - functional.h
         - bit_not
             - Unittests

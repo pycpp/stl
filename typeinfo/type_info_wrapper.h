@@ -47,87 +47,22 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/preprocessor/abi.h>
 #include <pycpp/preprocessor/compiler.h>
 #include <pycpp/preprocessor/os.h>
 #include <cassert>
 #include <string>
 #include <typeinfo>
 
-// MACROS
-// ------
-
-#if defined(HAVE_CLANG)
-#   if defined(__has_include) && __has_include(<cxxabi.h>)
-#       define PYCPP_CXX_ABI
-#   endif
-#elif defined(HAVE_GNUC) && !defined(OS_QNX)
-#   define PYCPP_CXX_ABI
-#endif
-
-#if defined(PYCPP_CXX_ABI)
-#   include <cxxabi.h>
-#   include <stdlib.h>
-#endif      // PYCPP_CXX_ABI
-
 PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
 
-#if defined(PYCPP_CXX_ABI)      // PYCPP_CXX_ABI
-
-// A simple scope guard for automatic memory free
-struct auto_free
-{
-    explicit
-    auto_free(
-        void* p
-    )
-    noexcept:
-        p_(p)
-    {}
-
-    ~auto_free()
-    {
-        free(p_);
-    }
-
-private:
-    void* p_;
-};
-
-inline
 std::string
 info_to_string(
     const std::type_info& info
-)
-{
-    // GCC returns decorated type name, will need to demangle it using ABI
-    int status = 0;
-    size_t size = 0;
-    const char* name = info.name();
-    char* undecorated = abi::__cxa_demangle(name, NULL, &size, &status);
-    auto_free cleanup(undecorated);
-
-    if (undecorated) {
-        return undecorated;
-    } else {
-        return name;
-    }
-}
-
-#else                           // !PYCPP_CXX_ABI
-
-inline
-std::string
-info_to_string(
-    const std::type_info& info
-)
-{
-    return info.name();
-}
-
-#endif                          // PYCPP_CXX_ABI
+);
 
 // OBJECTS
 // -------
@@ -360,8 +295,3 @@ noexcept
 }
 
 PYCPP_END_NAMESPACE
-
-// CLEANUP
-// -------
-
-#undef PYCPP_CXX_ABI
