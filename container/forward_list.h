@@ -88,12 +88,15 @@
  *      };
  */
 
+#pragma once
 
 #include <pycpp/stl/container/compressed_pair.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/iterator.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/type_traits.h>
-#include <initializer_list>
-#include <utility>
+#include <pycpp/stl/utility.h>
 // TODO: need functional
 // TODO: remove std::
 
@@ -253,12 +256,12 @@ class forward_list_iterator
         ptr_(traits::as_iter_node(p))
     {}
 
-    template <typename, typename, typename, typename> friend class forward_list_facet;
+    template <typename, typename> friend class forward_list_facet;
     template <typename, typename> friend class forward_list;
     template <typename> friend class forward_list_const_iterator;
 
 public:
-    using iterator_category = std::forward_iterator_tag;
+    using iterator_category = forward_iterator_tag;
     using value_type = typename traits::node_value_type;
     using reference = value_type&;
     using difference_type = typename pointer_traits<node_pointer>::difference_type;
@@ -373,11 +376,11 @@ struct forward_list_const_iterator
         ptr_(traits::as_iter_node(p))
     {}
 
-    template <typename, typename, typename, typename> friend class forward_list_facet;
+    template <typename, typename> friend class forward_list_facet;
     template <typename, typename> friend class forward_list;
 
 public:
-    using iterator_category = std::forward_iterator_tag;
+    using iterator_category = forward_iterator_tag;
     using value_type = typename traits::node_value_type;
     using reference = value_type&;
     using difference_type = typename pointer_traits<node_pointer>::difference_type;
@@ -449,9 +452,7 @@ public:
 
 template <
     typename T,
-    typename VoidPtr = void*,
-    typename Size = size_t,
-    typename DiffT = std::ptrdiff_t
+    typename VoidPtr = void*
 >
 class forward_list_facet
 {
@@ -501,7 +502,7 @@ protected:
         forward_list_facet&& x
     )
     noexcept:
-        before_begin_(std::move(x.before_begin_))
+        before_begin_(move(x.before_begin_))
     {
         x.begin_pointer() = nullptr;
     }
@@ -536,8 +537,8 @@ public:
     using const_reference = const value_type&;
     using pointer = typename pointer_traits<void_pointer>::template rebind<value_type>;
     using const_pointer = typename pointer_traits<void_pointer>::template rebind<const value_type>;
-    using size_type = Size;
-    using difference_type = DiffT;
+    using difference_type = typename pointer_traits<void_pointer>::difference_type;
+    using size_type = make_unsigned_t<difference_type>;
     using iterator = forward_list_iterator<node_pointer>;
     using const_iterator = forward_list_const_iterator<node_pointer>;
 
@@ -647,7 +648,7 @@ public:
         forward_list_facet&& x
     )
     {
-        merge(x, std::less<value_type>());
+        merge(x, less<value_type>());
     }
 
     template <typename Compare>
@@ -665,7 +666,7 @@ public:
         forward_list_facet& x
     )
     {
-        merge(x, std::less<value_type>());
+        merge(x, less<value_type>());
     }
 
     template <typename Compare>
@@ -788,7 +789,7 @@ public:
     void
     sort()
     {
-        sort(std::less<value_type>());
+        sort(less<value_type>());
     }
 
     template <typename Compare>
@@ -808,7 +809,7 @@ private:
     merge_list(
         node_pointer f1,
         node_pointer f2,
-        Compare comp
+        Compare& comp
     )
     {
         if (f1 == nullptr) {
@@ -886,15 +887,15 @@ private:
 };
 
 
-template <typename T, typename VoidPtr, typename Size, typename DiffT>
+template <typename T, typename VoidPtr>
 inline
 bool
 operator==(
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& x,
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& y
+    const forward_list_facet<T, VoidPtr>& x,
+    const forward_list_facet<T, VoidPtr>& y
 )
 {
-    using list_type = forward_list_facet<T, VoidPtr, Size, DiffT>;
+    using list_type = forward_list_facet<T, VoidPtr>;
     using iterator_type = typename list_type::const_iterator;
 
     iterator_type ix = x.begin();
@@ -910,63 +911,62 @@ operator==(
     return (ix == ex) == (iy == ey);
 }
 
-template <typename T, typename VoidPtr, typename Size, typename DiffT>
+template <typename T, typename VoidPtr>
 inline
 bool
 operator!=(
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& x,
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& y
+    const forward_list_facet<T, VoidPtr>& x,
+    const forward_list_facet<T, VoidPtr>& y
 )
 {
     return !(x == y);
 }
 
-template <typename T, typename VoidPtr, typename Size, typename DiffT>
+template <typename T, typename VoidPtr>
 inline
 bool
 operator<(
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& x,
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& y
+    const forward_list_facet<T, VoidPtr>& x,
+    const forward_list_facet<T, VoidPtr>& y
 )
 {
     return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
 }
 
-template <typename T, typename VoidPtr, typename Size, typename DiffT>
+template <typename T, typename VoidPtr>
 inline
 bool
 operator>(
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& x,
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& y
+    const forward_list_facet<T, VoidPtr>& x,
+    const forward_list_facet<T, VoidPtr>& y
 )
 {
     return y < x;
 }
 
-template <typename T, typename VoidPtr, typename Size, typename DiffT>
+template <typename T, typename VoidPtr>
 inline
 bool
 operator>=(
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& x,
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& y
+    const forward_list_facet<T, VoidPtr>& x,
+    const forward_list_facet<T, VoidPtr>& y
 )
 {
     return !(x < y);
 }
 
-template <typename T, typename VoidPtr, typename Size, typename DiffT>
+template <typename T, typename VoidPtr>
 inline
 bool
 operator<=(
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& x,
-    const forward_list_facet<T, VoidPtr, Size, DiffT>& y
+    const forward_list_facet<T, VoidPtr>& x,
+    const forward_list_facet<T, VoidPtr>& y
 )
 {
     return !(y < x);
 }
 
 // FORWARD LIST
-
 
 template <
     typename T,
@@ -979,9 +979,7 @@ public:
     using allocator_type = Allocator;
     using facet_type = forward_list_facet<
         value_type,
-        typename allocator_traits<allocator_type>::void_pointer,
-        typename allocator_traits<allocator_type>::size_type,
-        typename allocator_traits<allocator_type>::difference_type
+        typename allocator_traits<allocator_type>::void_pointer
     >;
     using reference = value_type&;
     using const_reference = const value_type&;
@@ -1726,7 +1724,7 @@ public:
     void
     unique()
     {
-        unique(std::equal_to<value_type>());
+        unique(equal_to<value_type>());
     }
 
     template <typename Predicate>
@@ -1954,6 +1952,18 @@ operator<=(
 )
 {
     return x.facet() <= y.facet();
+}
+
+template <typename T, typename Allocator>
+inline
+void
+swap(
+    forward_list<T, Allocator>& x,
+    forward_list<T, Allocator>& y
+)
+noexcept
+{
+    x.swap(y);
 }
 
 PYCPP_END_NAMESPACE

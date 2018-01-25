@@ -367,6 +367,9 @@ Working on:
     - filesystem
     - charconv
     - memory_resource.h
+    - memory.h
+        - Test smart_ptr
+        - Implement make_shared
     - vector.h
     - string.h
     - functional.h
