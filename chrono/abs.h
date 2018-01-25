@@ -4,6 +4,11 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `std::chrono::abs` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename Rep, typename Period>
+ *      inline constexpr
+ *      chrono::duration<Rep, Period> abs(chrono::duration<Rep, Period> d);
  */
 
 #pragma once

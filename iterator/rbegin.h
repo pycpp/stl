@@ -4,6 +4,25 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `rbegin` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename T, size_t N>
+ *      constexpr
+ *      reverse_iterator<T*>
+ *      rbegin(T (&arr)[N]);
+ *
+ *      template <typename E>
+ *      constexpr reverse_iterator<const E*>
+ *      rbegin(initializer_list<E> il);
+ *
+ *      template <typename C>
+ *      constexpr decltype(auto) rbegin(C& c);
+ *
+ *      template <typename C>
+ *      constexpr decltype(auto) rbegin(const C& c);
+ *
+ *      template <typename C>
+ *      constexpr decltype(auto) crbegin(const C& c);
  */
 
 #pragma once

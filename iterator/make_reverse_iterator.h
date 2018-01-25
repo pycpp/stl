@@ -4,6 +4,10 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `make_reverse_iterator` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename Iter>
+ *      reverse_iterator<Iter> make_reverse_iterator(Iter i);
  */
 
 #pragma once

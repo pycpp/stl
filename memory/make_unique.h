@@ -3,6 +3,13 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `make_unique` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename T, typename ... Ts>
+ *      unique_ptr<T> make_unique(Ts&&... ts);
+ *
+ *      template <typename T>
+ *      unique_ptr<T> make_unique(size_t size);
  */
 
 #pragma once
@@ -22,7 +29,7 @@ using std::make_unique;
 
 #else                       // <=CPP11
 
-template <typename T, typename ... Ts >
+template <typename T, typename ... Ts>
 std::unique_ptr<T>
 make_unique(
     Ts&&... ts

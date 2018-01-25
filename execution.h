@@ -14,22 +14,24 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-// ALIAS
-// -----
+// TODO: backport to C++11
 
-using std::is_execution_policy;
-using std::is_execution_policy_v;
-
-namespace execution
-{
-
-using std::execution::sequenced_policy;
-using std::execution::parallel_policy;
-using std::execution::parallel_unsequenced_policy;
-using std::execution::seq;
-using std::execution::par;
-using std::execution::par_unseq;
-
-}   /* execution */
+//// ALIAS
+//// -----
+//
+//using std::is_execution_policy;
+//using std::is_execution_policy_v;
+//
+//namespace execution
+//{
+//
+//using std::execution::sequenced_policy;
+//using std::execution::parallel_policy;
+//using std::execution::parallel_unsequenced_policy;
+//using std::execution::seq;
+//using std::execution::par;
+//using std::execution::par_unseq;
+//
+//}   /* execution */
 
 PYCPP_END_NAMESPACE

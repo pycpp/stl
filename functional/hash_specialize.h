@@ -28,7 +28,8 @@ PYCPP_BEGIN_NAMESPACE
  *  Specialize primitive types by value using std::hash by default.
  */
 #define PYCPP_SPECIALIZE_HASH_VALUE(name, type)                         \
-    template <typename T> struct name;                                  \
+    template <typename T>                                               \
+    struct name;                                                        \
                                                                         \
     template <>                                                         \
     struct name<type>                                                   \
@@ -50,7 +51,8 @@ PYCPP_BEGIN_NAMESPACE
  *  Specialize classes by const reference using std::hash by default.
  */
 #define PYCPP_SPECIALIZE_HASH_REFERENCE(name, type)                     \
-    template <typename T> struct name;                                  \
+    template <typename T>                                               \
+    struct name;                                                        \
                                                                         \
     template <>                                                         \
     struct name<type>                                                   \
@@ -74,7 +76,8 @@ PYCPP_BEGIN_NAMESPACE
  *  Any items containing commas must be enclosed inside parentheses.
  */
 #define PYCPP_SPECIALIZE_HASH_TEMPLATE(name, parameters, type)          \
-    template <typename T> struct name;                                  \
+    template <typename T>                                               \
+    struct name;                                                        \
                                                                         \
     template <parameters>                                               \
     struct name<type>                                                   \

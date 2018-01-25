@@ -4,6 +4,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `std::chrono::floor` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename ToDuration, typename Rep, typename Period>
+ *      inline constexpr
+ *      ToDuration floor(const chrono::duration<Rep, Period>& d);
+ *
+ *      template <typename ToDuration, typename Clock, typename Duration>
+ *      inline constexpr
+ *      chrono::time_point<Clock, ToDuration> floor(const chrono::time_point<Clock, Duration>& t);
  */
 
 #pragma once

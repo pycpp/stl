@@ -3,6 +3,13 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `to_address` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename T>
+ *      constexpr T* to_address(T* p) noexcept;
+ *
+ *      template <typename Pointer>
+ *      decltype(auto) to_address(const Pointer& p) noexcept;
  */
 
 #pragma once

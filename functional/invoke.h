@@ -4,6 +4,11 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `invoke*` backports for C++11.
+ *
+ *  \synopsis
+ *      template <typename F, typename ... Ts>
+ *      typename std::result_of<F&&(Ts&&...)>::type
+ *      invoke(F&& f, Ts&&... ts)
  */
 
 #pragma once

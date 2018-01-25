@@ -18,7 +18,7 @@
  *          using is_transparent = void;
  *
  *          template <typename T1, typename T2>
- *          constexpr implementation-defined operator()(T1&& x, T2&& y) const;
+ *          constexpr bool operator()(T1&& x, T2&& y) const;
  *      };
  */
 

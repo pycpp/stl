@@ -15,7 +15,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-// Ckasses
+// Classes
 using std::atomic;
 using std::atomic_flag;
 using std::memory_order;

@@ -4,6 +4,10 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `launder` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename T>
+ *      [[ nodiscard ]] constexpr T* launder(T* p) noexcept;
  */
 
 #pragma once

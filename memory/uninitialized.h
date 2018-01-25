@@ -6,7 +6,23 @@
  *  \brief `unitinialized_*` backports for C++11 utilities.
  *
  *  \synopsis
- *      // TODO
+ *      template <typename InputIter, typename ForwardIter>
+ *      ForwardIter uninitialized_move(InputIter first, InputIter last, ForwardIter first_res);
+ *
+ *      template <typename InputIter, typename Size, typename ForwardIter>
+ *      std::pair<InputIter, ForwardIter> uninitialized_move_n(InputIter first, Size n, ForwardIter first_res);
+ *
+ *      template <typename ForwardIter>
+ *      void uninitialized_default_construct(ForwardIter first, ForwardIter last);
+ *
+ *      template <typename ForwardIter, typename Size>
+ *      ForwardIter uninitialized_default_construct_n(ForwardIter first, Size n);
+ *
+ *      template <typename ForwardIter>
+ *      void uninitialized_value_construct(ForwardIter first, ForwardIter last);
+ *
+ *      template <typename ForwardIter, typename Size>
+ *      ForwardIter uninitialized_value_construct_n(ForwardIter first, Size n);
  */
 
 #pragma once

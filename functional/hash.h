@@ -83,10 +83,11 @@ noexcept
 /**
  *  Specialize hashes for string types.
  */
-#define PYCPP_SPECIALIZE_HASH_STRING(name, type)                                            \
-    template <typename T> struct name;                                                      \
+#define PYCPP_SPECIALIZE_HASH_STRING(name, parameters, type)                                \
+    template <typename T>                                                                   \
+    struct name;                                                                            \
                                                                                             \
-    template <>                                                                             \
+    template <parameters>                                                                   \
     struct name<type>                                                                       \
     {                                                                                       \
         using argument_type = type;                                                         \
@@ -122,9 +123,22 @@ PYCPP_SPECIALIZE_HASH_VALUE(hash, float);
 PYCPP_SPECIALIZE_HASH_VALUE(hash, double);
 PYCPP_SPECIALIZE_HASH_VALUE(hash, long double);
 
-#if defined(HAVE_CPP17)
-PYCPP_SPECIALIZE_HASH_VALUE(hash, std::nullptr_t);
-#endif          // HAVE_CPP17
+// nullptr_t
+template <>
+struct hash<std::nullptr_t>
+{
+    using argument_type = std::nullptr_t;
+    using result_type = size_t;
+
+    size_t
+    operator()(
+        std::nullptr_t
+    )
+    const noexcept
+    {
+        return std::hash<uintptr_t>()(0);
+    }
+};
 
 // Pointer
 template <typename T>

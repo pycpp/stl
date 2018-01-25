@@ -3,6 +3,10 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `byte` backport for C++11.
+ *
+ *  \synopsis
+ *      enum class byte: unsigned char
+ *      {};
  */
 
 #pragma once

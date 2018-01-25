@@ -3,7 +3,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief `endian` backport for C++11.
+ *  \brief `default_searcher` backport for C++11.
  *
  *  \synopsis
 // TODO: implement

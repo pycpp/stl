@@ -7,10 +7,14 @@
 
 #pragma once
 
+#include <pycpp/stl/functional/bit_and.h>
+#include <pycpp/stl/functional/bit_or.h>
+#include <pycpp/stl/functional/bit_xor.h>
 #include <pycpp/stl/functional/bit_not.h>
 #include <pycpp/stl/functional/boyer_moore_horspool_searcher.h>
 #include <pycpp/stl/functional/boyer_moore_searcher.h>
 #include <pycpp/stl/functional/default_searcher.h>
+#include <pycpp/stl/functional/divides.h>
 #include <pycpp/stl/functional/equal_to.h>
 #include <pycpp/stl/functional/greater.h>
 #include <pycpp/stl/functional/greater_equal.h>
@@ -18,8 +22,16 @@
 #include <pycpp/stl/functional/invoke.h>
 #include <pycpp/stl/functional/less.h>
 #include <pycpp/stl/functional/less_equal.h>
+#include <pycpp/stl/functional/logical_and.h>
+#include <pycpp/stl/functional/logical_not.h>
+#include <pycpp/stl/functional/logical_or.h>
+#include <pycpp/stl/functional/minus.h>
+#include <pycpp/stl/functional/modulus.h>
+#include <pycpp/stl/functional/multiplies.h>
+#include <pycpp/stl/functional/negate.h>
 #include <pycpp/stl/functional/not_equal_to.h>
 #include <pycpp/stl/functional/not_fn.h>
+#include <pycpp/stl/functional/plus.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -57,24 +69,9 @@ using std::ref;
 using std::cref;
 
 // Functors
-using std::plus;
-using std::minus;
-using std::multiplies;
-using std::divides;
-using std::modulus;
-using std::negate;
-using std::logical_and;
-using std::logical_or;
-using std::logical_not;
-using std::bit_and;
-using std::bit_or;
-using std::bit_xor;
-//using std::not_fn;
 using std::unary_negate;
 using std::binary_negate;
 using std::not1;
 using std::not2;
-// using std::boyer_moore_searcher
-// using std::boyer_moore_horspool_searcher
 
 PYCPP_END_NAMESPACE

@@ -6,16 +6,16 @@
  *
  *  \synopsis
  *      template <typename T, typename U>
- *      std::shared_ptr<T> static_pointer_cast(const std::shared_ptr<U>& r) noexcept;
+ *      shared_ptr<T> static_pointer_cast(const shared_ptr<U>& r) noexcept;
  *
  *      template <typename T, typename U>
- *      std::shared_ptr<T> dynamic_pointer_cast(const std::shared_ptr<U>& r) noexcept;
+ *      shared_ptr<T> dynamic_pointer_cast(const shared_ptr<U>& r) noexcept;
  *
  *      template <typename T, typename U>
- *      std::shared_ptr<T> const_pointer_cast(const std::shared_ptr<U>& r) noexcept;
+ *      shared_ptr<T> const_pointer_cast(const shared_ptr<U>& r) noexcept;
  *
  *      template <typename T, typename U>
- *      std::shared_ptr<T> reinterpret_pointer_cast(const std::shared_ptr<U>& r) noexcept;
+ *      shared_ptr<T> reinterpret_pointer_cast(const shared_ptr<U>& r) noexcept;
  */
 
 #pragma once

@@ -3,7 +3,6 @@
 /**
  *  \addtogroup PyCPP
  *  \brief STL forward_list with allocator erasure from iterators.
- *
  */
 
 #pragma once

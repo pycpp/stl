@@ -4,6 +4,25 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `rend` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename T, size_t N>
+ *      constexpr
+ *      reverse_iterator<T*>
+ *      rend(T (&arr)[N]);
+ *
+ *      template <typename E>
+ *      constexpr reverse_iterator<const E*>
+ *      rend(initializer_list<E> il);
+ *
+ *      template <typename C>
+ *      constexpr decltype(auto) rend(C& c);
+ *
+ *      template <typename C>
+ *      constexpr decltype(auto) rend(const C& c);
+ *
+ *      template <typename C>
+ *      constexpr decltype(auto) crend(const C& c);
  */
 
 #pragma once

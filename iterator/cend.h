@@ -4,6 +4,10 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `cend` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename C>
+ *      constexpr decltype(auto) cend(const C& c);
  */
 
 #pragma once

@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief `uncaught_exception` backport for C++11.
+ *  \brief `uncaught_exceptions` backport for C++11.
  *
  *  \synopsis
  *      bool uncaught_exception() noexcept;

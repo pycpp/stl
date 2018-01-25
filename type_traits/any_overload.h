@@ -8,7 +8,7 @@
  *  \synopsis
  *      struct any_overload
  *      {
- *          any_overload(...);;
+ *          any_overload(...);
  *      };
  */
 

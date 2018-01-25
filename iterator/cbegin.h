@@ -4,6 +4,10 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `cbegin` backport for C++11.
+ *
+ *  \synopsis
+ *      template <typename C>
+ *      constexpr decltype(auto) cbegin(const C& c);
  */
 
 #pragma once

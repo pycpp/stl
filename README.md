@@ -304,6 +304,23 @@ Finished:
     - stdexcept.h
     - exception.h
     - new.h
+    - system_error.h
+    - cerrno.h
+    - cctype.h
+    - cwctype.h
+    - cstring.h
+    - cwchar.h
+    - cuchar.h
+    - ctime.h
+    - valarray.h
+    - random.h
+    - cfenv.h
+    - mutex.h
+    - thread.h
+    - condition_variable.h
+    - regex.h
+    - cstdio.h
+    - clocale.h
     - 
     - memory.h
         - Unittests
@@ -320,36 +337,44 @@ Finished:
         - Unittests
 
 Working on:
+    - algorithm
+        - Parallel xD
+    - cmath.h
+        -Everything done besides the special functions.
+        - http://en.cppreference.com/w/cpp/experimental/special_math/assoc_laguerre
+    - numeric.h
+        - Implement transform_inclusive and transform_exclusive
+        - Write unittests for all.
+    - execution
+    - any
+    - optional
+    - variant
+    - compare
     - iomanip
     - ios
     - iosfwd
+    - istream
+    - ostream
+    - iostream
+    - fstream
+    - sstream
+    - syncstream
+    - strstream
+    - streambuf
+    - locale
+    - codecvt
+    - shared_mutex
+    - filesystem
+    - charconv
     - memory_resource.h
+    - vector.h
+    - string.h
     - functional.h
-        - bit_not
-            - Unittests
         - boyer_moore_horspool_searcher
             - Unittests
         - boyer_moore_searcher
             - Unittests
         - default_searcher
-            - Unittests
-        - equal_to
-            - Unittests
-        - not_equal_to
-            - Unittests
-        - greater
-            - Unittests
-        - less
-            - Unittests
-        - greater_equal
-            - Unittests
-        - less_equal
-            - Unittests
-        - hash
-            - Unittests
-        - invoke
-            - Unittests
-        - not_fn
             - Unittests
         - WORK ON IT!
     - utility.h
