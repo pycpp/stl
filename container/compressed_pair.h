@@ -87,23 +87,23 @@
  *      };
  *
  *      template <typename T1, typename T2>
- *      struct tuple_size<compressed_pair<T1, T2>>: std::integral_constant<size_t, 2>
+ *      struct tuple_size<compressed_pair<T1, T2>>: integral_constant<size_t, 2>
  *      {};
  *
  *      template <size_t I, typename T1, typename T2>
- *      inline constexpr typename std::tuple_element<I, compressed_pair<T1, T2>>::type&
+ *      inline constexpr typename tuple_element_t<I, compressed_pair<T1, T2>>&
  *      get(compressed_pair<T1, T2>& p) noexcept;
  *
  *      template <size_t I, typename T1, typename T2>
- *      inline constexpr const typename std::tuple_element<I, compressed_pair<T1, T2>>::type&
+ *      inline constexpr const typename tuple_element_t<I, compressed_pair<T1, T2>>&
  *      get(const compressed_pair<T1, T2>& p) noexcept;
  *
  *      template <size_t I, typename T1, typename T2>
- *      inline constexpr typename std::tuple_element<I, compressed_pair<T1, T2>>::type&&
+ *      inline constexpr typename tuple_element_t<I, compressed_pair<T1, T2>>&&
  *      get(compressed_pair<T1, T2>&& p) noexcept;
  *
  *      template <size_t I, typename T1, typename T2>
- *      inline constexpr const typename std::tuple_element<I, compressed_pair<T1, T2>>::type&&
+ *      inline constexpr const typename tuple_element_t<I, compressed_pair<T1, T2>>&&
  *      get(const compressed_pair<T1, T2>&& p) noexcept;
  *
  *      template <typename T1, typename T2>
@@ -135,12 +135,12 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler_traits.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/tuple.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <warnings/push.h>
 #include <warnings/assign-could-not-be-generated.h>
-#include <algorithm>
-#include <tuple>
-#include <type_traits>
-#include <utility>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -200,12 +200,12 @@ template <typename T1, typename T2>
 using compressed_switch = compressed_pair_switch_helper<
     T1,
     T2,
-    std::is_same<
-        typename std::remove_cv<T1>::type,
-        typename std::remove_cv<T2>::type
+    is_same<
+        remove_cv_t<T1>,
+        remove_cv_t<T2>
     >::value,
-    std::is_empty<T1>::value,
-    std::is_empty<T2>::value
+    is_empty<T1>::value,
+    is_empty<T2>::value
 >;
 
 template <size_t I>
@@ -253,20 +253,20 @@ public:
         first_type&& x,
         second_type&& y
     ):
-        first_(std::forward<first_type>(x)),
-        second_(std::forward<second_type>(y))
+        first_(forward<first_type>(x)),
+        second_(forward<second_type>(y))
     {}
 
     compressed_pair_impl(
         first_type&& x
     ):
-        first_(std::forward<first_type>(x))
+        first_(forward<first_type>(x))
     {}
 
     compressed_pair_impl(
         second_type&& y
     ):
-        second_(std::forward<second_type>(y))
+        second_(forward<second_type>(y))
     {}
 
     // Element Access
@@ -308,8 +308,8 @@ public:
         compressed_pair<T1, T2>& y
     )
     {
-        std::swap(first_, y.first());
-        std::swap(second_, y.second());
+        fast_swap(first_, y.first());
+        fast_swap(second_, y.second());
     }
 
 private:
@@ -321,7 +321,7 @@ private:
 // 1    derive from T1
 template <typename T1, typename T2>
 class compressed_pair_impl<T1, T2, 1>:
-    protected std::remove_cv<T1>::type
+    protected remove_cv_t<T1>
 {
 public:
     // MEMBER TYPES
@@ -358,20 +358,20 @@ public:
         first_type&& x,
         second_type&& y
     ):
-        first_type(std::forward<first_type>(x)),
-        second_(std::forward<second_type>(y))
+        first_type(forward<first_type>(x)),
+        second_(forward<second_type>(y))
     {}
 
     compressed_pair_impl(
         first_type&& x
     ):
-        first_type(std::forward<first_type>(x))
+        first_type(forward<first_type>(x))
     {}
 
     compressed_pair_impl(
         second_type&& y
     ):
-        second_(std::forward<second_type>(y))
+        second_(forward<second_type>(y))
     {}
 
     // Element Access
@@ -414,8 +414,8 @@ public:
         compressed_pair<T1, T2>& y
     )
     {
-        // no need to swap empty base class:
-        std::swap(second_, y.second());
+        // no need to swap empty base class
+        fast_swap(second_, y.second());
     }
 
 private:
@@ -426,7 +426,7 @@ private:
 // 2    derive from T2
 template <typename T1, typename T2>
 class compressed_pair_impl<T1, T2, 2>:
-    protected std::remove_cv<T2>::type
+    protected remove_cv_t<T2>
 {
 public:
     // MEMBER TYPES
@@ -463,20 +463,20 @@ public:
         first_type&& x,
         second_type&& y
     ):
-        second_type(std::forward<second_type>(y)),
-        first_(std::forward<first_type>(x))
+        second_type(forward<second_type>(y)),
+        first_(forward<first_type>(x))
     {}
 
     compressed_pair_impl(
         first_type&& x
     ):
-        first_(std::forward<first_type>(x))
+        first_(forward<first_type>(x))
     {}
 
     compressed_pair_impl(
         second_type&& y
     ):
-        second_type(std::forward<second_type>(y))
+        second_type(forward<second_type>(y))
     {}
 
     // Element Access
@@ -518,8 +518,8 @@ public:
         compressed_pair<T1, T2>& y
     )
     {
-        // no need to swap empty base class:
-        std::swap(first_, y.first());
+        // no need to swap empty base class
+        fast_swap(first_, y.first());
     }
 
 private:
@@ -530,8 +530,8 @@ private:
 // 3    derive from T1 and T2
 template <typename T1, typename T2>
 class compressed_pair_impl<T1, T2, 3>:
-    protected std::remove_cv<T1>::type,
-    protected std::remove_cv<T2>::type
+    protected remove_cv_t<T1>,
+    protected remove_cv_t<T2>
 {
 public:
     // MEMBER TYPES
@@ -568,20 +568,20 @@ public:
         first_type&& x,
         second_type&& y
     ):
-        first_type(std::forward<first_type>(x)),
-        second_type(std::forward<second_type>(y))
+        first_type(forward<first_type>(x)),
+        second_type(forward<second_type>(y))
     {}
 
     compressed_pair_impl(
         first_type&& x
     ):
-        first_type(std::forward<first_type>(x))
+        first_type(forward<first_type>(x))
     {}
 
     compressed_pair_impl(
         second_type&& y
     ):
-        second_type(std::forward<second_type>(y))
+        second_type(forward<second_type>(y))
     {}
 
     // Element Access
@@ -624,7 +624,7 @@ public:
     )
     noexcept
     {
-        // no need to swap empty base class:
+        // no need to swap empty base class
     }
 };
 
@@ -637,7 +637,7 @@ public:
 //  second() returning different objects (albeit both empty).
 template <typename T1, typename T2>
 class compressed_pair_impl<T1, T2, 4>:
-    protected std::remove_cv<T1>::type
+    protected remove_cv_t<T1>
 {
 public:
     // MEMBER TYPES
@@ -669,15 +669,15 @@ public:
         first_type&& x,
         second_type&& y
     ):
-        first_type(std::forward<first_type>(x)),
-        second_(std::forward<second_type>(y))
+        first_type(forward<first_type>(x)),
+        second_(forward<second_type>(y))
     {}
 
     compressed_pair_impl(
         first_type&& x
     ):
         first_type(x),
-        second_(std::forward<first_type>(x))
+        second_(forward<first_type>(x))
     {}
 
     // Element Access
@@ -720,7 +720,7 @@ public:
     )
     noexcept
     {
-        // no need to swap empty base class:
+        // no need to swap empty base class
     }
 
 private:
@@ -761,15 +761,15 @@ public:
         first_type&& x,
         second_type&& y
     ):
-        first_(std::forward<first_type>(x)),
-        second_(std::forward<second_type>(y))
+        first_(forward<first_type>(x)),
+        second_(forward<second_type>(y))
     {}
 
     compressed_pair_impl(
         first_type&& x
     ):
         first_(x),
-        second_(std::forward<first_type>(x))
+        second_(forward<first_type>(x))
     {}
 
     // Element Access
@@ -810,8 +810,8 @@ public:
         compressed_pair<T1, T2>& y
     )
     {
-        std::swap(first_, y.first());
-        std::swap(second_, y.second());
+        fast_swap(first_, y.first());
+        fast_swap(second_, y.second());
     }
 
 private:
@@ -876,21 +876,21 @@ public:
         first_type&& x,
         second_type&& y
     ):
-        base_t(std::forward<first_type>(x), std::forward<second_type>(y))
+        base_t(forward<first_type>(x), forward<second_type>(y))
     {}
 
     explicit
     compressed_pair(
         first_type&& x
     ):
-        base_t(std::forward<first_type>(x))
+        base_t(forward<first_type>(x))
     {}
 
     explicit
     compressed_pair(
         second_type&& y
     ):
-        base_t(std::forward<second_type>(y))
+        base_t(forward<second_type>(y))
     {}
 
     // Element Access
@@ -978,14 +978,14 @@ public:
         first_type&& x,
         second_type&& y
     ):
-        base_t(std::forward<first_type>(x), std::forward<second_type>(y))
+        base_t(forward<first_type>(x), forward<second_type>(y))
     {}
 
     explicit
     compressed_pair(
         first_type&& x
     ):
-        base_t(std::forward<first_type>(x))
+        base_t(forward<first_type>(x))
     {}
 
     // Element Access
@@ -1078,7 +1078,7 @@ struct get_pair<0>
     )
     noexcept
     {
-        return std::forward<T1>(p.first());
+        return forward<T1>(p.first());
     }
 
     template <typename T1, typename T2>
@@ -1089,7 +1089,7 @@ struct get_pair<0>
     )
     noexcept
     {
-        return std::forward<const T1>(p.first());
+        return forward<const T1>(p.first());
     }
 };
 
@@ -1127,7 +1127,7 @@ struct get_pair<1>
     )
     noexcept
     {
-        return std::forward<T2>(p.second());
+        return forward<T2>(p.second());
     }
 
     template <typename T1, typename T2>
@@ -1138,7 +1138,7 @@ struct get_pair<1>
     )
     noexcept
     {
-        return std::forward<const T2>(p.second());
+        return forward<const T2>(p.second());
     }
 };
 
@@ -1147,7 +1147,7 @@ struct get_pair<1>
 
 template <size_t I, typename T1, typename T2>
 inline CPP14_CONSTEXPR
-typename std::tuple_element<I, compressed_pair<T1, T2>>::type&
+tuple_element_t<I, compressed_pair<T1, T2>>&
 get(
     compressed_pair<T1, T2>& p
 )
@@ -1159,7 +1159,7 @@ noexcept
 
 template <size_t I, typename T1, typename T2>
 inline CPP14_CONSTEXPR
-const typename std::tuple_element<I, compressed_pair<T1, T2>>::type&
+const tuple_element_t<I, compressed_pair<T1, T2>>&
 get(
     const compressed_pair<T1, T2>& p
 )
@@ -1171,25 +1171,25 @@ noexcept
 
 template <size_t I, typename T1, typename T2>
 inline CPP14_CONSTEXPR
-typename std::tuple_element<I, compressed_pair<T1, T2>>::type&&
+tuple_element_t<I, compressed_pair<T1, T2>>&&
 get(
     compressed_pair<T1, T2>&& p
 )
 noexcept
 {
-    return compressed_detail::get_pair<I>()(std::move(p));
+    return compressed_detail::get_pair<I>()(move(p));
 }
 
 
 template <size_t I, typename T1, typename T2>
 inline CPP14_CONSTEXPR
-const typename std::tuple_element<I, compressed_pair<T1, T2>>::type&&
+const tuple_element_t<I, compressed_pair<T1, T2>>&&
 get(
     const compressed_pair<T1, T2>&& p
 )
 noexcept
 {
-    return compressed_detail::get_pair<I>()(std::move(p));
+    return compressed_detail::get_pair<I>()(move(p));
 }
 
 
@@ -1224,7 +1224,7 @@ get(
 )
 noexcept
 {
-    return compressed_detail::get_pair<0>()(std::move(p));
+    return compressed_detail::get_pair<0>()(move(p));
 }
 
 
@@ -1236,7 +1236,7 @@ get(
 )
 noexcept
 {
-    return compressed_detail::get_pair<0>()(std::move(p));
+    return compressed_detail::get_pair<0>()(move(p));
 }
 
 
@@ -1272,7 +1272,7 @@ get(
 )
 noexcept
 {
-    return compressed_detail::get_pair<1>()(std::move(p));
+    return compressed_detail::get_pair<1>()(move(p));
 }
 
 
@@ -1284,7 +1284,7 @@ get(
 )
 noexcept
 {
-    return compressed_detail::get_pair<1>()(std::move(p));
+    return compressed_detail::get_pair<1>()(move(p));
 }
 
 PYCPP_END_NAMESPACE
@@ -1308,7 +1308,7 @@ struct tuple_element<1, PYCPP_NAMESPACE::compressed_pair<T1, T2>>
 };
 
 template <typename T1, typename T2>
-struct tuple_size<PYCPP_NAMESPACE::compressed_pair<T1, T2>>: std::integral_constant<size_t, 2>
+struct tuple_size<PYCPP_NAMESPACE::compressed_pair<T1, T2>>: integral_constant<size_t, 2>
 {};
 
 }   /* std */

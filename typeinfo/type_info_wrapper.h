@@ -50,6 +50,7 @@
 #include <pycpp/preprocessor/abi.h>
 #include <pycpp/preprocessor/compiler.h>
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/utility/fast_swap.h>
 #include <cassert>
 #include <string>
 #include <typeinfo>
@@ -196,7 +197,7 @@ public:
     )
     noexcept
     {
-        std::swap(info_, x.info_);
+        fast_swap(info_, x.info_);
     }
 
 private:

@@ -12,6 +12,7 @@
 #include <pycpp/config.h>
 #include <pycpp/stl/memory/checked_delete.h>
 #include <pycpp/stl/thread/checked_thread.h>
+#include <pycpp/stl/utility/fast_swap.h>
 #include <atomic>
 #include <cassert>
 #include <cstdint>
@@ -1142,7 +1143,7 @@ public:
     )
     noexcept
     {
-        std::swap(ptr_, r.ptr_);
+        fast_swap(ptr_, r.ptr_);
         ctrl_.swap(r.ctrl_);
     }
 

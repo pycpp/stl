@@ -11,7 +11,7 @@
  *      {
  *          using allocator_type = Allocator;
  *
- *          pointer reallocate(allocator_type& allocator, pointer ptr, size_type old_size, size_type new_size);
+ *          pointer reallocate(allocator_type& allocator, pointer ptr, size_type old_size, size_type new_size, size_type count, size_type old_offset = 0, size_type new_offset = 0);
  *
  *          template <typename Pointer>
  *          static void construct_forward(allocator_type& alloc, Pointer begin1, Pointer end1, Pointer& begin2);
@@ -28,7 +28,9 @@
 
 #include <pycpp/stl/memory/has_construct.h>
 #include <pycpp/stl/memory/to_raw_pointer.h>
-#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/type_traits/has_reallocate.h>
+#include <pycpp/stl/type_traits/is_relocatable.h>
+#include <cassert>
 #include <cstring>
 #include <memory>
 #include <utility>
@@ -49,60 +51,95 @@ struct allocator_traits: std::allocator_traits<Allocator>
 
     // Reallocate
 
+    // Reallocate allocates the size similarly to `allocate` and
+    // `deallocate`, it uses the number of objects and not the
+    // number of bytes.
+    // \param alloc             Allocator
+    // \param old_size          Old size of buffer (in objects, not bytes)
+    // \param new_size          New size of buffer (in objects, not bytes)
+    // \param count             Number of objects to move from old to new
+    // \param old_offset        Object offset for copying from old-buffer
+    // \param new_offset        Object offset for copying into old-buffer
+
     // Overload if class provides specialized reallocate
     // Only use for relocatable types, since the type might
     // not be relocatable, in which case the types
     // still must be moved into position.
     template <typename T = value_type, typename A = allocator_type>
-    enable_if_t<has_reallocate<A>::value && is_relocatable<T>::value, pointer>
+    static
+    typename std::enable_if<has_reallocate<A>::value && is_relocatable<T>::value, pointer>::type
     reallocate(
-        allocator_type& allocator,
+        allocator_type& alloc,
         pointer ptr,
         size_type old_size,
-        size_type new_size
+        size_type new_size,
+        size_type count,
+        size_type old_offset = 0,
+        size_type new_offset = 0
     )
     {
-        return allocator.reallocate(ptr, old_size, new_size);
+        assert(count + old_offset <= old_size && "Buffer overflow.");
+        assert(count + new_offset <= new_size && "Buffer overflow.");
+
+        return alloc.reallocate(ptr, old_size, new_size, count, old_offset, new_offset);
     }
 
     // Overload if class does not provide specialized reallocate
     // and can be trivially moved as bytes.
     template <typename T = value_type, typename A = allocator_type>
-    enable_if_t<!has_reallocate<A>::value && is_relocatable<T>::value, pointer>
+    static
+    typename std::enable_if<!has_reallocate<A>::value && is_relocatable<T>::value, pointer>::type
     reallocate(
-        allocator_type& allocator,
+        allocator_type& alloc,
         pointer ptr,
         size_type old_size,
-        size_type new_size
+        size_type new_size,
+        size_type count,
+        size_type old_offset = 0,
+        size_type new_offset = 0
     )
     {
-        pointer p = allocator.allocate(new_size);
-        memcpy((void*) p, (void*) ptr, old_size * sizeof(value_type));
-        allocator.deallocate(ptr, old_size);
+        assert(count + old_offset <= old_size && "Buffer overflow.");
+        assert(count + new_offset <= new_size && "Buffer overflow.");
+
+        pointer p = alloc.allocate(new_size);
+        value_type* psrc = to_raw_pointer(ptr);
+        value_type* pdest = to_raw_pointer(p);
+        std::memmove(pdest + new_offset, psrc + old_offset, count * sizeof(value_type));
+        alloc.deallocate(ptr, old_size);
         return p;
     }
 
     // Overload if class does not provide specialized reallocate
     // and cannot be trivially moved as bytes.
     template <typename T = value_type, typename A = allocator_type>
-    enable_if_t<!is_relocatable<T>::value, pointer>
+    static
+    typename std::enable_if<!is_relocatable<T>::value, pointer>::type
     reallocate(
-        allocator_type& allocator,
+        allocator_type& alloc,
         pointer ptr,
         size_type old_size,
-        size_type new_size
+        size_type new_size,
+        size_type count,
+        size_type old_offset = 0,
+        size_type new_offset = 0
     )
     {
-        pointer p = allocator.allocate(new_size);
+        assert(count + old_offset <= old_size && "Buffer overflow.");
+        assert(count + new_offset <= new_size && "Buffer overflow.");
+
+        pointer p = alloc.allocate(new_size);
+        pointer npoff = p + new_offset;
+        pointer opoff = ptr + old_offset;
         // use placement new to construct-in-place
         // Don't use `std::move`, since that move assigns into
         // uninitialized memory.
-        for (size_t i = 0; i < old_size; ++i) {
-            T& src = ptr[i];
-            T* dst = &p[i];
-            new (static_cast<void*>(dst)) T(std::move(src));
+        for (size_t i = 0; i < count; ++i) {
+            T& src = opoff[i];
+            T* dst = &npoff[i];
+            traits::construct(alloc, dst, std::move(src));
         }
-        allocator.deallocate(ptr, old_size);
+        alloc.deallocate(ptr, old_size);
         return p;
     }
 
@@ -124,7 +161,7 @@ struct allocator_traits: std::allocator_traits<Allocator>
 
     template <typename T>
     static
-    enable_memcpy_construct<allocator_type, T>
+    enable_memcpy_construct_t<allocator_type, T>
     construct_forward(
         allocator_type&,
         T* begin1,
@@ -134,7 +171,7 @@ struct allocator_traits: std::allocator_traits<Allocator>
     {
         std::ptrdiff_t n = end1 - begin1;
         if (n > 0) {
-            std::memcpy(begin2, begin1, n * sizeof(T));
+            std::memmove(begin2, begin1, n * sizeof(T));
             begin2 += n;
         }
     }
@@ -157,7 +194,7 @@ struct allocator_traits: std::allocator_traits<Allocator>
 
     template <typename T>
     static
-    enable_memcpy_construct<allocator_type, T>
+    enable_memcpy_construct_t<allocator_type, T>
     construct_range_forward(
         allocator_type&,
         T* begin1,
@@ -168,7 +205,7 @@ struct allocator_traits: std::allocator_traits<Allocator>
         using value_type = typename std::remove_const<T>::type;
         std::ptrdiff_t n = end1 - begin1;
         if (n > 0) {
-            std::memcpy(const_cast<value_type*>(begin2), begin1, n * sizeof(T));
+            std::memmove(const_cast<value_type*>(begin2), begin1, n * sizeof(T));
             begin2 += n;
         }
     }
@@ -192,13 +229,18 @@ struct allocator_traits: std::allocator_traits<Allocator>
 
     template <typename T>
     static
-    enable_memcpy_construct<allocator_type, T>
-    construct_backward(allocator_type&, T* begin1, T* end1, T*& end2)
+    enable_memcpy_construct_t<allocator_type, T>
+    construct_backward(
+        allocator_type&,
+        T* begin1,
+        T* end1,
+        T*& end2
+    )
     {
         std::ptrdiff_t n = end1 - begin1;
         end2 -= n;
         if (n > 0) {
-            std::memcpy(end2, begin1, n * sizeof(T));
+            std::memmove(end2, begin1, n * sizeof(T));
         }
     }
 };

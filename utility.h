@@ -14,6 +14,7 @@
 #include <pycpp/stl/utility/as_const.h>
 #include <pycpp/stl/utility/chars.h>
 #include <pycpp/stl/utility/exchange.h>
+#include <pycpp/stl/utility/fast_swap.h>
 #include <pycpp/stl/utility/in_place.h>
 #include <pycpp/stl/utility/integer_sequence.h>
 

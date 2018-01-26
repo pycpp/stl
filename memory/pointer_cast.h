@@ -26,32 +26,33 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-// ALIAS
-// -----
+// TODO: implement them all, since I use my own shared_ptr type
 
-using std::static_pointer_cast;
-using std::dynamic_pointer_cast;
-using std::const_pointer_cast;
-
-#if defined(HAVE_CPP17)     // HAVE_CPP17
-
-using std::reinterpret_pointer_cast;
-
-#else                       // !HAVE_CPP17
-
-template <typename T, typename U>
-std::shared_ptr<T>
-reinterpret_pointer_cast(
-    const std::shared_ptr<U>& r
-)
-noexcept
-{
-    auto p = reinterpret_cast<typename std::shared_ptr<T>::element_type*>(r.get());
-    return std::shared_ptr<T>(r, p);
-}
-
-#endif                      // HAVE_CPP17
-
+//// ALIAS
+//// -----
+//
+//using std::static_pointer_cast;
+//using std::dynamic_pointer_cast;
+//using std::const_pointer_cast;
+//
+//#if defined(HAVE_CPP17)     // HAVE_CPP17
+//
+//using std::reinterpret_pointer_cast;
+//
+//#else                       // !HAVE_CPP17
+//
+//template <typename T, typename U>
+//std::shared_ptr<T>
+//reinterpret_pointer_cast(
+//    const std::shared_ptr<U>& r
+//)
+//noexcept
+//{
+//    auto p = reinterpret_cast<typename std::shared_ptr<T>::element_type*>(r.get());
+//    return std::shared_ptr<T>(r, p);
+//}
+//
+//#endif                      // HAVE_CPP17
 
 // TODO: here...
 

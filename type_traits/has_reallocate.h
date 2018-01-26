@@ -41,6 +41,17 @@ template <typename T>
 class has_reallocate_impl
 {
 protected:
+    // Reallocate has a function declaration as follows:
+    // pointer
+    // reallocate(
+    //      pointer ptr,
+    //      size_type old_size,
+    //      size_type new_size,
+    //      size_type count,
+    //      size_type old_offset = 0,
+    //      size_type new_offset = 0
+    // )
+
     template <typename C>
     static
     char
@@ -48,6 +59,9 @@ protected:
         decltype(
             std::declval<C>().reallocate(
                 std::declval<typename std::allocator_traits<C>::pointer>(),
+                std::declval<typename std::allocator_traits<C>::size_type>(),
+                std::declval<typename std::allocator_traits<C>::size_type>(),
+                std::declval<typename std::allocator_traits<C>::size_type>(),
                 std::declval<typename std::allocator_traits<C>::size_type>(),
                 std::declval<typename std::allocator_traits<C>::size_type>()
             )

@@ -16,6 +16,7 @@
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/iterator.h>
+#include <pycpp/stl/limits.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
@@ -139,7 +140,7 @@ class list_iterator
     template <typename, typename> friend class list_const_iterator;
 
 public:
-    using iterator_category = std::bidirectional_iterator_tag;
+    using iterator_category = bidirectional_iterator_tag;
     using value_type = T;
     using reference = value_type&;
     using pointer = typename pointer_traits<VoidPtr>::template rebind<value_type>;
@@ -237,7 +238,7 @@ class list_const_iterator
     template <typename, typename> friend class list;
 
 public:
-    using iterator_category = std::bidirectional_iterator_tag;
+    using iterator_category = bidirectional_iterator_tag;
     using value_type = T;
     using reference = value_type&;
     using pointer = typename pointer_traits<VoidPtr>::template rebind<const value_type>;
@@ -436,8 +437,8 @@ protected:
     )
     noexcept
     {
-        swap(size_, x.size_);
-        swap(end_, x.end_);
+        fast_swap(size_, x.size_);
+        fast_swap(end_, x.end_);
         if (size_() == 0) {
             end_.next_ = end_.prev_ = end_as_link();
         } else {
@@ -603,7 +604,7 @@ public:
     const noexcept
     {
         // guaranteed to be constexpr
-        return std::numeric_limits<size_type>::max() / sizeof(value_type);
+        return numeric_limits<size_type>::max() / sizeof(value_type);
     }
 
     // Operations
@@ -622,7 +623,7 @@ public:
         Compare comp
     )
     {
-        merge(x, std::move(comp));
+        merge(x, move(comp));
     }
 
     void
@@ -720,7 +721,7 @@ public:
             --l;
             link_pointer last = l.ptr_;
             if (this != &x) {
-                size_type s = std::distance(f, l) + 1;
+                size_type s = distance(f, l) + 1;
                 x.size_ -= s;
                 size_ += s;
             }
@@ -736,10 +737,10 @@ public:
         if (size() > 1) {
             iterator e = end();
             for (iterator i = begin(); i.ptr_ != e.ptr_;) {
-                std::swap(i.ptr_->prev_, i.ptr_->next_);
+                fast_swap(i.ptr_->prev_, i.ptr_->next_);
                 i.ptr_ = i.ptr_->prev_;
             }
-            std::swap(e.ptr_->prev_, e.ptr_->next_);
+            fast_swap(e.ptr_->prev_, e.ptr_->next_);
         }
     }
 
@@ -932,10 +933,10 @@ public:
     >;
     using reference = value_type&;
     using const_reference = const value_type&;
-    using pointer = typename allocator_traits<allocator_type>::pointer;
-    using const_pointer = typename allocator_traits<allocator_type>::const_pointer;
-    using size_type = typename allocator_traits<allocator_type>::size_type;
-    using difference_type = typename allocator_traits<allocator_type>::difference_type;
+    using pointer = typename facet_type::pointer;
+    using const_pointer = typename facet_type::const_pointer;
+    using size_type = typename facet_type::size_type;
+    using difference_type = typename facet_type::difference_type;
     using iterator = typename facet_type::iterator;
     using const_iterator = typename facet_type::const_iterator;
     using reverse_iterator = typename facet_type::reverse_iterator;
@@ -1148,8 +1149,9 @@ public:
     )
     noexcept
     {
-        std::swap(alloc(), x.alloc());
-        std::swap(facet(), x.facet());
+        using PYCPP_NAMESPACE::swap;
+        facet().swap(x.facet());
+        swap_allocator(alloc(), x.alloc());
     }
 
     // Operations
@@ -1158,7 +1160,7 @@ public:
         list&& x
     )
     {
-        facet().merge(std::move(x.facet()));
+        facet().merge(move(x.facet()));
     }
 
     template <typename Compare>
@@ -1168,7 +1170,7 @@ public:
         Compare comp
     )
     {
-        facet().merge(std::move(x.facet()), std::move(comp));
+        facet().merge(move(x.facet()), move(comp));
     }
 
     void
@@ -1186,7 +1188,7 @@ public:
         Compare comp
     )
     {
-        facet().merge(x.facet(), std::move(comp));
+        facet().merge(x.facet(), move(comp));
     }
 
     void
@@ -1204,7 +1206,7 @@ public:
         list&& x
     )
     {
-        facet().splice(p, std::move(x.facet()));
+        facet().splice(p, move(x.facet()));
     }
 
     void
@@ -1214,7 +1216,7 @@ public:
         const_iterator i
     )
     {
-        facet().splice(p, std::move(x.facet()), i);
+        facet().splice(p, move(x.facet()), i);
     }
 
     void
@@ -1225,7 +1227,7 @@ public:
         const_iterator l
     )
     {
-        facet().splice(p, std::move(x.facet()), f, l);
+        facet().splice(p, move(x.facet()), f, l);
     }
 
     void splice(
@@ -1321,7 +1323,7 @@ public:
         Compare comp
     )
     {
-        facet().sort(std::move(comp));
+        facet().sort(move(comp));
     }
 
     // Facet

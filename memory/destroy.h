@@ -21,6 +21,7 @@
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
 #include <cassert>
+#include <memory>
 
 PYCPP_BEGIN_NAMESPACE
 

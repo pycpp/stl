@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
 #include <memory>
 #include <type_traits>

@@ -45,7 +45,7 @@ allocate_and_construct(
 
     // the allocator should throw if there's no memory available
     allocator_type alloc(allocator);
-    T* t = traits_type::allocate(alloc, sizeof(T));
+    T* t = traits_type::allocate(alloc, 1);
     traits_type::construct(alloc, t, std::forward<Ts>(ts)...);
     return t;
 }

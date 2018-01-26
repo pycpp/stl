@@ -21,6 +21,12 @@
  *      template <typename T>
  *      using is_nothrow_swappable = is_nothrow_swappable_with<T, T>;
  *
+ *      template <typename T>
+ *      using is_member_swappable = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_nothrow_member_swappable = implementation-defined;
+ *
  *      template <typename T1, typename T2>
  *      using enable_swappable_with = implementation-defined;
  *
@@ -33,6 +39,12 @@
  *      template <typename T>
  *      using enable_nothrow_swappable = implementation-defined;
  *
+ *      template <typename T>
+ *      using enable_member_swappable = implementation-defined;
+ *
+ *      template <typename T>
+ *      using enable_nothrow_member_swappable = implementation-defined;
+ *
  *      template <typename T1, typename T2>
  *      using enable_swappable_with_t = implementation-defined;
  *
@@ -44,6 +56,12 @@
  *
  *      template <typename T>
  *      using enable_nothrow_swappable_t = implementation-defined;
+ *
+ *      template <typename T>
+ *      using enable_member_swappable_t = implementation-defined;
+ *
+ *      template <typename T>
+ *      using enable_nothrow_member_swappable_t = implementation-defined;
  *
  *      #ifdef HAVE_CPP14
  *
@@ -59,15 +77,19 @@
  *      template <typename T>
  *      constexpr bool is_nothrow_swappable_v = implementation-defined;
  *
+ *      template <typename T>
+ *      constexpr bool is_member_swappable_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool is_nothrow_member_swappable_v = implementation-defined;
+ *
  *      #endif
  */
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
-#include <type_traits>
-#include <utility>
+#include <pycpp/stl/type_traits/has_member_function.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -224,6 +246,32 @@ template <typename T>
 struct is_nothrow_swappable: is_nothrow_swappable_with<T&, T&>
 {};
 
+// IS MEMBER SWAPPABLE
+
+PYCPP_HAS_MEMBER_FUNCTION(swap, is_member_swappable_impl, void (C::*)(C&));
+
+template <typename T>
+struct is_member_swappable: is_member_swappable_impl<T>
+{};
+
+// IS NOTHROW MEMBER SWAPPABLE
+
+template <typename T, bool IsSwappable = is_member_swappable<T>::value>
+struct is_nothrow_member_swappable_impl
+{
+    static constexpr bool value = noexcept(std::declval<T&>().swap(std::declval<T&>()));
+};
+
+template <typename T>
+struct is_nothrow_member_swappable_impl<T, false>
+{
+    static constexpr bool value = false;
+};
+
+template <typename T>
+struct is_nothrow_member_swappable: is_nothrow_member_swappable_impl<T>
+{};
+
 // ENABLE IF
 
 template <typename T1, typename T2>
@@ -238,6 +286,12 @@ using enable_swappable = std::enable_if<is_swappable<T>::value>;
 template <typename T>
 using enable_nothrow_swappable = std::enable_if<is_nothrow_swappable<T>::value>;
 
+template <typename T>
+using enable_member_swappable = std::enable_if<is_member_swappable<T>::value>;
+
+template <typename T>
+using enable_nothrow_member_swappable = std::enable_if<is_nothrow_member_swappable<T>::value>;
+
 template <typename T1, typename T2>
 using enable_swappable_with_t = typename enable_swappable_with<T1, T2>::type;
 
@@ -249,6 +303,12 @@ using enable_swappable_t = typename enable_swappable<T>::type;
 
 template <typename T>
 using enable_nothrow_swappable_t = typename enable_nothrow_swappable<T>::type;
+
+template <typename T>
+using enable_member_swappable_t = typename enable_member_swappable<T>::type;
+
+template <typename T>
+using enable_nothrow_member_swappable_t = typename enable_nothrow_member_swappable<T>::type;
 
 #ifdef HAVE_CPP14
 
@@ -266,6 +326,12 @@ constexpr bool is_swappable_v = is_swappable<T>::value;
 
 template <typename T>
 constexpr bool is_nothrow_swappable_v = is_nothrow_swappable<T>::value;
+
+template <typename T>
+constexpr bool is_member_swappable_v = is_member_swappable<T>::value;
+
+template <typename T>
+constexpr bool is_nothrow_member_swappable_v = is_nothrow_member_swappable<T>::value;
 
 #endif              // HAVE_CPP14
 

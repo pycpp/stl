@@ -6,7 +6,7 @@
  *  \brief Detect if type is allocator-constructible.
  *
  *  \synopsis
- *      template <typename Allocator, typename Pointer, typename ... Ts>
+ *      template <typename Allocator, typename T, typename ... Ts>
  *      struct has_construct: implementation-defined
  *      {};
  *
@@ -16,12 +16,25 @@
  *
  *      template <typename Allocator, typename T, typename R = void>
  *      using enable_memcpy_construct = implementation-defined;
+ *
+ *      template <typename Allocator, typename T, typename R = void>
+ *      using enable_memcpy_construct_t = implementation-defined;
+ *
+ *      #ifdef HAVE_CPP14
+ *
+ *      template <typename T>
+ *      constexpr bool has_construct_v = implementation-defined;
+ *
+ *      template <typename T>
+ *      constexpr bool has_memcpy_construct_v = implementation-defined;
+ *
+ *      #endif              // HAVE_CPP14
  */
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <type_traits>
+#include <pycpp/stl/type_traits/is_relocatable.h>
+#include <memory>
 #include <utility>
 
 PYCPP_BEGIN_NAMESPACE
@@ -51,13 +64,13 @@ has_construct_test(
 // OBJECTS
 // -------
 
-template <typename Allocator, typename Pointer, typename ... Ts>
+template <typename Allocator, typename T, typename ... Ts>
 struct has_construct:
     std::integral_constant<bool,
         std::is_same<
             decltype(has_construct_test(
                 std::declval<Allocator>(),
-                std::declval<Pointer>(),
+                std::declval<T*>(),
                 std::declval<Ts>()...
             )),
             std::true_type
@@ -70,18 +83,33 @@ template <typename Allocator, typename T>
 struct has_memcpy_construct:
     std::integral_constant<
         bool,
-        std::is_trivially_move_constructible<T>::value &&
         (
-            std::is_same<Allocator, std::allocator<T> >::value ||
-            has_construct<Allocator, T*, T>::value
+            is_relocatable<T>::value &&
+            std::is_same<typename std::allocator_traits<Allocator>::pointer, T*>::value
         )
     >
 {};
 
 template <typename Allocator, typename T, typename R = void>
-using enable_memcpy_construct = typename std::enable_if<
+using enable_memcpy_construct = std::enable_if<
     has_memcpy_construct<Allocator, T>::value,
     R
->::type;
+>;
+
+template <typename Allocator, typename T, typename R = void>
+using enable_memcpy_construct_t = typename enable_memcpy_construct<Allocator, T, R>::type;
+
+#ifdef HAVE_CPP14
+
+// SFINAE
+// ------
+
+template <typename T>
+constexpr bool has_construct_v = has_construct<T>::value;
+
+template <typename T>
+constexpr bool has_memcpy_construct_v = has_memcpy_construct<T>::value;
+
+#endif              // HAVE_CPP14
 
 PYCPP_END_NAMESPACE

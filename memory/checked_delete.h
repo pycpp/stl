@@ -35,7 +35,7 @@
 
 #pragma once
 
-#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/type_traits/is_complete.h>
 
 PYCPP_BEGIN_NAMESPACE
 

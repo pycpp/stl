@@ -11,11 +11,14 @@
   - [IOS Extensions](#ios-extensions)
 - [IOManip](#iomanip)
 - [Memory](#memory)
+  - [Memory Extensions](#memory-extensions)
 - [Thread](#thread)
 - [Type Info](#type-info)
   - [Type Info Extensions](#type-info-extensions)
 - [Type Traits](#type-traits)
   - [Type Trait Extensions](#type-trait-extensions)
+- [Utility](#utility)
+  - [Utility Extensions](#utility-extensions)
 
 ## Introduction
 
@@ -92,6 +95,16 @@ void call(stringstream& stream)
 // TODO: document
 
 ## Memory
+
+## Memory Extensions
+
+**Relocate**
+
+For relocatable types, `relocate` and `relocate_n` use `memcpy` under the hood for improved performance; otherwise, they are call `uninitialized_move` and `uninitialized_move_n`, respectively.
+
+**Swap Allocator**
+
+PyCPP provides `swap_allocator` method, which correctly swaps allocates depending on `allocator_traits<Allocator>::propagate_on_container_swap`.
 
 // TODO: document
 
@@ -252,6 +265,8 @@ static_assert(is_safe_overload<true, int, float>::value, "");
 
 In addition to C++17 backports of `is_swappable_with`, `is_nothrow_swappable_with`,  `is_swappable`, and `is_nothrow_swappable`, PyCPP also includes `enable_*`, which evaluate to `void` if the types are swappable, and lead to substitution failure otherwise.
 
+Two additional traits are also defines, along with the `enable_*` variants of them: `is_member_swappable` detects if the class defines a specialized `swap` member function, and `is_nothrow_member_swappable` detects a non-throwing, specialized `swap` member function.
+
 **Is Trivial**
 
 Due to the partial support of `is_trivially_*` type traits in early C++11 compilers, we include backports for all support compilers, and include `enable_*` traits, which enable substitution failure if the type does not support a trivial operation.
@@ -269,6 +284,21 @@ static_assert(type_map_and<identity_t, true_type, true_type>::value, "");
 static_assert(type_map_or<identity_t, true_type, false_type>::value, "");
 static_assert(type_not<identity_t, false_type>::value, "");
 ```
+
+## Utility
+
+PyCPP contains a complete backport of C++17 (and proposed C++20) utilities to C++11, in addition to various extensions.
+
+### Utility Extensions
+
+**Fast Swap**
+
+Most swap implementations are rather inefficient, since they require a temporary object to be created, and are implemented as a 3-way move. Fast swap uses the following overloads, in order:
+
+1. Does nothing, if the classes are empty.
+2. Uses a member-function swap, if present.
+3. Uses a bitwise swap, if the types are relocatable, avoiding any constructors or destructors being called.
+4. Uses `std::swap`.
 
 ## Progress
 

@@ -8,9 +8,7 @@
  *  \synopsis
  *       template <
  *          typename T,
- *          typename VoidPtr = void*,
- *          typename Size = size_t,
- *          typename DiffT = std::ptrdiff_t
+ *          typename VoidPtr = void*
  *      >
  *      class forward_list_facet
  *      {
@@ -94,6 +92,7 @@
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/iterator.h>
+#include <pycpp/stl/limits.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
@@ -526,7 +525,7 @@ protected:
     )
     noexcept
     {
-        std::swap(begin_pointer(), x.begin_pointer());
+        fast_swap(begin_pointer(), x.begin_pointer());
     }
 
     template <typename, typename> friend class forward_list;
@@ -639,7 +638,7 @@ public:
     const noexcept
     {
         // guaranteed to be constexpr
-        return std::numeric_limits<size_type>::max() / sizeof(value_type);
+        return numeric_limits<size_type>::max() / sizeof(value_type);
     }
 
     // Operations
@@ -658,7 +657,7 @@ public:
         Compare comp
     )
     {
-        merge(x, std::move(comp));
+        merge(x, move(comp));
     }
 
     void
@@ -798,7 +797,7 @@ public:
         Compare comp
     )
     {
-        difference_type d = std::distance(begin(), end());
+        difference_type d = distance(begin(), end());
         begin_pointer() = sort_list(before_begin_pointer(), d, comp);
     }
 
@@ -983,10 +982,10 @@ public:
     >;
     using reference = value_type&;
     using const_reference = const value_type&;
-    using pointer = typename allocator_traits<allocator_type>::pointer;
-    using const_pointer = typename allocator_traits<allocator_type>::const_pointer;
-    using size_type = typename allocator_traits<allocator_type>::size_type;
-    using difference_type = typename allocator_traits<allocator_type>::difference_type;
+    using pointer = typename facet_type::pointer;
+    using const_pointer = typename facet_type::const_pointer;
+    using size_type = typename facet_type::size_type;
+    using difference_type = typename facet_type::difference_type;
     using iterator = typename facet_type::iterator;
     using const_iterator = typename facet_type::const_iterator;
 
@@ -1082,7 +1081,7 @@ public:
     forward_list(
         forward_list&& x
     ):
-        data_(std::move(x.facet()))
+        data_(move(x.facet()))
     {}
 
     forward_list(
@@ -1092,15 +1091,15 @@ public:
         forward_list(alloc)
     {
         if (alloc != x.alloc()) {
-            using iter = std::move_iterator<iterator>;
+            using iter = move_iterator<iterator>;
             insert_after(cbefore_begin(), iter(x.begin()), iter(x.end()));
         } else {
-            swap(facet(), x.facet());
+            facet().swap(x.facet());
         }
     }
 
     forward_list(
-        std::initializer_list<value_type> il
+        initializer_list<value_type> il
     ):
         forward_list()
     {
@@ -1108,7 +1107,7 @@ public:
     }
 
     forward_list(
-        std::initializer_list<value_type> il,
+        initializer_list<value_type> il,
         const allocator_type& alloc
     ):
         forward_list(alloc)
@@ -1141,7 +1140,7 @@ public:
 
     forward_list&
     operator=(
-        std::initializer_list<value_type> il
+        initializer_list<value_type> il
     )
     {
         assign(il.begin(), il.end());
@@ -1196,7 +1195,7 @@ public:
 
     void
     assign(
-        std::initializer_list<T> il
+        initializer_list<T> il
     )
     {
         assign(il.begin(), il.end());
@@ -1328,7 +1327,7 @@ public:
         node_allocator& a = alloc();
         using deleter = allocator_destructor<node_allocator>;
         unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-        node_traits::construct(a, addressof(h->value_), std::move(v));
+        node_traits::construct(a, addressof(h->value_), move(v));
         h->next_ = r->next_;
         r->next_ = h.release();
         return iterator(r->next_);
@@ -1428,7 +1427,7 @@ public:
     iterator
     insert_after(
         const_iterator p,
-        std::initializer_list<value_type> il
+        initializer_list<value_type> il
     )
     {
         return insert_after(p, il.begin(), il.end());
@@ -1445,7 +1444,7 @@ public:
         node_allocator& a = alloc();
         using deleter = allocator_destructor<node_allocator>;
         unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-        node_traits::construct(a, addressof(h->value_), std::forward<Ts>(ts)...);
+        node_traits::construct(a, addressof(h->value_), forward<Ts>(ts)...);
         h->next_ = r->next_;
         r->next_ = h.release();
         return iterator(r->next_);
@@ -1507,7 +1506,7 @@ public:
         value_type&& v
     )
     {
-        emplace_front(std::forward<value_type>(v));
+        emplace_front(forward<value_type>(v));
     }
 
     template <typename ... Ts>
@@ -1519,7 +1518,7 @@ public:
         node_allocator& a = alloc();
         using deleter = allocator_destructor<node_allocator>;
         unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
-        node_traits::construct(a, addressof(h->value_), std::forward<Ts>(ts)...);
+        node_traits::construct(a, addressof(h->value_), forward<Ts>(ts)...);
         h->next_ = facet().begin_pointer();
         facet().begin_pointer() = h.release();
         return facet().begin_pointer()->value_;
@@ -1579,8 +1578,8 @@ public:
     )
     noexcept
     {
-        std::swap(alloc(), x.alloc());
-        std::swap(facet(), x.facet());
+        facet().swap(x.facet());
+        swap_allocator(alloc(), x.alloc());
     }
 
     // Operations
@@ -1589,7 +1588,7 @@ public:
         forward_list&& x
     )
     {
-        facet().merge(std::move(x.facet()));
+        facet().merge(move(x.facet()));
     }
 
     template <typename Compare>
@@ -1599,7 +1598,7 @@ public:
         Compare comp
     )
     {
-        facet().merge(std::move(x.facet()), std::move(comp));
+        facet().merge(move(x.facet()), move(comp));
     }
 
     void
@@ -1617,7 +1616,7 @@ public:
         Compare comp
     )
     {
-        facet().merge(x.facet(), std::move(comp));
+        facet().merge(x.facet(), move(comp));
     }
 
     void
@@ -1626,7 +1625,7 @@ public:
         forward_list&& x
     )
     {
-        facet().splice_after(p, std::move(x.facet()));
+        facet().splice_after(p, move(x.facet()));
     }
 
     void
@@ -1636,7 +1635,7 @@ public:
         const_iterator i
     )
     {
-        facet().splice_after(p, std::move(x.facet()), i);
+        facet().splice_after(p, move(x.facet()), i);
     }
 
     void
@@ -1647,7 +1646,7 @@ public:
         const_iterator l
     )
     {
-        facet().splice_after(p, std::move(x.facet()), f, l);
+        facet().splice_after(p, move(x.facet()), f, l);
     }
 
     void
@@ -1756,7 +1755,7 @@ public:
         Compare comp
     )
     {
-        facet().sort(std::move(comp));
+        facet().sort(move(comp));
     }
 
     // Facet
@@ -1829,7 +1828,7 @@ private:
     )
     noexcept
     {
-        alloc() = std::move(x.alloc());
+        alloc() = move(x.alloc());
     }
 
     void
@@ -1872,7 +1871,7 @@ private:
         if (alloc() == x.alloc()) {
             move_assign(x, true_type());
         } else {
-            using iter = std::move_iterator<iterator>;
+            using iter = move_iterator<iterator>;
             assign(iter(x.begin()), iter(x.end()));
         }
     }

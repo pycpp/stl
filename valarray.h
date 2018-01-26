@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/utility.h>
 #include <valarray>
 
 PYCPP_BEGIN_NAMESPACE
@@ -25,7 +25,6 @@ using std::mask_array;
 using std::indirect_array;
 
 // Functions
-using std::swap;
 using std::begin;
 using std::end;
 using std::abs;

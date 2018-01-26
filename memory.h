@@ -16,7 +16,9 @@
 #include <pycpp/stl/memory/pointer_cast.h>
 #include <pycpp/stl/memory/pointer_traits.h>
 #include <pycpp/stl/memory/polymorphic_allocator.h>
+#include <pycpp/stl/memory/relocate.h>
 #include <pycpp/stl/memory/shared_ptr.h>
+#include <pycpp/stl/memory/swap_allocator.h>
 #include <pycpp/stl/memory/to_address.h>
 #include <pycpp/stl/memory/uninitialized.h>
 #include <pycpp/stl/memory/uses_allocator.h>
