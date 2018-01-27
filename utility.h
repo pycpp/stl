@@ -1,5 +1,5 @@
 //  :copyright: (c) 2011-2012 Andrzej Krzemienski.
-//  :copyright: (c) 2017 Alex Huszagh.
+//  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 /**
  *  \addtogroup PyCPP

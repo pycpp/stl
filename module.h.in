@@ -7,4 +7,65 @@
 
 #pragma once
 
-// TODO: implement...
+#pragma message("This includes **all** of the STL. Are you sure you want to do this?")
+
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/array.h>
+#include <pycpp/stl/atomic.h>
+#include <pycpp/stl/bitset.h>
+#include <pycpp/stl/cassert.h>
+#include <pycpp/stl/cctype.h>
+#include <pycpp/stl/cerrno.h>
+#include <pycpp/stl/cfenv.h>
+#include <pycpp/stl/cfloat.h>
+#include <pycpp/stl/chrono.h>
+#include <pycpp/stl/cinttypes.h>
+#include <pycpp/stl/climits.h>
+#include <pycpp/stl/clocale.h>
+#include <pycpp/stl/cmath.h>
+#include <pycpp/stl/complex.h>
+#include <pycpp/stl/condition_variable.h>
+#include <pycpp/stl/csetjmp.h>
+#include <pycpp/stl/csignal.h>
+#include <pycpp/stl/cstdarg.h>
+#include <pycpp/stl/cstddef.h>
+#include <pycpp/stl/cstdint.h>
+#include <pycpp/stl/cstdio.h>
+#include <pycpp/stl/cstdlib.h>
+#include <pycpp/stl/cstring.h>
+#include <pycpp/stl/ctime.h>
+#include <pycpp/stl/cuchar.h>
+#include <pycpp/stl/cwchar.h>
+#include <pycpp/stl/cwctype.h>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/exception.h>
+#include <pycpp/stl/execution.h>
+#include <pycpp/stl/forward_list.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/future.h>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/iomanip.h>
+#include <pycpp/stl/ios.h>
+#include <pycpp/stl/iosfwd.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/limits.h>
+#include <pycpp/stl/list.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/mutex.h>
+#include <pycpp/stl/new.h>
+#include <pycpp/stl/numeric.h>
+#include <pycpp/stl/random.h>
+#include <pycpp/stl/ratio.h>
+#include <pycpp/stl/regex.h>
+#include <pycpp/stl/scoped_allocator.h>
+#include <pycpp/stl/stdexcept.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/system_error.h>
+#include <pycpp/stl/thread.h>
+#include <pycpp/stl/tuple.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/typeindex.h>
+#include <pycpp/stl/typeinfo.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/valarray.h>
+#include <pycpp/stl/vector.h>

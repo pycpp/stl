@@ -7,8 +7,8 @@
  *  Detect if a type is a `std::reference_wrapper`.
  *
  *  \synopsis
- *      template <typename T
- *      using is_reference_wrapper<T> = implementation-defined;
+ *      template <typename T>
+ *      using is_reference_wrapper = implementation-defined;
  *
  *      #ifdef HAVE_CPP14
  *
