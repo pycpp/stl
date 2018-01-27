@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/stl/mutex/dummy_mutex.h>
 #include <mutex>
 
 PYCPP_BEGIN_NAMESPACE

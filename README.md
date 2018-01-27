@@ -12,6 +12,8 @@
 - [IOManip](#iomanip)
 - [Memory](#memory)
   - [Memory Extensions](#memory-extensions)
+- [Mutex](#mutex)
+  - [Mutex Extensions](#mutex-extensions)
 - [Thread](#thread)
 - [Type Info](#type-info)
   - [Type Info Extensions](#type-info-extensions)
@@ -116,6 +118,14 @@ class shared_ptr;
 ```
 
 // TODO: document
+
+## Mutex
+
+### Mutex Extensions
+
+**Dummy Mutex**
+
+By using `dummy_mutex` rather than `mutex`, you can avoid the overhead of an actual mutex for code that will only execute in a single thread. All the methods are no-ops, however, it will abort if used in code executed in multiple threads during debug builds.
 
 ## Thread
 
