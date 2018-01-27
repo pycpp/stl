@@ -61,4 +61,17 @@ using std::pair;
 using std::piecewise_construct_t;
 using std::piecewise_construct;
 
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable;
+
+template <typename T1, typename T2>
+struct is_relocatable<pair<T1, T2>>: std::integral_constant<
+        bool,
+        is_relocatable<T1>::value && is_relocatable<T2>::value
+    >
+{};
+
 PYCPP_END_NAMESPACE

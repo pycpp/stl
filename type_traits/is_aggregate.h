@@ -22,7 +22,6 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/abi.h>
-#include <pycpp/preprocessor/compiler.h>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
@@ -39,19 +38,17 @@ using std::is_aggregate;
 // MACROS
 // ------
 
-#if defined(HAVE_CLANG)             // HAVE_CLANG
-#   if __has_extension(is_aggregate)
+#if defined(HAVE_CLANG)                     // HAVE_CLANG
+#   if HAS_EXTENSION(is_aggregate)
 #       define PYCPP_IS_AGGREGATE(T) __is_aggregate(T)
 #   endif
-#elif defined(HAVE_GNUC)            // HAVE_GNUC
+#elif defined(HAVE_GNUC)                    // HAVE_GNUC
 #   if GNUC_MAJOR_VERSION >= 7
 #       define PYCPP_IS_AGGREGATE(T) __is_aggregate(T)
 #   endif
-#elif defined(__is_identifier)      // __is_identifier
-#   if __is_identifier(__is_aggregate) == 0
-#       define PYCPP_IS_AGGREGATE(T) __is_aggregate(T)
-#   endif
-#endif                              // HAVE_CLANG
+#elif IS_IDENTIFIER(__is_aggregate) == 0    // __is_identifier
+#   define PYCPP_IS_AGGREGATE(T) __is_aggregate(T)
+#endif                                      // HAVE_CLANG
 
 // ALIAS
 // -----

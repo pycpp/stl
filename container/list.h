@@ -12,6 +12,7 @@
 #pragma once
 
 #include <pycpp/stl/container/compressed_pair.h>
+#include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/cassert.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/initializer_list.h>
@@ -1439,5 +1440,39 @@ noexcept
 {
     x.swap(y);
 }
+
+// SPECIALIZATION
+// --------------
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<list_node_base<T, VoidPtr>>: is_relocatable<VoidPtr>
+{};
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<list_node<T, VoidPtr>>:
+    bool_constant<
+        is_relocatable<T>::value && is_relocatable<list_node_base<T, VoidPtr>>::value
+    >
+{};
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<list_iterator<T, VoidPtr>>: is_relocatable<VoidPtr>
+{};
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<list_const_iterator<T, VoidPtr>>: is_relocatable<VoidPtr>
+{};
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<list_facet<T, VoidPtr>>: is_relocatable<list_node_base<T, VoidPtr>>
+{};
+
+template <typename T, typename Allocator>
+struct is_relocatable<list<T, Allocator>>:
+    bool_constant<
+        is_relocatable<list_facet<T, typename allocator_traits<Allocator>::void_pointer>>::value &&
+        is_relocatable<Allocator>::value
+    >
+{};
 
 PYCPP_END_NAMESPACE

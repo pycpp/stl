@@ -9,6 +9,7 @@
 
 #include <pycpp/stl/tuple/apply.h>
 #include <pycpp/stl/tuple/make_from_tuple.h>
+#include <pycpp/stl/type_traits/logical.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -64,5 +65,18 @@ template <typename T>
 constexpr std::size_t tuple_size_v = tuple_size<T>::value;
 
 #endif      // HAVE_CPP14
+
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable;
+
+template <typename ... Ts>
+struct is_relocatable<tuple<Ts...>>: std::integral_constant<
+        bool,
+        type_map_and<is_relocatable, Ts...>::value
+    >
+{};
 
 PYCPP_END_NAMESPACE

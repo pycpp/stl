@@ -40,7 +40,7 @@ noexcept
     static_assert(!std::is_function<T>::value, "can't launder functions");
     static_assert(!std::is_same<void, typename std::remove_cv<T>::type>::value, "can't launder cv-void");
 
-#if defined(__has_builtin) && __has_builtin(__builtin_launder)
+#if HAS_BUILTIN(__builtin_launder)
     return __builtin_launder(p);
 #elif defined(HAVE_GNUC) && (COMPILER_MAJOR_VERSION >= 7)
     return __builtin_launder(p);

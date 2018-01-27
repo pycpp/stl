@@ -106,6 +106,15 @@ For relocatable types, `relocate` and `relocate_n` use `memcpy` under the hood f
 
 PyCPP provides `swap_allocator` method, which correctly swaps allocates depending on `allocator_traits<Allocator>::propagate_on_container_swap`.
 
+**Shared Ptr**
+
+PyCPP includes both thread-safe and single-threaded `shared_ptr`. The single-threaded variant will abort if used from a different thread it was initialized in debug builds. All the old methods, including `make_shared`, `enable_shared_from_this`, and `weak_ptr` may be used, defaulting to the thread-safe variant. Under-the-hood, the thread-safe `shared_ptr` uses atomic variables for fast, thread-safe reference counting, while the non-thread-safe variant uses raw arithmetic types. The new type signature of `shared_ptr` is:
+
+```cpp
+template <typename T, typename ThreadSafe = true>
+class shared_ptr;
+```
+
 // TODO: document
 
 ## Thread
@@ -125,6 +134,10 @@ PyCPP provides `swap_allocator` method, which correctly swaps allocates dependin
 PyCPP contains a complete backport of C++17 (and proposed C++20) type traits to C++11, in addition to various extensions.
 
 ### Type Trait Extensions
+
+**Disable If**
+
+Logical negation of `enable_if`, use `disable_if` or `disable_if_t` in the same way as `enable_if`.
 
 **Has Reallocate**
 
@@ -160,6 +173,21 @@ PYCPP_USING_NAMESPACE
 
 static_assert(is_same<typename identity<int>::type, int>::value, "");
 static_assert(is_same<identity_t<int>, int>::value, "");
+```
+
+**Is Array**
+
+In addition to `is_array`, detect bounded arrays (`T[N]`) with `is_bounded_array` and unbounded arrays (`T[]`) with `is_unbounded_array`.
+
+```cpp
+#include <pycpp/stl/type_traits.h>
+
+PYCPP_USING_NAMESPACE
+
+static_assert(is_array<int[]>::value>::value, "");
+static_assert(!is_array<int>::value>::value, "");
+static_assert(!is_bounded_array<int[]>::value>::value, "");
+static_assert(is_unbounded_array<int[]>::value>::value, "");
 ```
 
 **Is Complete***
@@ -224,7 +252,11 @@ static_assert(is_reference_wrapper<reference_wrapper<int>>::value, "");
 
 **Is Relocatable**
 
-Detect if a type is relocatable (can be relocated via `std::memcpy`) at compile-time. By default, only trivially copyable or trivially movable types are relocatable, however, `is_relocatable` may be specialized to mark complex types as relocatable. Nearly every C++ type is relocatable, except for those with virtual methods or pointers to internal variables. Specializing `is_relocatable` for a type may enable significant optimizations for PyCPP containers.
+Detect if a type is relocatable (can be relocated via `std::memcpy`) at compile-time. By default, only trivially copyable or trivially movable types are relocatable, however, `is_relocatable` may be specialized to mark complex types as relocatable. Nearly every C++ type is relocatable, except for those with virtual methods[1], references[2], or pointers to internal variables[3]. Specializing `is_relocatable` for a type may enable significant optimizations for PyCPP containers.
+
+[1] Virtual functions do not have any specified implementation, and virtual classes are not standard layout [9.7.2].
+[2] References do not have any required storage duration, unlike pointers [8.3.2.4].
+[3] When copied, the pointer will point to the previous address of the internal variable.
 
 ```cpp
 #include <pycpp/stl/type_traits.h>

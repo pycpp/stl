@@ -5,696 +5,130 @@
 /**
  *  \addtogroup PyCPP
  *  \brief `shared_ptr` with single-threaded optimizations.
+ *
+ *  \synopsis
+ *      template <typename T, bool ThreadSafe>
+ *      class enable_shared_from_this
+ *      {
+ *      protected:
+ *          constexpr enable_shared_from_this() noexcept;
+ *          constexpr enable_shared_from_this(const enable_shared_from_this&);
+ *          enable_shared_from_this& operator=(const enable_shared_from_this&) noexcept;
+ *          ~enable_shared_from_this() noexcept;
+ *
+ *      public:
+ *          static constexpr bool thread_safe = ThreadSafe;
+ *
+ *          shared_ptr<T, thread_safe> shared_from_this();
+ *          shared_ptr<const T, thread_safe> shared_from_this() const;
+ *          weak_ptr<T, thread_safe> weak_from_this() noexcept;
+ *          weak_ptr<const T, thread_safe> weak_from_this() const noexcept;
+ *      };
+ *
+ *      template <typename T, bool ThreadSafe>
+ *      class shared_ptr
+ *      {
+ *      public:
+ *          using element_type = typename std::remove_extent<T>::type;
+ *          using weak_type = weak_ptr<T, ThreadSafe>;
+ *          using count_type = shared_count<ThreadSafe>;
+ *          static constexpr bool thread_safe = ThreadSafe;
+ *
+ *          constexpr shared_ptr() noexcept;
+ *          constexpr shared_ptr(std::nullptr_t) noexcept;
+ *          shared_ptr(const shared_ptr& r) noexcept;
+ *          shared_ptr(shared_ptr&& r) noexcept;
+ *
+ *          template <typename U>
+ *          explicit shared_ptr(U* p);
+ *
+ *          template <typename U, typename Deleter>
+ *          shared_ptr( U* p, Deleter d);
+ *
+ *          template <typename Deleter>
+ *          shared_ptr(std::nullptr_t p, Deleter d);
+ *
+ *          template <typename U, typename Deleter, typename Allocator>
+ *          shared_ptr(U* p, Deleter d, Allocator alloc);
+ *
+ *          template <typename Deleter, typename Allocator>
+ *          shared_ptr(std::nullptr_t p, Deleter d, Allocator alloc);
+ *
+ *          template <typename U>
+ *          shared_ptr(const shared_ptr<U, thread_safe>& r, element_type* p) noexcept;
+ *
+ *          template <typename U>
+ *          shared_ptr(const shared_ptr<U, thread_safe>& r) noexcept;
+ *
+ *          template <typename U>
+ *          shared_ptr(shared_ptr<U, thread_safe>&& r) noexcept;
+ *
+ *          template <typename U>
+ *          explicit shared_ptr(const weak_ptr<U, thread_safe>& r);
+ *
+ *          template <typename U, typename Deleter>
+ *          shared_ptr(std::unique_ptr<U, Deleter>&& r);
+ *
+ *          shared_ptr& operator=(const shared_ptr& r) noexcept;
+ *          shared_ptr& operator=(shared_ptr&& r) noexcept;
+ *
+ *          template <typename U>
+ *          shared_ptr& operator=(const shared_ptr<U, thread_safe>& r) noexcept;
+ *
+ *          template <typename U>
+ *          shared_ptr& operator=(shared_ptr<U, thread_safe>&& r) noexcept;
+ *
+ *          template <typename U, typename Deleter>
+ *          shared_ptr& operator=(std::unique_ptr<U, Deleter>&& r);
+ *
+ *          void reset() noexcept;
+ *          void swap(shared_ptr& r) noexcept;
+ *
+ *          template <typename U>
+ *          void reset(U* p);
+ *
+ *          template <typename U, typename Deleter>
+ *          void reset(U* p, Deleter d);
+ *
+ *          template <typename U, typename Deleter, typename Allocator>
+ *          void reset(U * p, Deleter d, Allocator alloc);
+ *
+ *          element_type* get() const noexcept;
+ *          T& operator*() const noexcept;
+ *          T* operator->() const noexcept;
+ *          element_type& operator[](std::ptrdiff_t idx);
+ *          long use_count() const noexcept;
+ *          bool unique() const noexcept;
+ *          explicit operator bool() const noexcept;
+ *
+ *          template <typename U>
+ *          bool owner_before(const shared_ptr<U, thread_safe>& r) const noexcept;
+ *
+ *          template <typename U>
+ *          bool owner_before(const weak_ptr<U, thread_safe>& r) const noexcept;
+ *      };
+ *
+ *      template <typename T, bool ThreadSafe, typename ... Ts>
+ *      shared_ptr<T, ThreadSafe> make_shared(Ts&&... ts);
+ *
+ *      template <typename T, typename ... Ts>
+ *      shared_ptr<T, true> make_shared(Ts&&... ts);
+ *
+ *      template <typename T, bool ThreadSafe, typename Allocator, typename ... Ts>
+ *      shared_ptr<T, ThreadSafe> allocate_shared(const Allocator& alloc, Ts&&... ts);
+ *
+ *      template <typename T, typename Allocator, typename ... Ts>
+ *      shared_ptr<T, true> allocate_shared(const Allocator& alloc, Ts&&... ts);
  */
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/stl/memory/checked_delete.h>
-#include <pycpp/stl/thread/checked_thread.h>
-#include <pycpp/stl/utility/fast_swap.h>
-#include <atomic>
+#include <pycpp/stl/memory/weak_ptr.h>
+#include <pycpp/stl/memory/make_shared.h>
+#include <pycpp/stl/type_traits/is_array.h>
 #include <cassert>
-#include <cstdint>
-#include <functional>
-#include <memory>
-#include <typeinfo>
-#include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
-
-// FORWARD
-// -------
-
-template <typename T, bool ThreadSafe = true>
-class shared_ptr;
-
-template <typename T, bool ThreadSafe = true>
-class weak_ptr;
-
-template <typename T, bool ThreadSafe = true>
-class enable_shared_from_this;
-
-// TODO: restore
-//class enable_shared_from_raw;
-
-// FUNCTIONS
-// ---------
-
-inline
-void
-atomic_increment(
-    std::atomic_int_least32_t* count
-)
-{
-    count->fetch_add(1, std::memory_order_relaxed);
-}
-
-
-inline
-std::int_least32_t
-atomic_decrement(
-    std::atomic_int_least32_t* count
-)
-{
-    return count->fetch_sub( 1, std::memory_order_acq_rel );
-}
-
-inline
-std::int_least32_t
-atomic_conditional_increment(
-    std::atomic_int_least32_t* count
-)
-{
-    std::int_least32_t r = count->load(std::memory_order_relaxed);
-
-    for (;;) {
-        if (r == 0) {
-            return r;
-        }
-
-        if(count->compare_exchange_weak(r, r + 1, std::memory_order_relaxed, std::memory_order_relaxed)) {
-            return r;
-        }
-    }
-}
-
-// OBJECTS
-// -------
-
-// SP COUNTED BASE
-
-template <bool ThreadSafe>
-class sp_counted_base;
-
-// Thread-safe
-template <>
-class sp_counted_base<true>
-{
-public:
-    constexpr
-    sp_counted_base():
-        use_count_(1),
-        weak_count_(1)
-    {}
-
-    sp_counted_base(const sp_counted_base&) = delete;
-    sp_counted_base& operator=(const sp_counted_base&) = delete;
-
-    virtual
-    ~sp_counted_base()
-    {}
-
-    virtual void dispose() = 0;
-
-    virtual
-    void
-    destroy()
-    {
-        delete this;
-    }
-
-    virtual void* get_deleter(const std::type_info&) = 0;
-    virtual void* get_untyped_deleter() = 0;
-
-    void
-    add_ref_copy()
-    {
-        atomic_increment(&use_count_);
-    }
-
-    bool
-    add_ref_lock()
-    {
-        return atomic_conditional_increment(&use_count_) != 0;
-    }
-
-    void
-    release()
-    {
-        if (atomic_decrement(&use_count_) == 1) {
-            dispose();
-            weak_release();
-        }
-    }
-
-    void
-    weak_add_ref()
-    {
-        atomic_increment(&weak_count_);
-    }
-
-    void
-    weak_release()
-    {
-        if (atomic_decrement( &weak_count_ ) == 1) {
-            destroy();
-        }
-    }
-
-    long
-    use_count()
-    const
-    {
-        return use_count_.load(std::memory_order_acquire);
-    }
-
-private:
-    std::atomic_int_least32_t use_count_;
-    std::atomic_int_least32_t weak_count_;
-};
-
-
-// Single-threaded
-template <>
-class sp_counted_base<false>: checked_thread<false>
-{
-public:
-    sp_counted_base():
-        use_count_(1),
-        weak_count_(1)
-    {
-        this->check();
-    }
-
-    sp_counted_base(const sp_counted_base&) = delete;
-    sp_counted_base & operator=(const sp_counted_base&) = delete;
-
-    virtual
-    ~sp_counted_base()
-    {
-        this->check();
-    }
-
-    virtual void dispose() = 0;
-
-    virtual
-    void
-    destroy()
-    {
-        this->check();
-        delete this;
-    }
-
-    virtual void* get_deleter(const std::type_info&) = 0;
-    virtual void* get_untyped_deleter() = 0;
-
-    void
-    add_ref_copy()
-    {
-        this->check();
-        ++use_count_;
-    }
-
-    bool
-    add_ref_lock()
-    {
-        this->check();
-        if (use_count_ == 0) {
-            return false;
-        }
-        ++use_count_;
-        return true;
-    }
-
-    void
-    release()
-    {
-        this->check();
-        if (--use_count_ == 0) {
-            dispose();
-            weak_release();
-        }
-    }
-
-    void
-    weak_add_ref()
-    {
-        this->check();
-        ++weak_count_;
-    }
-
-    void
-    weak_release()
-    {
-        this->check();
-        if (--weak_count_ == 0) {
-            destroy();
-        }
-    }
-
-    long
-    use_count()
-    const
-    {
-        this->check();
-        return use_count_;
-    }
-
-private:
-    long use_count_;
-    long weak_count_;
-};
-
-// SP COUNTED IMPL P
-
-template <typename T, bool ThreadSafe>
-class sp_counted_impl_p: public sp_counted_base<ThreadSafe>
-{
-public:
-    explicit
-    sp_counted_impl_p(
-        T * p
-    ):
-        ptr_(p)
-    {}
-
-    sp_counted_impl_p(sp_counted_impl_p const &) = delete;
-    sp_counted_impl_p& operator=(sp_counted_impl_p const &) = delete;
-
-    virtual
-    void
-    dispose()
-    {
-        checked_delete(ptr_);
-    }
-
-    virtual
-    void*
-    get_deleter(
-        const std::type_info&
-    )
-    {
-        return nullptr;
-    }
-
-    virtual
-    void*
-    get_untyped_deleter()
-    {
-        return nullptr;
-    }
-
-private:
-    T* ptr_;
-};
-
-// SP COUNTED IMPL PD
-
-template <typename Pointer, typename Deleter, bool ThreadSafe>
-class sp_counted_impl_pd: public sp_counted_base<ThreadSafe>
-{
-public:
-    sp_counted_impl_pd(
-        Pointer p,
-        Deleter& d
-    ):
-        ptr_(p),
-        del_(d)
-    {}
-
-    sp_counted_impl_pd(
-        Pointer p
-    ):
-        ptr_(p),
-        del_()
-    {}
-
-    sp_counted_impl_pd(sp_counted_impl_pd const &) = delete;
-    sp_counted_impl_pd& operator=(sp_counted_impl_pd const &) = delete;
-
-    virtual
-    void
-    dispose()
-    {
-        del_(ptr_);
-    }
-
-    virtual
-    void*
-    get_deleter(
-        const  std::type_info& ti
-    )
-    noexcept
-    {
-        if (typeid(Deleter) == ti) {
-            return &reinterpret_cast<char&>(del_);
-        }
-        return nullptr;
-    }
-
-    virtual
-    void*
-    get_untyped_deleter()
-    noexcept
-    {
-        return &reinterpret_cast<char&>(del_);
-    }
-
-private:
-    Pointer ptr_;
-    Deleter del_;
-};
-
-// SP COUNTED IMPL PDA
-
-template <typename Pointer, typename Deleter, typename Allocator, bool ThreadSafe>
-class sp_counted_impl_pda: public sp_counted_base<ThreadSafe>
-{
-public:
-    sp_counted_impl_pda(
-        Pointer p,
-        Deleter& d,
-        Allocator alloc
-    ):
-        ptr_(p),
-        del_(d),
-        alloc_(alloc)
-    {}
-
-    sp_counted_impl_pda(
-        Pointer p,
-        Allocator alloc
-    ):
-        ptr_(p),
-        del_(alloc),
-        alloc_(alloc)
-    {}
-
-    sp_counted_impl_pda(const sp_counted_impl_pda&) = delete;
-    sp_counted_impl_pda& operator=(const sp_counted_impl_pda&) = delete;
-
-    virtual
-    void
-    dispose()
-    {
-        d_(ptr_);
-    }
-
-    virtual
-    void
-    destroy()
-    {
-        using allocator = typename allocator_traits<Allocator>::template rebind_alloc<sp_counted_impl_pda>;
-        allocator alloc(alloc_);
-        std::allocator_traits<allocator>::destroy(alloc, this);
-        alloc.deallocate(this, 1);
-    }
-
-    virtual
-    void*
-    get_deleter(
-        const std::type_info& ti
-    )
-    noexcept
-    {
-        if (typeid(Deleter) == ti) {
-            return &reinterpret_cast<char&>(del_);
-        }
-        return nullptr;
-    }
-
-    virtual
-    void*
-    get_untyped_deleter()
-    noexcept
-    {
-        return &reinterpret_cast<char&>(del_);
-    }
-
-private:
-    Pointer ptr_;
-    Deleter del_;
-    Allocator alloc_;
-};
-
-// SHARED COUNT
-
-template <bool ThreadSafe>
-class shared_count
-{
-public:
-    static constexpr bool thread_safe = ThreadSafe;
-
-    constexpr
-    shared_count()
-    noexcept:
-        pi_(nullptr)
-    {}
-
-    template <typename T>
-    explicit
-    shared_count(
-        T* p
-    ):
-        pi_(nullptr)
-    {
-        try {
-            pi_ = new sp_counted_impl_p<T, thread_safe>(p);
-        } catch(...) {
-            checked_delete(p);
-            throw;
-        }
-    }
-
-    template <typename Pointer, typename Deleter>
-    shared_count(
-        Pointer p,
-        Deleter d
-    ):
-        pi_(nullptr)
-    {
-        try {
-            pi_ = new sp_counted_impl_pd<Pointer, Deleter, thread_safe>(p, d);
-        } catch(...) {
-            d(p);
-            throw;
-        }
-    }
-
-    //
-    // TODO: implement...
-
-    ~shared_count()
-    {
-        if (pi_ != nullptr) {
-            pi_->release();
-        }
-    }
-
-    void
-    swap(
-        shared_count& r
-    )
-    {
-        sp_counted_base<thread_safe>* tmp = r.pi_;
-        r.pi_ = pi_;
-        pi_ = tmp;
-    }
-
-    long
-    use_count()
-    const
-    {
-        return pi_ != nullptr ? pi_->use_count() : 0;
-    }
-
-    bool
-    unique()
-    const
-    {
-        return use_count() == 1;
-    }
-
-    bool
-    empty()
-    const
-    {
-        return pi_ == nullptr;
-    }
-
-    friend inline
-    bool
-    operator==(
-        const shared_count& x,
-        const shared_count& y
-    )
-    {
-        return x.pi_ == y.pi_;
-    }
-
-    friend inline
-    bool
-    operator<(
-        const shared_count& x,
-        const shared_count& y
-    )
-    {
-        return std::less<sp_counted_base<thread_safe>*>()(x.pi_, y.pi_);
-    }
-
-    void*
-    get_deleter(
-        const std::type_info& ti
-    )
-    const
-    {
-        return pi_ ? pi_->get_deleter(ti) : nullptr;
-    }
-
-    void*
-    get_untyped_deleter()
-    const
-    {
-        return pi_ ? pi_->get_untyped_deleter() : nullptr;
-    }
-
-private:
-    sp_counted_base<thread_safe>* pi_;
-};
-
-// WEAK COUNT
-
-template <bool ThreadSafe>
-class weak_count
-{
-public:
-    static constexpr bool thread_safe = ThreadSafe;
-
-    constexpr
-    weak_count()
-    noexcept:
-        pi_(nullptr)
-    {}
-
-    weak_count(
-        const shared_count<thread_safe>& r
-    )
-    noexcept:
-        pi_(r.pi_)
-    {
-        if (pi_ != nullptr) {
-            pi_->weak_add_ref();
-        }
-    }
-
-    weak_count(
-        const weak_count& r
-    )
-    noexcept:
-        pi_(r.pi_)
-    {
-        if (pi_ != nullptr) {
-            pi_->weak_add_ref();
-        }
-    }
-
-    weak_count(
-        weak_count&& r
-    )
-    noexcept:
-        pi_(r.pi_)
-    {
-        r.pi_ = nullptr;
-    }
-
-    ~weak_count()
-    {
-        if (pi_ != nullptr) {
-            pi_->weak_release();
-        }
-    }
-
-    weak_count&
-    operator=(
-        const shared_count<thread_safe>& r
-    )
-    {
-        sp_counted_base<thread_safe>* tmp = r.pi_;
-
-        if(tmp != pi_ ) {
-            if (tmp != nullptr) {
-                tmp->weak_add_ref();
-            }
-            if (pi_ != nullptr) {
-                pi_->weak_release();
-            }
-            pi_ = tmp;
-        }
-
-        return *this;
-    }
-
-    weak_count&
-    operator=(
-        const weak_count& r
-    )
-    {
-        sp_counted_base<thread_safe>* tmp = r.pi_;
-
-        if( tmp != pi_ ) {
-            if (tmp != nullptr) {
-                tmp->weak_add_ref();
-            }
-            if (pi_ != nullptr) {
-                pi_->weak_release();
-            }
-            pi_ = tmp;
-        }
-
-        return *this;
-    }
-
-    void
-    swap(
-        weak_count& r
-    )
-    {
-        sp_counted_base<thread_safe>* tmp = r.pi_;
-        r.pi_ = pi_;
-        pi_ = tmp;
-    }
-
-    long
-    use_count()
-    const
-    {
-        return pi_ != nullptr ? pi_->use_count() : 0;
-    }
-
-    bool
-    empty()
-    const
-    {
-        return pi_ == nullptr;
-    }
-
-    friend inline
-    bool
-    operator==(
-        const weak_count& x,
-        const weak_count& y
-    )
-    {
-        return x.pi_ == y.pi_;
-    }
-
-    friend inline
-    bool
-    operator<(
-        const weak_count& x,
-        const weak_count& y
-    )
-    {
-        return std::less<sp_counted_base<thread_safe>*>()(x.pi_, y.pi_);
-    }
-
-private:
-    template <bool>
-    friend class shared_count;
-
-    sp_counted_base<thread_safe>* pi_;
-};
 
 // HELPERS
 // -------
@@ -708,23 +142,7 @@ sp_enable_shared_from_this(
     const shared_ptr<X, ThreadSafe>* spx,
     const Y* py,
     const enable_shared_from_this<T, ThreadSafe>* pe
-)
-{
-    if (pe != nullptr) {
-        pe->_internal_accept_owner(spx, const_cast<Y*>(py));
-    }
-}
-
-// TODO: restore
-//template <typename X, typename Y, bool ThreadSafe>
-//inline
-//void
-//sp_enable_shared_from_this(
-//    shared_ptr<X, ThreadSafe>* ppx,
-//    const Y* py,
-//    const enable_shared_from_raw* pe
-//);
-
+);
 
 #ifdef _MANAGED
 
@@ -864,9 +282,173 @@ noexcept
 
 // ENABLE SHARED FROM THIS
 
-// TODO: define
+template <typename T, bool ThreadSafe>
+class enable_shared_from_this
+{
+protected:
+    // Constructors
+    constexpr
+    enable_shared_from_this()
+    noexcept
+    {}
+
+    constexpr
+    enable_shared_from_this(
+        const enable_shared_from_this&
+    )
+    noexcept
+    {}
+
+    enable_shared_from_this&
+    operator=(
+        const enable_shared_from_this&
+    )
+    noexcept
+    {
+        return *this;
+    }
+
+    // Destructors
+    ~enable_shared_from_this()
+    noexcept
+    {}
+
+public:
+    static constexpr bool thread_safe = ThreadSafe;
+
+    shared_ptr<T, thread_safe>
+    shared_from_this()
+    {
+        shared_ptr<T, thread_safe> p(weak_);
+        assert(p.get() == this);
+        return p;
+    }
+
+    shared_ptr<const T, thread_safe>
+    shared_from_this()
+    const
+    {
+        shared_ptr<T const, thread_safe> p(weak_);
+        assert(p.get() == this);
+        return p;
+    }
+
+    weak_ptr<T, thread_safe>
+    weak_from_this()
+    noexcept
+    {
+        return weak_;
+    }
+
+    weak_ptr<const T, thread_safe>
+    weak_from_this()
+    const noexcept
+    {
+        return weak_;
+    }
+
+private:
+    mutable weak_ptr<T, thread_safe> weak_;
+
+    template <typename X, typename Y, typename U, bool Threaded>
+    friend
+    void
+    sp_enable_shared_from_this(
+        const shared_ptr<X, Threaded>* spx,
+        const Y* py,
+        const enable_shared_from_this<U, Threaded>* pe
+    );
+
+    template <typename X, typename Y>
+    void accept_owner(
+        const shared_ptr<X, thread_safe>* ppx,
+        Y* py
+    )
+    const noexcept
+    {
+        if(weak_.expired() ) {
+            weak_ = shared_ptr<T, thread_safe>(*ppx, py);
+        }
+    }
+};
+
+template <typename X, typename Y, typename T, bool ThreadSafe>
+inline
+void
+sp_enable_shared_from_this(
+    const shared_ptr<X, ThreadSafe>* spx,
+    const Y* py,
+    const enable_shared_from_this<T, ThreadSafe>* pe
+)
+{
+    if (pe != nullptr) {
+        pe->accept_owner(spx, const_cast<Y*>(py));
+    }
+}
 
 // SHARED PTR
+
+template <typename T, typename R>
+using sp_disable_if_array_t = typename std::enable_if<
+    !is_array<T>::value, R
+>::type;
+
+template <typename T, typename R>
+using sp_enable_if_array_t = typename std::enable_if<
+    is_array<T>::value, R
+>::type;
+
+template <typename T, typename R>
+using sp_enable_if_bounded_array_t = typename std::enable_if<
+    is_bounded_array<T>::value, R
+>::type;
+
+template <typename T, typename R>
+using sp_enable_if_unbounded_array_t = typename std::enable_if<
+    is_unbounded_array<T>::value, R
+>::type;
+
+template <typename T, bool ThreadSafe, typename ... Ts>
+sp_disable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+make_shared(Ts&&... ts);
+
+// TODO(ahuszagh): Wish list
+//template <typename T, bool ThreadSafe>
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//make_shared();
+//
+//template <typename T, bool ThreadSafe>
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//make_shared(const typename std::remove_extent<T>::type& u);
+//
+//template <typename T, bool ThreadSafe>
+//sp_enable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+//make_shared(std::size_t n);
+//
+//template <typename T, bool ThreadSafe>
+//sp_enable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+//make_shared(std::size_t n, const typename std::remove_extent<T>::type& u);
+
+template <typename T, bool ThreadSafe, typename Allocator, typename ... Ts>
+sp_disable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+allocate_shared(const Allocator& alloc, Ts&&... ts);
+
+// TODO(ahuszagh): Wish list
+//template <typename T, bool ThreadSafe, typename Allocator>
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(const Allocator& alloc);
+//
+//template <typename T, bool ThreadSafe, typename Allocator>
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(const Allocator& alloc, const typename std::remove_extent<T>::type& u);
+//template <typename T, bool ThreadSafe, typename Allocator>
+//sp_enable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(const Allocator& alloc, std::size_t n);
+//
+//template <typename T, bool ThreadSafe, typename Allocator>
+//sp_enable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(const Allocator& alloc, std::size_t n, const typename std::remove_extent<T>::type& u);
+
 
 template <typename T, bool ThreadSafe>
 class shared_ptr
@@ -876,6 +458,7 @@ public:
     // ------------
     using element_type = typename std::remove_extent<T>::type;
     using weak_type = weak_ptr<T, ThreadSafe>;
+    using count_type = shared_count<ThreadSafe>;
     static constexpr bool thread_safe = ThreadSafe;
 
     // MEMBER FUNCTIONS
@@ -1023,7 +606,7 @@ public:
         );
 
         // it is now safe to copy r.ctrl_, as ptr_(r.ptr_) did not throw
-        ctrl_ = r.ctrl_;
+        ctrl_ = count_type(r.ctrl_);
     }
 
     template <typename U, typename Deleter>
@@ -1040,7 +623,7 @@ public:
 
         using pointer = typename std::unique_ptr<U, Deleter>::pointer;
         pointer tmp = r.get();
-        ctrl_ = shared_count<thread_safe>(r);
+        ctrl_ = count_type(r);
 
         sp_deleter_construct(this, tmp);
     }
@@ -1227,17 +810,181 @@ public:
 
 private:
     element_type* ptr_;
-    shared_count<thread_safe> ctrl_;
+    count_type ctrl_;
+
+    // Friends
+    template <typename, bool> friend class weak_ptr;
+    template <typename, bool> friend class shared_ptr;
+
+    template <typename U, bool Threaded, typename ... Ts>
+    friend sp_disable_if_array_t<U, shared_ptr<U, Threaded>> make_shared(Ts&&...);
+
+    template <typename U, bool Threaded, typename Allocator, typename ... Ts>
+    friend sp_disable_if_array_t<U, shared_ptr<U, Threaded>> allocate_shared(const Allocator&, Ts&&...);
+
+    // Internal
+    void*
+    get_deleter(
+        const std::type_info& ti
+    )
+    const noexcept
+    {
+        return ctrl_.get_deleter(ti);
+    }
+
+    void*
+    get_untyped_deleter()
+    const noexcept
+    {
+        return ctrl_.get_untyped_deleter();
+    }
 };
 
-// NON MEMBER FUNCTIONS
+// MAKE SHARED
 
+template <typename T, bool ThreadSafe, typename ... Ts>
+inline
+sp_disable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+make_shared(
+    Ts&&... ts
+)
+{
+    static_assert(std::is_constructible<T, Ts...>::value, "Can't construct object in make_shared");
 
-// TODO:
+    using allocator_type = allocator<T>;
+    using shared_type = shared_ptr<T, ThreadSafe>;
+    using deleter_type = sp_ms_deleter<T>;
 
-// http://www.boost.org/doc/libs/1_61_0/boost/smart_ptr/shared_ptr.hpp
+    // allocate control and data
+    shared_type ptr(static_cast<T*>(nullptr), deleter_type());
+    auto* pd = static_cast<deleter_type*>(ptr.get_untyped_deleter());
+    void* pv = pd->address();
+    new (pv) T(std::forward<Ts>(ts)...);
 
+    // initialize and create shared
+    pd->set_initialized();
+    T* ptr2 = static_cast<T*>(pv);
+    sp_enable_shared_from_this(&ptr, ptr2, ptr2);
 
-// TODO: implement thread_safe;
+    return shared_type(ptr, ptr2);
+}
+
+template <typename T, typename ... Ts>
+inline
+sp_disable_if_array_t<T, shared_ptr<T, PYCPP_SP_THREAD_SAFE>>
+make_shared(
+    Ts&&... ts
+)
+{
+    return make_shared<T, PYCPP_SP_THREAD_SAFE>(std::forward<Ts>(ts)...);
+}
+
+// TODO: need all make_shared
+
+//template <typename T, bool ThreadSafe>
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//make_shared();
+//
+//template <typename T, bool ThreadSafe>
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//make_shared(const typename std::remove_extent<T>::type& u);
+//
+//template <typename T, bool ThreadSafe>
+//sp_enable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+//make_shared(std::size_t n);
+//
+//template <typename T, bool ThreadSafe>
+//sp_enable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+//make_shared(std::size_t n, const typename std::remove_extent<T>::type& u);
+
+// ALLOCATE SHARED
+
+template <typename T, bool ThreadSafe, typename Allocator, typename ... Ts>
+inline
+sp_disable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+allocate_shared(
+    const Allocator& alloc,
+    Ts&&... ts
+)
+{
+    static_assert(std::is_constructible<T, Ts...>::value, "Can't construct object in make_shared");
+
+    using element_type = T;
+    using allocator_type = Allocator;
+    using alloc_traits = allocator_traits<allocator_type>;
+    using shared_type = shared_ptr<element_type, ThreadSafe>;
+    using deleter_type = sp_as_deleter<element_type, allocator_type>;
+
+    // allocate control and data
+    allocator_type a(alloc);
+    shared_type ptr(static_cast<T*>(nullptr), deleter_type(a), a);
+    auto* pd = static_cast<deleter_type*>(ptr.get_untyped_deleter());
+    void* pv = pd->address();
+    alloc_traits::construct(a, static_cast<T*>(pv), std::forward<Ts>(ts)...);
+
+    // initialize and create shared
+    pd->set_initialized();
+    T* ptr2 = static_cast<T*>(pv);
+    sp_enable_shared_from_this(&ptr, ptr2, ptr2);
+
+    return shared_type(ptr, ptr2);
+}
+
+template <typename T, typename Allocator, typename ... Ts>
+inline
+sp_disable_if_array_t<T, shared_ptr<T, PYCPP_SP_THREAD_SAFE>>
+allocate_shared(
+    const Allocator& alloc,
+    Ts&&... ts
+)
+{
+    return allocate_shared<T, PYCPP_SP_THREAD_SAFE>(alloc, std::forward<Ts>(ts)...);
+}
+
+// TODO: need all allocate_shared
+
+//template <typename T, bool ThreadSafe, typename Allocator>
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(const Allocator& alloc)
+//
+//template <typename T, bool ThreadSafe, typename Allocator>
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(const Allocator& alloc, const typename std::remove_extent<T>::type& u);
+//template <typename T, bool ThreadSafe, typename Allocator>
+//sp_enable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(const Allocator& alloc, std::size_t n);
+//
+//template <typename T, bool ThreadSafe, typename Allocator>
+//sp_enable_if_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(const Allocator& alloc, std::size_t n, const typename std::remove_extent<T>::type& u);
+
+// Tentative implementation of #1
+//template <typename T, bool ThreadSafe, typename Allocator>
+//inline
+//sp_enable_if_bounded_array_t<T, shared_ptr<T, ThreadSafe>>
+//allocate_shared(
+//    const Allocator& alloc
+//)
+//{
+//    constexpr size_t size = std::extent<T, 0>::value;
+//    using axis_type = typename std::remove_extent<T>::type;
+//    using value_type = typename std::remove_all_extents<T>::type;
+//    using allocator_type = typename allocator_traits<Allocator>::template rebind_alloc<value_type> type;
+//    // TODO: do I need state?
+//    // sp_array_scalar is remove_all_extents
+//}
+
+// TODO: implement swap
+
+// SPECIALIZATION
+// --------------
+
+template <typename T, bool ThreadSafe>
+struct is_relocatable<enable_shared_from_this<T, ThreadSafe>>: is_relocatable<weak_ptr<T, ThreadSafe>>
+{};
+
+template <typename T, bool ThreadSafe>
+struct is_relocatable<shared_ptr<T, ThreadSafe>>: is_relocatable<shared_count<ThreadSafe>>
+{};
 
 PYCPP_END_NAMESPACE

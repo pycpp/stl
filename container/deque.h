@@ -58,13 +58,17 @@ public:
     using iterator_category = random_access_iterator_tag;
 
     // Constructors
-    deque_iterator():
+    deque_iterator()
+    noexcept:
         iter_(nullptr),
         ptr_(nullptr)
     {}
 
     template <typename P1, enable_if_t<is_convertible<P1, pointer>::value>* = nullptr>
-    deque_iterator(const deque_iterator<P1, block_size>& it):
+    deque_iterator(
+        const deque_iterator<P1, block_size>& it
+    )
+    noexcept:
         iter_(it.iter_),
         ptr_(it.ptr_)
     {}
@@ -185,8 +189,8 @@ private:
     pointer ptr_;
     map_pointer iter_;
 
-    template <typename, size_t, typename> friend class deque_facet;
-    template <typename, size_t, intmax_t, intmax_t, typename> friend class deque_base;
+    template <typename, typename, size_t> friend class deque_facet;
+    template <typename, typename, size_t, intmax_t, intmax_t> friend class deque;
 
     // Constructors
     deque_iterator(
@@ -205,8 +209,8 @@ private:
 
 template <
     typename T,
-    size_t DequeBlockSize,
-    typename VoidPtr = void*
+    typename VoidPtr = void*,
+    size_t DequeBlockSize = PYCPP_DEQUE_BLOCK_SIZE(T)
 >
 class deque_facet
 {
@@ -443,16 +447,16 @@ private:
 
 // TODO: implement...
 
-// DEQUE BASE
+// DEQUE
 
 template <
     typename T,
-    size_t DequeBlockSize,
-    intmax_t GrowthFactorNumerator,
-    intmax_t GrowthFactorDenominator,
-    typename Allocator
+    typename Allocator = allocator<T>,
+    size_t DequeBlockSize = PYCPP_DEQUE_BLOCK_SIZE(T),
+    intmax_t GrowthFactorNumerator = PYCPP_DEQUE_GROWTH_FACTOR_NUMERATOR,
+    intmax_t GrowthFactorDenominator = PYCPP_DEQUE_GROWTH_FACTOR_DENOMINATOR
 >
-struct deque_base
+struct deque
 {
     static constexpr size_t block_size = DequeBlockSize;
 
@@ -461,8 +465,8 @@ struct deque_base
     using allocator_type = Allocator;
     using facet_type = deque_facet<
         value_type,
-        DequeBlockSize,
-        typename allocator_traits<allocator_type>::void_pointer
+        typename allocator_traits<allocator_type>::void_pointer,
+        block_size
     >;
     using reference = value_type&;
     using const_reference = const value_type&;
@@ -694,23 +698,28 @@ private:
 // Uses split buffer...
 // Split buffer should likely have a growth size... LOLS....
 
-template <
-    typename T,
-    size_t DequeBlockSize = PYCPP_DEQUE_BLOCK_SIZE(T),
-    intmax_t GrowthFactorNumerator = PYCPP_DEQUE_GROWTH_FACTOR_NUMERATOR,
-    intmax_t GrowthFactorDenominator = PYCPP_DEQUE_GROWTH_FACTOR_DENOMINATOR,
-    typename Allocator = allocator<T>
->
-class deque:
-    public deque_base<T, DequeBlockSize, GrowthFactorNumerator, GrowthFactorDenominator, Allocator>
+// SPECIALIZATION
+// --------------
+
+template <typename Pointer, size_t DequeBlockSize>
+struct is_relocatable<deque_iterator<Pointer, DequeBlockSize>>: is_relocatable<Pointer>
 {};
 
+// Stores an internal reference.
+template <typename T, typename VoidPtr, size_t DequeBlockSize>
+struct is_relocatable<deque_facet<T, VoidPtr, DequeBlockSize>>: false_type
+{};
+
+// split_buffer stores internal references.
+// References have no guaranteed storage duration.
 template <
     typename T,
-    typename Allocator
+    typename Allocator,
+    size_t DequeBlockSize,
+    intmax_t GrowthFactorNumerator,
+    intmax_t GrowthFactorDenominator
 >
-class deque<T, PYCPP_DEQUE_BLOCK_SIZE(T), PYCPP_DEQUE_GROWTH_FACTOR_NUMERATOR, PYCPP_DEQUE_GROWTH_FACTOR_DENOMINATOR, Allocator>:
-    public deque_base<T, PYCPP_DEQUE_BLOCK_SIZE(T), PYCPP_DEQUE_GROWTH_FACTOR_NUMERATOR, PYCPP_DEQUE_GROWTH_FACTOR_DENOMINATOR, Allocator>
+struct is_relocatable<deque<T, Allocator, DequeBlockSize, GrowthFactorNumerator, GrowthFactorDenominator>>: false_type
 {};
 
 PYCPP_END_NAMESPACE

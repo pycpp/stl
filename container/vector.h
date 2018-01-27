@@ -287,15 +287,15 @@ private:
     // TODO: private constructors, modifiers, etc...
 };
 
-// VECTOR BASE
+// VECTOR
 
 template <
     typename T,
-    intmax_t GrowthFactorNumerator,
-    intmax_t GrowthFactorDenominator,
-    typename Allocator
+    typename Allocator = allocator<T>,
+    intmax_t GrowthFactorNumerator = PYCPP_VECTOR_GROWTH_FACTOR_NUMERATOR,
+    intmax_t GrowthFactorDenominator = PYCPP_VECTOR_GROWTH_FACTOR_DENOMINATOR
 >
-class vector_base
+class vector
 {
 public:
     using value_type = T;
@@ -651,7 +651,7 @@ public:
 
     void
     swap(
-        vector_base& x
+        vector& x
     )
     noexcept
     {
@@ -873,28 +873,19 @@ private:
     }
 };
 
-// VECTOR
+// SPECIALIZATION
+// --------------
 
-template <
-    typename T,
-    intmax_t GrowthFactorNumerator = PYCPP_VECTOR_GROWTH_FACTOR_NUMERATOR,
-    intmax_t GrowthFactorDenominator = PYCPP_VECTOR_GROWTH_FACTOR_DENOMINATOR,
-    typename Allocator = allocator<T>
->
-class vector:
-    public vector_base<T, GrowthFactorNumerator, GrowthFactorDenominator, Allocator>
-{
-    // TODO: constructors, etc.
-};
+template <typename T, typename VoidPtr>
+struct is_relocatable<vector_facet<T, VoidPtr>>: is_relocatable<VoidPtr>
+{};
 
-template <
-    typename T,
-    typename Allocator
->
-class vector<T, PYCPP_VECTOR_GROWTH_FACTOR_NUMERATOR, PYCPP_VECTOR_GROWTH_FACTOR_DENOMINATOR, Allocator>:
-    public vector_base<T, PYCPP_VECTOR_GROWTH_FACTOR_NUMERATOR, PYCPP_VECTOR_GROWTH_FACTOR_DENOMINATOR, Allocator>
-{
-    // TODO: constructors, etc.
-};
+template <typename T, typename Allocator>
+struct is_relocatable<vector<T, Allocator>>:
+    bool_constant<
+        is_relocatable<vector_facet<T, typename allocator_traits<Allocator>::void_pointer>>::value &&
+        is_relocatable<Allocator>::value
+    >
+{};
 
 PYCPP_END_NAMESPACE

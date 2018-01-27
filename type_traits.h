@@ -7,10 +7,11 @@
 
 #pragma once
 
-#include <pycpp/preprocessor/compiler.h>
+#include <pycpp/stl/type_traits/disable_if.h>
 #include <pycpp/stl/type_traits/endian.h>
 #include <pycpp/stl/type_traits/has_reallocate.h>
 #include <pycpp/stl/type_traits/is_aggregate.h>
+#include <pycpp/stl/type_traits/is_array.h>
 #include <pycpp/stl/type_traits/is_complete.h>
 #include <pycpp/stl/type_traits/is_final.h>
 #include <pycpp/stl/type_traits/is_invocable.h>
@@ -41,7 +42,6 @@ using std::is_floating_point;
 using std::is_same;
 using std::is_base_of;
 using std::is_reference;
-using std::is_array;
 using std::is_void;
 using std::is_lvalue_reference;
 using std::is_rvalue_reference;
@@ -258,9 +258,6 @@ constexpr bool is_base_of_v = is_base_of<T, U>::value;
 
 template <typename T>
 constexpr bool is_reference_v = is_reference<T>::value;
-
-template <typename T>
-constexpr bool is_array_v = is_array<T>::value;
 
 template <typename T>
 constexpr bool is_void_v = is_void<T>::value;

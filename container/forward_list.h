@@ -1965,4 +1965,39 @@ noexcept
     x.swap(y);
 }
 
+// SPECIALIZATION
+// --------------
+
+template <typename NodePtr>
+struct is_relocatable<forward_begin_node<NodePtr>>: is_relocatable<NodePtr>
+{};
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<begin_node_of<T, VoidPtr>>: true_type
+{};
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<forward_list_node<T, VoidPtr>>: is_relocatable<T>
+{};
+
+template <typename NodePtr>
+struct is_relocatable<forward_list_iterator<NodePtr>>: is_relocatable<NodePtr>
+{};
+
+template <typename NodePtr>
+struct is_relocatable<forward_list_const_iterator<NodePtr>>: is_relocatable<NodePtr>
+{};
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<forward_list_facet<T, VoidPtr>>: is_relocatable<begin_node_of<T, VoidPtr>>
+{};
+
+template <typename T, typename Allocator>
+struct is_relocatable<forward_list<T, Allocator>>:
+    bool_constant<
+        is_relocatable<forward_list_facet<T, typename allocator_traits<Allocator>::void_pointer>>::value &&
+        is_relocatable<Allocator>::value
+    >
+{};
+
 PYCPP_END_NAMESPACE

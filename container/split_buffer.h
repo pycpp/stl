@@ -825,4 +825,16 @@ noexcept
     x.swap(y);
 }
 
+// SPECIALIZATION
+// --------------
+
+template <typename T, typename VoidPtr>
+struct is_relocatable<split_buffer_facet<T, VoidPtr>>: is_relocatable<VoidPtr>
+{};
+
+// Split buffer stores a reference to an allocator.
+template <typename T, std::intmax_t N, std::intmax_t D, typename Allocator>
+struct is_relocatable<split_buffer<T, N, D, Allocator>>: false_type
+{};
+
 PYCPP_END_NAMESPACE

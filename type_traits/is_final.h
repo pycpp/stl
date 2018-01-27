@@ -20,7 +20,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/preprocessor/compiler.h>
+#include <pycpp/preprocessor/compiler_traits.h>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
@@ -40,23 +40,21 @@ constexpr bool is_final_v = is_final<T>::value;
 // MACROS
 // ------
 
-#if defined(HAVE_CLANG)             // HAVE_CLANG
-#   if __has_extension(is_final)
+#if defined(HAVE_CLANG)                 // HAVE_CLANG
+#   if HAS_EXTENSION(is_final)
 #       define PYCPP_IS_FINAL(T) __is_final(T)
 #   endif
-#elif defined(HAVE_GCC)             // HAVE_GCC
+#elif defined(HAVE_GCC)                 // HAVE_GCC
 #   if COMPILER_VERSION_CODE >= COMPILER_VERSION(4, 7, 0)
 #       define PYCPP_IS_FINAL(T) __is_final(T)
 #   endif
-#elif defined(HAVE_SUNPRO)          // HAVE_SUNPRO
+#elif defined(HAVE_SUNPRO)              // HAVE_SUNPRO
 #   if COMPILER_VERSION_CODE >= COMPILER_VERSION(5, 13, 0)
 #       define PYCPP_IS_FINAL(T) __oracle_is_final(T)
 #   endif
-#elif defined(__is_identifier)      // __is_identifier
-#   if __is_identifier(__is_final) == 0
-#       define PYCPP_IS_FINAL(T) __is_final(T)
-#   endif
-#endif                              // HAVE_CLANG
+#elif IS_IDENTIFIER(__is_final) == 0    // __is_identifier(__is_final)
+#   define PYCPP_IS_FINAL(T) __is_final(T)
+#endif                                  // HAVE_CLANG
 
 // ALIAS
 // -----

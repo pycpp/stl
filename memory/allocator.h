@@ -71,4 +71,14 @@ destroy_and_deallocate(
     traits_type::deallocate(alloc, t, n);
 }
 
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable;
+
+template <typename T>
+struct is_relocatable<allocator<T>>: std::true_type
+{};
+
 PYCPP_END_NAMESPACE

@@ -61,4 +61,14 @@ public:
     }
 };
 
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable;
+
+template <typename T>
+struct is_relocatable<allocator_destructor<T>>: std::false_type
+{};
+
 PYCPP_END_NAMESPACE

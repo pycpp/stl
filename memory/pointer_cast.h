@@ -5,55 +5,82 @@
  *  \brief Smart pointer type-casts.
  *
  *  \synopsis
- *      template <typename T, typename U>
- *      shared_ptr<T> static_pointer_cast(const shared_ptr<U>& r) noexcept;
+ *      template <typename T, typename U, bool ThreadSafe>
+ *      shared_ptr<T, ThreadSafe> static_pointer_cast(const shared_ptr<U, ThreadSafe>& r) noexcept;
  *
- *      template <typename T, typename U>
- *      shared_ptr<T> dynamic_pointer_cast(const shared_ptr<U>& r) noexcept;
+ *      template <typename T, typename U, bool ThreadSafe>
+ *      shared_ptr<T, ThreadSafe> dynamic_pointer_cast(const shared_ptr<U, ThreadSafe>& r) noexcept;
  *
- *      template <typename T, typename U>
- *      shared_ptr<T> const_pointer_cast(const shared_ptr<U>& r) noexcept;
+ *      template <typename T, typename U, bool ThreadSafe>
+ *      shared_ptr<T, ThreadSafe> const_pointer_cast(const shared_ptr<U, ThreadSafe>& r) noexcept;
  *
- *      template <typename T, typename U>
- *      shared_ptr<T> reinterpret_pointer_cast(const shared_ptr<U>& r) noexcept;
+ *      template <typename T, typename U, bool ThreadSafe>
+ *      shared_ptr<T, ThreadSafe> reinterpret_pointer_cast(const shared_ptr<U, ThreadSafe>& r) noexcept;
  */
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/preprocessor/compiler.h>
-#include <memory>
+#include <pycpp/stl/memory/shared_ptr.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // TODO: implement them all, since I use my own shared_ptr type
 
-//// ALIAS
-//// -----
-//
-//using std::static_pointer_cast;
-//using std::dynamic_pointer_cast;
-//using std::const_pointer_cast;
-//
-//#if defined(HAVE_CPP17)     // HAVE_CPP17
-//
-//using std::reinterpret_pointer_cast;
-//
-//#else                       // !HAVE_CPP17
-//
-//template <typename T, typename U>
-//std::shared_ptr<T>
-//reinterpret_pointer_cast(
-//    const std::shared_ptr<U>& r
-//)
-//noexcept
-//{
-//    auto p = reinterpret_cast<typename std::shared_ptr<T>::element_type*>(r.get());
-//    return std::shared_ptr<T>(r, p);
-//}
-//
-//#endif                      // HAVE_CPP17
+// FUNCTIONS
+// ---------
 
-// TODO: here...
+template <typename T, typename U, bool ThreadSafe>
+inline
+shared_ptr<T, ThreadSafe>
+static_pointer_cast(
+    const shared_ptr<U, ThreadSafe>& r
+)
+noexcept
+{
+    auto p = static_cast<typename shared_ptr<T, ThreadSafe>::element_type*>(r.get());
+    return shared_ptr<T, ThreadSafe>(r, p);
+}
+
+
+template <typename T, typename U, bool ThreadSafe>
+inline
+shared_ptr<T, ThreadSafe>
+dynamic_pointer_cast(
+    const shared_ptr<U, ThreadSafe>& r
+)
+noexcept
+{
+    if (auto p = dynamic_cast<typename shared_ptr<T, ThreadSafe>::element_type*>(r.get())) {
+        return shared_ptr<T, ThreadSafe>(r, p);
+    } else {
+        return shared_ptr<T, ThreadSafe>();
+    }
+}
+
+
+template <typename T, typename U, bool ThreadSafe>
+inline
+shared_ptr<T, ThreadSafe>
+const_pointer_cast(
+    const shared_ptr<U, ThreadSafe>& r
+)
+noexcept
+{
+    auto p = const_cast<typename shared_ptr<T, ThreadSafe>::element_type*>(r.get());
+    return shared_ptr<T, ThreadSafe>(r, p);
+}
+
+
+template <typename T, typename U, bool ThreadSafe>
+inline
+shared_ptr<T, ThreadSafe>
+reinterpret_pointer_cast(
+    const shared_ptr<U, ThreadSafe>& r
+)
+noexcept
+{
+    auto p = reinterpret_cast<typename shared_ptr<T, ThreadSafe>::element_type*>(r.get());
+    return shared_ptr<T, ThreadSafe>(r, p);
+}
 
 PYCPP_END_NAMESPACE
