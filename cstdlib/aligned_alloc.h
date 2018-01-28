@@ -6,6 +6,7 @@
  *
  *  \synopsis
  *      void* aligned_alloc(std::size_t alignment, std::size_t size);
+ *      void* aligned_realloc(void* p, std::size_t alignment, std::size_t old_size, std::size_t new_size);
  *      void aligned_free(void* p);
  */
 
@@ -40,6 +41,13 @@ aligned_alloc(
 
 // FUNCTIONS
 // ---------
+
+void* aligned_realloc(
+   void *p,
+   std::size_t alignment,
+   std::size_t old_size,
+   std::size_t new_size
+);
 
 void
 aligned_free(

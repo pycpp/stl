@@ -33,19 +33,6 @@ PYCPP_BEGIN_NAMESPACE
     class name                                                  \
     {                                                           \
     protected:                                                  \
-        struct U {};                                            \
-        using V = typename std::conditional<                    \
-            std::is_class<T>::value,                            \
-            T, U                                                \
-        >::type;                                                \
-                                                                \
-        struct Fallback                                         \
-        {                                                       \
-            struct member {};                                   \
-        };                                                      \
-                                                                \
-        struct Derived: V, Fallback                             \
-        {};                                                     \
                                                                 \
         template <typename C>                                   \
         static char                                             \
@@ -57,7 +44,7 @@ PYCPP_BEGIN_NAMESPACE
                                                                 \
     public:                                                     \
         enum {                                                  \
-            value = sizeof(test<Derived>(0)) == sizeof(long)    \
+            value = sizeof(test<T>(0)) == sizeof(char)          \
         };                                                      \
     }
 

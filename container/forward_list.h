@@ -1325,8 +1325,8 @@ public:
     {
         begin_node_pointer const r = p.get_begin();
         node_allocator& a = alloc();
-        using deleter = allocator_destructor<node_allocator>;
-        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        using deleter = allocator_destructor<node_allocator, 1>;
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a));
         node_traits::construct(a, addressof(h->value_), move(v));
         h->next_ = r->next_;
         r->next_ = h.release();
@@ -1341,8 +1341,8 @@ public:
     {
         begin_node_pointer const r = p.get_begin();
         node_allocator& a = alloc();
-        using deleter = allocator_destructor<node_allocator>;
-        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        using deleter = allocator_destructor<node_allocator, 1>;
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a));
         node_traits::construct(a, addressof(h->value_), v);
         h->next_ = r->next_;
         r->next_ = h.release();
@@ -1359,8 +1359,8 @@ public:
         begin_node_pointer r = p.get_begin();
         if (n > 0) {
             node_allocator& a = alloc();
-            using deleter = allocator_destructor<node_allocator>;
-            unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+            using deleter = allocator_destructor<node_allocator, 1>;
+            unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a));
             node_traits::construct(a, addressof(h->value_), v);
             node_pointer first = h.release();
             node_pointer last = first;
@@ -1398,7 +1398,7 @@ public:
         if (f != l) {
             node_allocator& a = alloc();
             using deleter = allocator_destructor<node_allocator>;
-            unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+            unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a));
             node_traits::construct(a, addressof(h->value_), *f);
             node_pointer first = h.release();
             node_pointer last = first;
@@ -1442,8 +1442,8 @@ public:
     {
         begin_node_pointer const r = p.get_begin();
         node_allocator& a = alloc();
-        using deleter = allocator_destructor<node_allocator>;
-        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        using deleter = allocator_destructor<node_allocator, 1>;
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a));
         node_traits::construct(a, addressof(h->value_), forward<Ts>(ts)...);
         h->next_ = r->next_;
         r->next_ = h.release();
@@ -1494,8 +1494,8 @@ public:
     )
     {
         node_allocator& a = alloc();
-        using deleter = allocator_destructor<node_allocator>;
-        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        using deleter = allocator_destructor<node_allocator, 1>;
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a));
         node_traits::construct(a, addressof(h->value_), v);
         h->next_ = facet().begin_pointer();
         facet().begin_pointer() = h.release();
@@ -1516,8 +1516,8 @@ public:
     )
     {
         node_allocator& a = alloc();
-        using deleter = allocator_destructor<node_allocator>;
-        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a, 1));
+        using deleter = allocator_destructor<node_allocator, 1>;
+        unique_ptr<node, deleter> h(node_traits::allocate(a, 1), deleter(a));
         node_traits::construct(a, addressof(h->value_), forward<Ts>(ts)...);
         h->next_ = facet().begin_pointer();
         facet().begin_pointer() = h.release();
@@ -1560,8 +1560,8 @@ public:
             n -= sz;
             if (n > 0) {
                 node_allocator& a = alloc();
-                using deleter = allocator_destructor<node_allocator>;
-                unique_ptr<node, deleter> h(nullptr, deleter(a, 1));
+                using deleter = allocator_destructor<node_allocator, 1>;
+                unique_ptr<node, deleter> h(nullptr, deleter(a));
                 for (begin_node_pointer ptr = p.get_begin(); n > 0; --n, ptr = ptr->next_as_begin()) {
                     h.reset(node_traits::allocate(a, 1));
                     node_traits::construct(a, addressof(h->value_), v);

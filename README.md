@@ -100,6 +100,10 @@ void call(stringstream& stream)
 
 ## Memory Extensions
 
+**Aligned Realloc**
+
+On systems that support it (MSVC), we provide an extension `aligned_realloc`, efficiently reallocates a buffer with a given alignment. On other platforms, `aligned_realloc` is implemented as `aligned_alloc` and `memcpy`.
+
 **Relocate**
 
 For relocatable types, `relocate` and `relocate_n` use `memcpy` under the hood for improved performance; otherwise, they are call `uninitialized_move` and `uninitialized_move_n`, respectively.
@@ -116,6 +120,10 @@ PyCPP includes both thread-safe and single-threaded `shared_ptr`. The single-thr
 template <typename T, typename ThreadSafe = true>
 class shared_ptr;
 ```
+
+**Intrusive Ptr**
+
+PyCPP includes a port of Boost's `intrusive_ptr`, updated for modern C++.
 
 // TODO: document
 

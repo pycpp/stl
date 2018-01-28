@@ -2,6 +2,8 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/stl/cstdlib/aligned_alloc.h>
+#include <algorithm>
+#include <cstring>
 #if defined(HAVE_MSVC)
 #   include <malloc.h>
 #endif
@@ -59,6 +61,59 @@ aligned_alloc(
 #endif                                                      // HAVE_MSVC
 
 #endif                                                      // !CPP17 && !HAVE_ALIGNED_ALLOC
+
+// ALIGNED REALLOC
+
+#if defined(HAVE_MSVC)                                    // HAVE_MSVC
+
+void*
+aligned_realloc(
+   void *p,
+   std::size_t alignment
+   std::size_t /*old_size*/,
+   std::size_t new_size
+)
+{
+    // intentional argument inversion
+    return _aligned_realloc(p, new_size, alignment);
+}
+
+#else                                                       // !HAVE_MSVC
+
+void*
+aligned_realloc(
+   void *p,
+   std::size_t alignment,
+   std::size_t old_size,
+   std::size_t new_size
+)
+{
+    // TODO(ahuszagh)
+    // Wishlist. Optimize this routine to allow more efficiency
+    // than an aligned_alloc + memcpy, allow grow, etc.
+
+    void* pout = aligned_alloc(alignment, new_size);
+    // If the allocator returns null, don't free the pointer and return NULL
+    if (pout == nullptr) {
+        return nullptr;
+    }
+
+    // no input memory, just return the allocated buffer.
+    if (p == nullptr || old_size == 0) {
+        return pout;
+    }
+
+    // copy bytes
+    std::size_t count = std::min(old_size, new_size);
+    std::memcpy(pout, p, count);
+
+    // free old pointer
+    aligned_free(p);
+
+    return pout;
+}
+
+#endif                                                      // HAVE_MSVC
 
 // ALIGNED FREE
 

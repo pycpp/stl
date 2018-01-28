@@ -96,6 +96,7 @@ add_headers(
     memory/checked_delete.h
     memory/destroy.h
     memory/has_construct.h
+    memory/intrusive_ptr.h
     memory/make_shared.h
     memory/make_unique.h
     memory/pointer_cast.h
@@ -139,6 +140,7 @@ add_headers(
     type_traits/any_overload.h
     type_traits/disable_if.h
     type_traits/endian.h
+    type_traits/has_is_always_equal.h
     type_traits/has_member_function.h
     type_traits/has_member_type.h
     type_traits/has_member_variable.h

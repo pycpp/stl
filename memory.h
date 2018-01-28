@@ -11,6 +11,7 @@
 #include <pycpp/stl/memory/allocator_destructor.h>
 #include <pycpp/stl/memory/allocator_traits.h>
 #include <pycpp/stl/memory/destroy.h>
+#include <pycpp/stl/memory/intrusive_ptr.h>
 #include <pycpp/stl/memory/make_shared.h>
 #include <pycpp/stl/memory/make_unique.h>
 #include <pycpp/stl/memory/pointer_cast.h>

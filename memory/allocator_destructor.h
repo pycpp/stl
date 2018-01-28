@@ -27,28 +27,27 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-template <typename Allocator>
-class allocator_destructor
-{
-    using alloc_traits = allocator_traits<Allocator>;
+template <
+    typename Allocator,
+    std::size_t Size = 1,
+    bool IsAlwaysEqual = allocator_traits<Allocator>::is_always_equal::value
+>
+class allocator_destructor;
 
+// Always equal
+template <typename Allocator, std::size_t Size>
+class allocator_destructor<Allocator, Size, true>: Allocator
+{
 public:
     using allocator_type = Allocator;
+    using alloc_traits = allocator_traits<allocator_type>;
     using pointer = typename alloc_traits::pointer;
     using size_type = typename alloc_traits::size_type;
 
-private:
-    Allocator& alloc_;
-    size_type size_;
-
-public:
     allocator_destructor(
-        allocator_type& alloc,
-        size_type size
+        allocator_type&
     )
-    noexcept:
-        alloc_(alloc),
-        size_(size)
+    noexcept
     {}
 
     void
@@ -57,8 +56,52 @@ public:
     )
     noexcept
     {
-        alloc_traits::deallocate(alloc_, p, size_);
+        allocator_type alloc;
+        alloc_traits::deallocate(alloc, p, Size);
     }
+
+    allocator_type&
+    get_allocator()
+    {
+        return *this;
+    }
+};
+
+// Not always equal
+template <typename Allocator, std::size_t Size>
+class allocator_destructor<Allocator, Size, false>
+{
+public:
+    using allocator_type = Allocator;
+    using alloc_traits = allocator_traits<allocator_type>;
+    using pointer = typename alloc_traits::pointer;
+    using size_type = typename alloc_traits::size_type;
+
+public:
+    allocator_destructor(
+        allocator_type& alloc
+    )
+    noexcept:
+        alloc_(alloc)
+    {}
+
+    void
+    operator()(
+        pointer p
+    )
+    noexcept
+    {
+        alloc_traits::deallocate(alloc_, p, Size);
+    }
+
+    allocator_type&
+    get_allocator()
+    {
+        return alloc_;
+    }
+
+private:
+    Allocator& alloc_;
 };
 
 // SPECIALIZATION
@@ -67,8 +110,13 @@ public:
 template <typename T>
 struct is_relocatable;
 
-template <typename T>
-struct is_relocatable<allocator_destructor<T>>: std::false_type
+template <typename T, std::size_t Size>
+struct is_relocatable<allocator_destructor<T, Size, true>>: std::true_type
+{};
+
+// References are not relocatable
+template <typename T, std::size_t Size>
+struct is_relocatable<allocator_destructor<T, Size, false>>: std::false_type
 {};
 
 PYCPP_END_NAMESPACE

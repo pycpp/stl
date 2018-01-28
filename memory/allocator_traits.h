@@ -10,6 +10,7 @@
  *      struct allocator_traits: std::allocator_traits<Allocator>
  *      {
  *          using allocator_type = Allocator;
+ *          using is_always_equal = implementation-defined;
  *
  *          pointer reallocate(allocator_type& allocator, pointer ptr, size_type old_size, size_type new_size, size_type count, size_type old_offset = 0, size_type new_offset = 0);
  *
@@ -28,6 +29,7 @@
 
 #include <pycpp/stl/memory/has_construct.h>
 #include <pycpp/stl/memory/to_raw_pointer.h>
+#include <pycpp/stl/type_traits/has_is_always_equal.h>
 #include <pycpp/stl/type_traits/has_reallocate.h>
 #include <pycpp/stl/type_traits/is_relocatable.h>
 #include <cassert>
@@ -48,6 +50,73 @@ struct allocator_traits: std::allocator_traits<Allocator>
     using typename traits::value_type;
     using typename traits::pointer;
     using typename traits::size_type;
+    using is_always_equal = typename std::conditional<
+        has_is_always_equal<Allocator>::value,
+        typename Allocator::is_always_equal,
+        typename std::is_empty<Allocator>::type
+    >::type;
+
+    // Unsafe Reallocate
+    // Reallocation functions without checks for type safety.
+    // Do not use directly, only if wishing to call directly as a fallback
+    // in a custom allocator.
+
+    // Use an optimized memcpy to relocate the data from the old to
+    // new buffers.
+    static
+    pointer
+    reallocate_relocate(
+        allocator_type& alloc,
+        pointer ptr,
+        size_type old_size,
+        size_type new_size,
+        size_type count,
+        size_type old_offset = 0,
+        size_type new_offset = 0
+    )
+    {
+        assert(count + old_offset <= old_size && "Buffer overflow.");
+        assert(count + new_offset <= new_size && "Buffer overflow.");
+
+        pointer p = alloc.allocate(new_size);
+        value_type* psrc = to_raw_pointer(ptr);
+        value_type* pdest = to_raw_pointer(p);
+        std::memcpy(pdest + new_offset, psrc + old_offset, count * sizeof(value_type));
+        alloc.deallocate(ptr, old_size);
+        return p;
+    }
+
+    // Use the slow route, create a new buffer and use `traits::construct`
+    // with move semantics to move all items to the new buffer.
+    static
+    pointer
+    reallocate_move(
+        allocator_type& alloc,
+        pointer ptr,
+        size_type old_size,
+        size_type new_size,
+        size_type count,
+        size_type old_offset = 0,
+        size_type new_offset = 0
+    )
+    {
+        assert(count + old_offset <= old_size && "Buffer overflow.");
+        assert(count + new_offset <= new_size && "Buffer overflow.");
+
+        pointer p = alloc.allocate(new_size);
+        pointer npoff = p + new_offset;
+        pointer opoff = ptr + old_offset;
+        // use `construct` to construct-in-place
+        // Don't use a raw `std::move`, since that move assigns into
+        // uninitialized memory.
+        for (size_t i = 0; i < count; ++i) {
+            value_type& src = opoff[i];
+            value_type* dst = &npoff[i];
+            traits::construct(alloc, dst, std::move(src));
+        }
+        alloc.deallocate(ptr, old_size);
+        return p;
+    }
 
     // Reallocate
 
@@ -99,15 +168,7 @@ struct allocator_traits: std::allocator_traits<Allocator>
         size_type new_offset = 0
     )
     {
-        assert(count + old_offset <= old_size && "Buffer overflow.");
-        assert(count + new_offset <= new_size && "Buffer overflow.");
-
-        pointer p = alloc.allocate(new_size);
-        value_type* psrc = to_raw_pointer(ptr);
-        value_type* pdest = to_raw_pointer(p);
-        std::memmove(pdest + new_offset, psrc + old_offset, count * sizeof(value_type));
-        alloc.deallocate(ptr, old_size);
-        return p;
+        return reallocate_relocate(alloc, ptr, old_size, new_size, count, old_offset, new_offset);
     }
 
     // Overload if class does not provide specialized reallocate
@@ -125,22 +186,7 @@ struct allocator_traits: std::allocator_traits<Allocator>
         size_type new_offset = 0
     )
     {
-        assert(count + old_offset <= old_size && "Buffer overflow.");
-        assert(count + new_offset <= new_size && "Buffer overflow.");
-
-        pointer p = alloc.allocate(new_size);
-        pointer npoff = p + new_offset;
-        pointer opoff = ptr + old_offset;
-        // use placement new to construct-in-place
-        // Don't use `std::move`, since that move assigns into
-        // uninitialized memory.
-        for (size_t i = 0; i < count; ++i) {
-            T& src = opoff[i];
-            T* dst = &npoff[i];
-            traits::construct(alloc, dst, std::move(src));
-        }
-        alloc.deallocate(ptr, old_size);
-        return p;
+        return reallocate_move(alloc, ptr, old_size, new_size, count, old_offset, new_offset);
     }
 
     // Construct forward
