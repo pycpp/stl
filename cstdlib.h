@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/preprocessor/compiler.h>
 #include <pycpp/stl/cstdlib/aligned_alloc.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -23,12 +24,21 @@ using std::lldiv_t;
 // Process control
 using std::abort;
 using std::exit;
-using std::quick_exit;
 using std::_Exit;
 using std::atexit;
-using std::at_quick_exit;
 using std::system;
 using std::getenv;
+
+// MinGW doesn't necessarily support these.
+// Flow control is via the macros _GLIBCXX_HAVE_QUICK_EXIT
+// Defining them when the features aren't present won't work.
+#if !defined(PYCPP_MINGW) || defined(_GLIBCXX_HAVE_QUICK_EXIT)
+    using std::quick_exit;
+#endif
+
+#if !defined(PYCPP_MINGW) || defined(_GLIBCXX_HAVE_AT_QUICK_EXIT)
+    using std::at_quick_exit;
+#endif
 
 // Memory management
 using std::malloc;

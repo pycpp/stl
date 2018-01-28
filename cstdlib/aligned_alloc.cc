@@ -1,6 +1,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/preprocessor/compiler_traits.h>
 #include <pycpp/stl/cstdlib/aligned_alloc.h>
 #include <algorithm>
 #include <cstring>
@@ -17,7 +18,7 @@ PYCPP_BEGIN_NAMESPACE
 
 #if !defined(PYCPP_CPP17) && !defined(HAVE_ALIGNED_ALLOC)   // !CPP17 && !HAVE_ALIGNED_ALLOC
 
-#if defined(PYCPP_MSVC)                                     // MSVC
+#if defined(PYCPP_WINDOWS)                                  // WINDOWS
 
 PYCPP_MALLOC_ATTRIBUTE
 void*
@@ -58,13 +59,13 @@ aligned_alloc(
     return std::malloc(size);
 }
 
-#endif                                                      // MSVC
+#endif                                                      // WINDOWS
 
 #endif                                                      // !CPP17 && !HAVE_ALIGNED_ALLOC
 
 // ALIGNED REALLOC
 
-#if defined(PYCPP_MSVC)                                     // MSVC
+#if defined(PYCPP_WINDOWS)                                  // WINDOWS
 
 void*
 aligned_realloc(
@@ -78,7 +79,7 @@ aligned_realloc(
     return _aligned_realloc(p, new_size, alignment);
 }
 
-#else                                                       // !MSVC
+#else                                                       // !WINDOWS
 void*
 aligned_realloc(
    void *p,
@@ -112,7 +113,7 @@ aligned_realloc(
     return pout;
 }
 
-#endif                                                      // MSVC
+#endif                                                      // WINDOWS
 
 // ALIGNED FREE
 
@@ -126,7 +127,7 @@ aligned_free(
     std::free(p);
 }
 
-#elif defined(PYCPP_MSVC)                                   // MSVC
+#elif defined(PYCPP_WINDOWS)                                // WINDOWS
 
 void
 aligned_free(
