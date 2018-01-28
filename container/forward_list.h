@@ -89,6 +89,7 @@
 #pragma once
 
 #include <pycpp/stl/container/compressed_pair.h>
+#include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/iterator.h>

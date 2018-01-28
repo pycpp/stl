@@ -29,11 +29,13 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(PYCPP_CPP17)            // CPP17
+// TODO(ahuszagh): Wishlist.
+// GCC does not yet have the numeric C++17 implementation yet.
+#if defined(PYCPP_CPP17) && !defined(PYCPP_GCC) // CPP17
 
 using std::reduce;
 
-#else                               // <=CPP14
+#else                                           // <=CPP14
 
 // FUNCTIONS
 // ---------
@@ -77,6 +79,6 @@ reduce(
     return reduce(first, last, value_type());
 }
 
-#endif                              // CPP17
+#endif                                          // CPP17
 
 PYCPP_END_NAMESPACE

@@ -31,22 +31,24 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(PYCPP_CPP17)            // CPP17
+// TODO(ahuszagh): Wishlist.
+// GCC does not yet have the numeric C++17 implementation yet.
+#if defined(PYCPP_CPP17) && !defined(PYCPP_GCC) // CPP17
 
 using std::inclusive_scan;
 
-#else                               // <=CPP14
+#else                                           // <=CPP14
 
 // FUNCTIONS
 // ---------
 
-template <typename InputIterator, typename OutputIterator, typename T, typename BinaryOp>
+template <typename InputIter, typename OutputIter, typename T, typename BinaryOp>
 inline
-OutputIterator
+OutputIter
 inclusive_scan(
-    InputIterator first,
-    InputIterator last,
-    OutputIterator result,
+    InputIter first,
+    InputIter last,
+    OutputIter result,
     BinaryOp op,
     T init
 )
@@ -58,17 +60,17 @@ inclusive_scan(
     return result;
 }
 
-template <typename InputIterator, typename OutputIterator, typename BinaryOp>
+template <typename InputIter, typename OutputIter, typename BinaryOp>
 inline
-OutputIterator
+OutputIter
 inclusive_scan(
-    InputIterator first,
-    InputIterator last,
-    OutputIterator result,
+    InputIter first,
+    InputIter last,
+    OutputIter result,
     BinaryOp op
 )
 {
-    using value_type = typename std::iterator_traits<InputIterator>::value_type;
+    using value_type = typename std::iterator_traits<InputIter>::value_type;
     if (first != last) {
         value_type init = *first;
         *result++ = init;
@@ -79,18 +81,18 @@ inclusive_scan(
     return result;
 }
 
-template <typename InputIterator, typename OutputIterator>
+template <typename InputIter, typename OutputIter>
 inline
-OutputIterator
+OutputIter
 inclusive_scan(
-    InputIterator first,
-    InputIterator last,
-    OutputIterator result
+    InputIter first,
+    InputIter last,
+    OutputIter result
 )
 {
     return inclusive_scan(first, last, result, plus<>());
 }
 
-#endif                              // CPP17
+#endif                                          // CPP17
 
 PYCPP_END_NAMESPACE

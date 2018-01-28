@@ -387,10 +387,10 @@ using invoke_result_t = typename invoke_result<F, Ts...>::type;
 // ------
 
 template <typename F, typename ... Ts>
-constexpr bool is_invocable_v = std::is_invocable<F, Ts...>::value;
+constexpr bool is_invocable_v = is_invocable<F, Ts...>::value;
 
 template <class R, typename F, typename ... Ts>
-constexpr bool is_invocable_r_v = std::is_invocable_r<R, F, Ts...>::value;
+constexpr bool is_invocable_r_v = is_invocable_r<R, F, Ts...>::value;
 
 #endif                              // CPP14
 
@@ -400,10 +400,10 @@ constexpr bool is_invocable_r_v = std::is_invocable_r<R, F, Ts...>::value;
 // ------
 
 template <typename F, typename ... Ts>
-constexpr bool is_nothrow_invocable_v = std::is_nothrow_invocable<F, Ts...>::value;
+constexpr bool is_nothrow_invocable_v = is_nothrow_invocable<F, Ts...>::value;
 
 template <class R, typename F, typename ... Ts>
-constexpr bool is_nothrow_invocable_r_v = std::is_nothrow_invocable_r<R, F, Ts...>::value;
+constexpr bool is_nothrow_invocable_r_v = is_nothrow_invocable_r<R, F, Ts...>::value;
 
 #endif                              // CPP17
 

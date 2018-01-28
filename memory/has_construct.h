@@ -104,11 +104,11 @@ using enable_memcpy_construct_t = typename enable_memcpy_construct<Allocator, T,
 // SFINAE
 // ------
 
-template <typename T>
-constexpr bool has_construct_v = has_construct<T>::value;
+template <typename Allocator, typename T, typename ... Ts>
+constexpr bool has_construct_v = has_construct<Allocator, T, Ts...>::value;
 
-template <typename T>
-constexpr bool has_memcpy_construct_v = has_memcpy_construct<T>::value;
+template <typename Allocator, typename T>
+constexpr bool has_memcpy_construct_v = has_memcpy_construct<Allocator, T>::value;
 
 #endif
 

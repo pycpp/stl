@@ -28,9 +28,13 @@ PYCPP_BEGIN_NAMESPACE
 
 #if defined(PYCPP_CPP17)            // CPP17
 
-using std::chars_format;
-using std::to_chars;
-using std::from_chars;
+// None of the major compilers currently implement `std::chars_format`.
+// Annotate when it becomes available.
+#if 0
+    using std::chars_format;
+    using std::to_chars;
+    using std::from_chars;
+#endif
 
 #else                               // <=CPP14
 
@@ -53,6 +57,3 @@ using std::from_chars;
 #endif                              // CPP17
 
 PYCPP_END_NAMESPACE
-
-
-

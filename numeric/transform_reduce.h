@@ -1,3 +1,4 @@
+//  :copyright: (c) 2009-2017 LLVM Team.
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
@@ -5,14 +6,14 @@
  *  \brief `transform_reduce` backport for C++11.
  *
  *  \synopsis
- *      template <typename InputIterator, typename T, typename BinaryOp, typename UnaryOp>
- *      T transform_reduce(InputIterator first, InputIterator last, T init, BinaryOp op, UnaryOp u);
+ *      template <typename InputIter, typename T, typename BinaryOp, typename UnaryOp>
+ *      T transform_reduce(InputIter first, InputIter last, T init, BinaryOp op, UnaryOp u);
  *
- *      template <typename InputIterator1, typename InputIterator2, typename T, typename BinaryOp1, typename BinaryOp2>
- *      T transform_reduce(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, T init, BinaryOp1 op1, BinaryOp2 op2);
+ *      template <typename InputIter1, typename InputIter2, typename T, typename BinaryOp1, typename BinaryOp2>
+ *      T transform_reduce(InputIter1 first1, InputIter1 last1, InputIter2 first2, T init, BinaryOp1 op1, BinaryOp2 op2);
  *
- *      template <typename InputIterator1, typename InputIterator2, typename T>
- *      T transform_reduce(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, T init);
+ *      template <typename InputIter1, typename InputIter2, typename T>
+ *      T transform_reduce(InputIter1 first1, InputIter1 last1, InputIter2 first2, T init);
  */
 
 #pragma once
@@ -30,21 +31,23 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(PYCPP_CPP17)            // CPP17
+// TODO(ahuszagh): Wishlist.
+// GCC does not yet have the numeric C++17 implementation yet.
+#if defined(PYCPP_CPP17) && !defined(PYCPP_GCC) // CPP17
 
 using std::transform_reduce;
 
-#else                               // <=CPP14
+#else                                           // <=CPP14
 
 // FUNCTIONS
 // ---------
 
-template <typename InputIterator, typename T, typename BinaryOp, typename UnaryOp>
+template <typename InputIter, typename T, typename BinaryOp, typename UnaryOp>
 inline
 T
 transform_reduce(
-    InputIterator first,
-    InputIterator last,
+    InputIter first,
+    InputIter last,
     T init,
     BinaryOp op,
     UnaryOp u
@@ -57,8 +60,8 @@ transform_reduce(
 }
 
 template <
-    typename InputIterator1,
-    typename InputIterator2,
+    typename InputIter1,
+    typename InputIter2,
     typename T,
     typename BinaryOp1,
     typename BinaryOp2
@@ -66,9 +69,9 @@ template <
 inline
 T
 transform_reduce(
-    InputIterator1 first1,
-    InputIterator1 last1,
-    InputIterator2 first2,
+    InputIter1 first1,
+    InputIter1 last1,
+    InputIter2 first2,
     T init,
     BinaryOp1 op1,
     BinaryOp2 op2
@@ -80,19 +83,19 @@ transform_reduce(
     return init;
 }
 
-template <typename InputIterator1, typename InputIterator2, typename T>
+template <typename InputIter1, typename InputIter2, typename T>
 inline
 T
 transform_reduce(
-    InputIterator1 first1,
-    InputIterator1 last1,
-    InputIterator2 first2,
+    InputIter1 first1,
+    InputIter1 last1,
+    InputIter2 first2,
     T init
 )
 {
     return transform_reduce(first1, last1, first2, std::move(init), plus<>(), multiplies<>());
 }
 
-#endif                              // CPP17
+#endif                                          // CPP17
 
 PYCPP_END_NAMESPACE

@@ -169,13 +169,16 @@ template <typename T>
 struct not_: not_impl<T>
 {};
 
-#ifdef PYCPP_CPP17      // CPP17
+// TODO(ahuszagh): Wishlist.
+// GCC has currently not implemented the C++17 type_traits.
+// Use our own.
+#if defined(PYCPP_CPP17) && !defined(PYCPP_GCC) // CPP17
 
 using std::conjucation;
 using std::disjunction;
 using std::negation;
 
-#else                   // <=CPP14
+#else                                           // <=CPP14
 
 template <typename ... Ts>
 struct conjucation: map_and<Ts...>
@@ -189,7 +192,7 @@ template <typename T>
 struct negation: not_impl<T>
 {};
 
-#endif                  // CPP17
+#endif                                          // CPP17
 
 #ifdef PYCPP_CPP14
 

@@ -284,9 +284,6 @@ template <typename T>
 constexpr bool is_trivial_v = is_trivial<T>::value;
 
 template <typename T>
-constexpr bool is_trivially_copyable_v = is_trivially_copyable<T>::value;
-
-template <typename T>
 constexpr bool is_standard_layout_v = is_standard_layout<T>::value;
 
 template <typename T>
@@ -332,16 +329,10 @@ template <typename T, typename ... Ts>
 constexpr bool is_constructible_v = is_constructible<T, Ts...>::value;
 
 template <typename T, typename ... Ts>
-constexpr bool is_trivially_constructible_v = is_trivially_constructible<T, Ts...>::value;
-
-template <typename T, typename ... Ts>
 constexpr bool is_nothrow_constructible_v = is_nothrow_constructible<T, Ts...>::value;
 
 template <typename T>
 constexpr bool is_default_constructible_v = is_default_constructible<T>::value;
-
-template <typename T>
-constexpr bool is_trivially_default_constructible_v = is_trivially_default_constructible<T>::value;
 
 template <typename T>
 constexpr bool is_nothrow_default_constructible_v = is_nothrow_default_constructible<T>::value;
@@ -350,16 +341,10 @@ template <typename T>
 constexpr bool is_copy_constructible_v = is_copy_constructible<T>::value;
 
 template <typename T>
-constexpr bool is_trivially_copy_constructible_v = is_trivially_copy_constructible<T>::value;
-
-template <typename T>
 constexpr bool is_nothrow_copy_constructible_v = is_nothrow_copy_constructible<T>::value;
 
 template <typename T>
 constexpr bool is_move_constructible_v = is_move_constructible<T>::value;
-
-template <typename T>
-constexpr bool is_trivially_move_constructible_v = is_trivially_move_constructible<T>::value;
 
 template <typename T>
 constexpr bool is_nothrow_move_constructible_v = is_nothrow_move_constructible<T>::value;
@@ -368,16 +353,10 @@ template <typename T, typename ... Ts>
 constexpr bool is_assignable_v = is_assignable<T, Ts...>::value;
 
 template <typename T, typename ... Ts>
-constexpr bool is_trivially_assignable_v = is_trivially_assignable<T, Ts...>::value;
-
-template <typename T, typename ... Ts>
 constexpr bool is_nothrow_assignable_v = is_nothrow_assignable<T, Ts...>::value;
 
 template <typename T>
 constexpr bool is_copy_assignable_v = is_copy_assignable<T>::value;
-
-template <typename T>
-constexpr bool is_trivially_copy_assignable_v = is_trivially_copy_assignable<T>::value;
 
 template <typename T>
 constexpr bool is_nothrow_copy_assignable_v = is_nothrow_copy_assignable<T>::value;
@@ -386,31 +365,10 @@ template <typename T>
 constexpr bool is_move_assignable_v = is_move_assignable<T>::value;
 
 template <typename T>
-constexpr bool is_trivially_move_assignable_v = is_trivially_move_assignable<T>::value;
-
-template <typename T>
 constexpr bool is_nothrow_move_assignable_v = is_nothrow_move_assignable<T>::value;
-
-template <typename T, typename U>
-constexpr bool is_swappable_with_v = is_swappable_with<T, U>::value;
-
-template <typename T, typename U>
-constexpr bool is_nothrow_swappable_with_v = is_nothrow_swappable_with<T, U>::value;
-
-template <typename T>
-constexpr bool is_swappable_v = is_swappable<T>::value;
-
-template <bool RemoveReference, typename T, typename ... Ts>
-constexpr bool is_safe_overload_v = is_safe_overload<RemoveReference, T, Ts...>::value;
-
-template <typename T>
-constexpr bool is_nothrow_swappable_v = is_nothrow_swappable<T>::value;
 
 template <typename T>
 constexpr bool is_destructible_v = is_destructible<T>::value;
-
-template <typename T>
-constexpr bool is_relocatable_v = is_relocatable<T>::value;
 
 template <typename T>
 constexpr bool is_trivially_destructible_v = is_trivially_destructible<T>::value;

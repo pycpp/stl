@@ -21,12 +21,14 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(PYCPP_CPP17)            // CPP17
+// TODO(ahuszagh): Wishlist.
+// GCC does not yet have the hardware interference constants yet.
+#if defined(PYCPP_CPP17) && !defined(PYCPP_GCC)     // CPP17
 
 using std::hardware_destructive_interference_size;
 using std::hardware_constructive_interference_size;
 
-#else                               // <=CPP14
+#else                                               // <=CPP14
 
 // FUNCTIONS
 // ---------
@@ -34,6 +36,6 @@ using std::hardware_constructive_interference_size;
 static constexpr size_t hardware_destructive_interference_size = PYCPP_CACHELINE_SIZE;
 static constexpr size_t hardware_constructive_interference_size = PYCPP_CACHELINE_SIZE;
 
-#endif                              // CPP17
+#endif                                              // CPP17
 
 PYCPP_END_NAMESPACE

@@ -23,7 +23,12 @@ PYCPP_BEGIN_NAMESPACE
 
 #if defined(PYCPP_CPP17)            // CPP17
 
-using std::aligned_alloc;
+// `aligned_alloc` is not yet on GCC, fix when it becomes available.
+#if PYCPP_GCC
+    using ::aligned_alloc;
+#else
+    using std::aligned_alloc;
+#endif
 
 #elif defined(HAVE_ALIGNED_ALLOC)   // HAVE_ALIGNED_ALLOC
 
