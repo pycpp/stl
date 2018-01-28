@@ -29,7 +29,7 @@
  *      template <bool RemoveReference, typename T, typename ... Ts>
  *      using enable_safe_overload = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <bool RemoveReference, typename T, typename ... Ts>
  *      constexpr bool is_safe_overload_v = implementation-defined;
@@ -120,7 +120,7 @@ using enable_safe_overload = std::enable_if<
 template <bool RemoveReference, typename T, typename ... Ts>
 using enable_safe_overload_t = typename enable_safe_overload<RemoveReference, T, Ts...>::type;
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -128,6 +128,6 @@ using enable_safe_overload_t = typename enable_safe_overload<RemoveReference, T,
 template <bool RemoveReference, typename T, typename ... Ts>
 constexpr bool is_safe_overload_v = is_safe_overload<RemoveReference, T, Ts...>::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

@@ -37,7 +37,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::rend;
 using std::crend;
@@ -48,7 +48,7 @@ using std::crend;
 // ---------
 
 template <typename T, size_t N>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 std::reverse_iterator<T*>
 rend(
     T (&arr)[N]
@@ -58,7 +58,7 @@ rend(
 }
 
 template <typename E>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 std::reverse_iterator<const E*>
 rend(
     std::initializer_list<E> il
@@ -68,7 +68,7 @@ rend(
 }
 
 template <typename C>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 auto
 rend(
     C& c
@@ -79,7 +79,7 @@ rend(
 }
 
 template <typename C>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 auto
 rend(
     const C& c
@@ -90,7 +90,7 @@ rend(
 }
 
 template <typename C>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 auto
 crend(
     const C& c

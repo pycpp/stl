@@ -10,7 +10,7 @@
  *      template <typename T>
  *      using is_reference_wrapper = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool is_reference_wrapper_v = implementation-defined;
@@ -42,7 +42,7 @@ struct is_reference_wrapper:
     is_reference_wrapper_impl<typename std::remove_cv<typename std::remove_reference<T>::type>::type>
 {};
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------

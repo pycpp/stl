@@ -22,7 +22,7 @@ PYCPP_BEGIN_NAMESPACE
 
 using std::uncaught_exception;
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::uncaught_exceptions;
 

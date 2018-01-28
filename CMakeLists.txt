@@ -101,7 +101,6 @@ add_headers(
     memory/make_unique.h
     memory/pointer_cast.h
     memory/pointer_traits.h
-    #memory/polymorphic_allocator.h
     memory/relocate.h
     memory/shared_ptr.h
     memory/swap_allocator.h
@@ -109,6 +108,12 @@ add_headers(
     memory/to_raw_pointer.h
     memory/uninitialized.h
     memory/uses_allocator.h
+    memory_resource.h
+    memory_resource/memory_resource.h
+    memory_resource/new_delete_resource.h
+    memory_resource/null_memory_resource.h
+    memory_resource/polymorphic_allocator.h
+    memory_resource/resource_adaptor.h
     memory/weak_ptr.h
     mutex.h
     mutex/dummy_mutex.h
@@ -180,6 +185,6 @@ add_sources(
     cstdlib/aligned_alloc.cc
     exception/uncaught_exception.cc
     functional/xxhash_c.c
-    #memory/polymorphic_allocator.cc
+    memory_resource/memory_resource.cc
     typeinfo/type_info_wrapper.cc
 )

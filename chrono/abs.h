@@ -23,7 +23,7 @@ namespace chrono
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::chrono::abs;
 
@@ -33,7 +33,7 @@ using std::chrono::abs;
 // ---------
 
 template <typename Rep, typename Period>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 typename std::enable_if<
     std::numeric_limits<Rep>::is_signed,
     std::chrono::duration<Rep, Period>

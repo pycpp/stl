@@ -20,15 +20,15 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)     // HAVE_CPP17
+#if defined(PYCPP_CPP17)    // CPP17
 
 using std::byte;
 
-#else                       // !HAVE_CPP17
+#else                       // <=CPP14
 
 enum class byte: unsigned char
 {};
 
-#endif                      // HAVE_CPP17
+#endif                      // CPP17
 
 PYCPP_END_NAMESPACE

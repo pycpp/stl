@@ -271,7 +271,7 @@ public:
     {}
 
     // Element Access
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_type&
     first()
     noexcept
@@ -279,7 +279,7 @@ public:
         return first_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const first_type&
     first()
     const noexcept
@@ -287,7 +287,7 @@ public:
         return first_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_type&
     second()
     noexcept
@@ -295,7 +295,7 @@ public:
         return second_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const second_type&
     second()
     const noexcept
@@ -376,7 +376,7 @@ public:
     {}
 
     // Element Access
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_type&
     first()
     noexcept
@@ -385,7 +385,7 @@ public:
     }
 
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const first_type&
     first()
     const noexcept
@@ -393,7 +393,7 @@ public:
         return *this;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_type&
     second()
     noexcept
@@ -401,7 +401,7 @@ public:
         return second_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const second_type&
     second()
     const noexcept
@@ -481,7 +481,7 @@ public:
     {}
 
     // Element Access
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_type&
     first()
     noexcept
@@ -489,7 +489,7 @@ public:
         return first_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const first_type&
     first()
     const noexcept
@@ -497,7 +497,7 @@ public:
         return first_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_type&
     second()
     noexcept
@@ -505,7 +505,7 @@ public:
         return *this;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const second_type&
     second()
     const noexcept
@@ -586,7 +586,7 @@ public:
     {}
 
     // Element Access
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_type&
     first()
     noexcept
@@ -594,7 +594,7 @@ public:
         return *this;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const first_type&
     first()
     const noexcept
@@ -602,7 +602,7 @@ public:
         return *this;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_type&
     second()
     noexcept
@@ -610,7 +610,7 @@ public:
         return *this;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const second_type&
     second()
     const noexcept
@@ -682,7 +682,7 @@ public:
     {}
 
     // Element Access
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_type&
     first()
     noexcept
@@ -690,7 +690,7 @@ public:
         return *this;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const first_type&
     first()
     const noexcept
@@ -698,7 +698,7 @@ public:
         return *this;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_type&
     second()
     noexcept
@@ -706,7 +706,7 @@ public:
         return second_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const second_type&
     second()
     const noexcept
@@ -774,7 +774,7 @@ public:
     {}
 
     // Element Access
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_type&
     first()
     noexcept
@@ -782,7 +782,7 @@ public:
         return first_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const first_type&
     first()
     const noexcept
@@ -790,7 +790,7 @@ public:
         return first_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_type&
     second()
     noexcept
@@ -798,7 +798,7 @@ public:
         return second_;
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     const second_type&
     second()
     const noexcept
@@ -895,7 +895,7 @@ public:
     {}
 
     // Element Access
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_reference
     first()
     noexcept
@@ -903,7 +903,7 @@ public:
         return base_t::first();
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_const_reference
     first()
     const noexcept
@@ -911,7 +911,7 @@ public:
         return base_t::first();
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_reference
     second()
     noexcept
@@ -919,7 +919,7 @@ public:
         return base_t::second();
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_const_reference
     second()
     const noexcept
@@ -990,7 +990,7 @@ public:
     {}
 
     // Element Access
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_reference
     first()
     noexcept
@@ -998,7 +998,7 @@ public:
         return base_t::first();
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     first_const_reference
     first()
     const noexcept
@@ -1006,7 +1006,7 @@ public:
         return base_t::first();
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_reference
     second()
     noexcept
@@ -1014,7 +1014,7 @@ public:
         return base_t::second();
     }
 
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     second_const_reference
     second()
     const noexcept
@@ -1050,7 +1050,7 @@ template <>
 struct get_pair<0>
 {
     template <typename T1, typename T2>
-    inline CPP14_CONSTEXPR
+    inline PYCPP_CPP14_CONSTEXPR
     T1&
     operator()(
         compressed_pair<T1, T2>& p
@@ -1061,7 +1061,7 @@ struct get_pair<0>
     }
 
     template <typename T1, typename T2>
-    inline CPP14_CONSTEXPR
+    inline PYCPP_CPP14_CONSTEXPR
     const T1&
     operator()(
         const compressed_pair<T1, T2>& p
@@ -1072,7 +1072,7 @@ struct get_pair<0>
     }
 
     template <typename T1, typename T2>
-    inline CPP14_CONSTEXPR
+    inline PYCPP_CPP14_CONSTEXPR
     T1&&
     operator()(
         compressed_pair<T1, T2>&& p
@@ -1083,7 +1083,7 @@ struct get_pair<0>
     }
 
     template <typename T1, typename T2>
-    inline CPP14_CONSTEXPR
+    inline PYCPP_CPP14_CONSTEXPR
     const T1&&
     operator()(
         const compressed_pair<T1, T2>&& p
@@ -1099,7 +1099,7 @@ template <>
 struct get_pair<1>
 {
     template <typename T1, typename T2>
-    inline CPP14_CONSTEXPR
+    inline PYCPP_CPP14_CONSTEXPR
     T2&
     operator()(
         compressed_pair<T1, T2>& p
@@ -1110,7 +1110,7 @@ struct get_pair<1>
     }
 
     template <typename T1, typename T2>
-    inline CPP14_CONSTEXPR
+    inline PYCPP_CPP14_CONSTEXPR
     const T2&
     operator()(
         const compressed_pair<T1, T2>& p
@@ -1121,7 +1121,7 @@ struct get_pair<1>
     }
 
     template <typename T1, typename T2>
-    inline CPP14_CONSTEXPR
+    inline PYCPP_CPP14_CONSTEXPR
     T2&&
     operator()(
         compressed_pair<T1, T2>&& p
@@ -1132,7 +1132,7 @@ struct get_pair<1>
     }
 
     template <typename T1, typename T2>
-    inline CPP14_CONSTEXPR
+    inline PYCPP_CPP14_CONSTEXPR
     const T2&&
     operator()(
         const compressed_pair<T1, T2>&& p
@@ -1147,7 +1147,7 @@ struct get_pair<1>
 
 
 template <size_t I, typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 typename std::tuple_element<I, compressed_pair<T1, T2>>::type&
 get(
     compressed_pair<T1, T2>& p
@@ -1159,7 +1159,7 @@ noexcept
 
 
 template <size_t I, typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 const typename std::tuple_element<I, compressed_pair<T1, T2>>::type&
 get(
     const compressed_pair<T1, T2>& p
@@ -1171,7 +1171,7 @@ noexcept
 
 
 template <size_t I, typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 typename std::tuple_element<I, compressed_pair<T1, T2>>::type&&
 get(
     compressed_pair<T1, T2>&& p
@@ -1183,7 +1183,7 @@ noexcept
 
 
 template <size_t I, typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 const typename std::tuple_element<I, compressed_pair<T1, T2>>::type&&
 get(
     const compressed_pair<T1, T2>&& p
@@ -1195,7 +1195,7 @@ noexcept
 
 
 template <typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 T1&
 get(
     compressed_pair<T1, T2>& p
@@ -1206,7 +1206,7 @@ noexcept
 }
 
 template <typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 const T1&
 get(
     const compressed_pair<T1, T2>& p
@@ -1218,7 +1218,7 @@ noexcept
 
 
 template <typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 T1&&
 get(
     compressed_pair<T1, T2>&& p
@@ -1230,7 +1230,7 @@ noexcept
 
 
 template <typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 const T1&&
 get(
     const compressed_pair<T1, T2>&& p
@@ -1242,7 +1242,7 @@ noexcept
 
 
 template <typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 T1&
 get(
     compressed_pair<T2, T1>& p
@@ -1254,7 +1254,7 @@ noexcept
 
 
 template <typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 const T1&
 get(
     const compressed_pair<T2, T1>& p
@@ -1266,7 +1266,7 @@ noexcept
 
 
 template <typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 T1&&
 get(
     compressed_pair<T2, T1>&& p
@@ -1278,7 +1278,7 @@ noexcept
 
 
 template <typename T1, typename T2>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 const T1&&
 get(
     const compressed_pair<T2, T1>&& p

@@ -224,7 +224,7 @@ using make_signed_t = typename make_signed<T>::type;
 template <typename T>
 using make_unsigned_t = typename make_unsigned<T>::type;
 
-#if defined(HAVE_CPP14)
+#if defined(PYCPP_CPP14)
 
 template <typename T>
 constexpr bool is_fundamental_v = is_fundamental<T>::value;
@@ -427,7 +427,7 @@ constexpr size_t rank_v = rank<T>::value;
 template <typename T, unsigned N = 0>
 constexpr size_t extent_v = extent<T, N>::value;
 
-#endif          // HAVE_CPP14
+#endif
 
 // MACROS
 // ------

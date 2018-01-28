@@ -3,7 +3,7 @@
 //  :license: Boost, see licenses/boost.md for more details.
 
 #include <pycpp/stl/typeinfo/type_info_wrapper.h>
-#if defined(HAVE_CXXABI)
+#if defined(PYCPP_CXXABI)
 // Avoid including <cxxabi.h> in header files.
 // Can cause compatiblity issues with other source files.
 #   include <cxxabi.h>
@@ -15,7 +15,7 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-#if defined(HAVE_CXXABI)        // HAVE_CXXABI
+#if defined(PYCPP_CXXABI)       // PYCPP_CXXABI
 
 // A simple scope guard for automatic memory free
 struct auto_free
@@ -56,7 +56,7 @@ info_to_string(
     }
 }
 
-#else                           // !HAVE_CXXABI
+#else                          // !PYCPP_CXXABI
 
 std::string
 info_to_string(
@@ -66,6 +66,6 @@ info_to_string(
     return info.name();
 }
 
-#endif                          // HAVE_CXXABI
+#endif                         // PYCPP_CXXABI
 
 PYCPP_END_NAMESPACE

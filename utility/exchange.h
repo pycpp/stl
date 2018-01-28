@@ -20,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::exchange;
 
@@ -30,7 +30,7 @@ using std::exchange;
 // ---------
 
 template <typename T, typename U = T>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 T
 exchange(
     T& obj,

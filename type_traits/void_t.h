@@ -20,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)     // CPP17
+#if defined(PYCPP_CPP17)    // CPP17
 
 using std::void_t;
 
@@ -29,6 +29,6 @@ using std::void_t;
 template <typename...>
 using void_t = void;
 
-#endif                      // HAVE_CPP17
+#endif                      // CPP17
 
 PYCPP_END_NAMESPACE

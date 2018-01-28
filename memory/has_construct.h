@@ -20,7 +20,7 @@
  *      template <typename Allocator, typename T, typename R = void>
  *      using enable_memcpy_construct_t = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool has_construct_v = implementation-defined;
@@ -28,7 +28,7 @@
  *      template <typename T>
  *      constexpr bool has_memcpy_construct_v = implementation-defined;
  *
- *      #endif              // HAVE_CPP14
+ *      #endif
  */
 
 #pragma once
@@ -99,7 +99,7 @@ using enable_memcpy_construct = std::enable_if<
 template <typename Allocator, typename T, typename R = void>
 using enable_memcpy_construct_t = typename enable_memcpy_construct<Allocator, T, R>::type;
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -110,6 +110,6 @@ constexpr bool has_construct_v = has_construct<T>::value;
 template <typename T>
 constexpr bool has_memcpy_construct_v = has_memcpy_construct<T>::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

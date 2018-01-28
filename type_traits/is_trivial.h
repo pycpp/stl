@@ -80,7 +80,7 @@
  *      template <typename T, typename R = void>
  *      using enable_trivially_move_assignable_t = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool is_trivially_copyable_v = implementation-defined;
@@ -123,7 +123,7 @@ PYCPP_BEGIN_NAMESPACE
 // `is_trivially_destructible` is supported by GCC early on in
 // the 4.x series, and therefore does not have to be wrapped here.
 
-#if defined(CPP11_PARTIAL_TYPE_TRAITS)      // CPP11_PARTIAL_TYPE_TRAITS
+#if defined(PYCPP_CPP11_PARTIAL_TYPE_TRAITS)        // PYCPP_CPP11_PARTIAL_TYPE_TRAITS
 
 // Guess all trivially constructible/assignable types are
 // `is_trivial`.
@@ -156,7 +156,7 @@ using is_trivially_copy_assignable = std::is_trivial<T>;
 template <typename T>
 using is_trivially_move_assignable = std::is_trivial<T>;
 
-#else                                       // !CPP11_PARTIAL_TYPE_TRAITS
+#else                                               // !PYCPP_CPP11_PARTIAL_TYPE_TRAITS
 
 using std::is_trivially_copyable;
 using std::is_trivially_constructible;
@@ -167,7 +167,7 @@ using std::is_trivially_assignable;
 using std::is_trivially_copy_assignable;
 using std::is_trivially_move_assignable;
 
-#endif                                      // CPP11_PARTIAL_TYPE_TRAITS
+#endif                                              // PYCPP_CPP11_PARTIAL_TYPE_TRAITS
 
 // SFINAE
 // ------
@@ -222,7 +222,7 @@ using enable_trivially_copy_assignable_t = typename enable_trivially_copy_assign
 template <typename T, typename R = void>
 using enable_trivially_move_assignable_t = typename enable_trivially_move_assignable<T, R>::type;
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -251,6 +251,6 @@ constexpr bool is_trivially_copy_assignable_v = is_trivially_copy_assignable<T>:
 template <typename T>
 constexpr bool is_trivially_move_assignable_v = is_trivially_move_assignable<T>::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

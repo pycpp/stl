@@ -33,7 +33,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::logical_not;
 
@@ -42,7 +42,7 @@ using std::logical_not;
 template <typename T = void>
 struct logical_not: std::binary_function<T, T, bool>
 {
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     bool
     operator()(
         const T& x
@@ -59,7 +59,7 @@ struct logical_not<void>
     using is_transparent = void;
 
     template <typename T>
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     auto
     operator()(
         T&& x

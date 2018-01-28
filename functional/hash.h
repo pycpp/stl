@@ -44,12 +44,12 @@ PYCPP_BEGIN_NAMESPACE
 // np.random.randint(np.iinfo(np.int32).min, np.iinfo(np.int32).max)
 // np.random.seed(0)
 // np.random.randint(np.iinfo(np.int64).min, np.iinfo(np.int64).max)
-#if SYSTEM_ARCHITECTURE <= 32
+#if PYCPP_SYSTEM_ARCHITECTURE <= 32
 #   define PYCPP_USE_HASH32
 #   define XXH_NO_LONG_LONG
     using hash_result_t = XXH32_hash_t;
     static constexpr hash_result_t HASH_SEED = 118409032;
-#elif SYSTEM_ARCHITECTURE == 64
+#elif PYCPP_SYSTEM_ARCHITECTURE == 64
 #   define PYCPP_USE_HASH64
     using hash_result_t = XXH64_hash_t;
     static constexpr hash_result_t HASH_SEED = 900450186894289455;

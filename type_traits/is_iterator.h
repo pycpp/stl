@@ -101,7 +101,7 @@
  *      template <typename T, typename R = void>
  *      using enable_random_access_iterable_t = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool is_input_iterator_v = implementation-defined;
@@ -274,7 +274,7 @@ using enable_bidirectional_iterable_t = typename enable_bidirectional_iterable<T
 template <typename T, typename R = void>
 using enable_random_access_iterable_t = typename enable_random_access_iterable<T, R>::type;
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -313,6 +313,6 @@ constexpr bool is_bidirectional_iterable_v = is_bidirectional_iterable<T>::value
 template <typename T>
 constexpr bool is_random_access_iterable_v = is_random_access_iterable<T>::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

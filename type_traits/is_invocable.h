@@ -25,7 +25,7 @@
  *      template <typename F, typename ... Ts>
  *      using invoke_result_t = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename F, typename ... Ts>
  *      constexpr bool is_invocable_v = implementation-defined;
@@ -35,7 +35,7 @@
  *
  *      #endif
  *
- *      #ifdef HAVE_CPP17
+ *      #ifdef PYCPP_CPP17
  *
  *      template <typename F, typename ... Ts>
  *      struct is_nothrow_invocable: implementation-defined
@@ -67,7 +67,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::is_invocable;
 using std::is_invocable_r;
@@ -379,9 +379,9 @@ using invoke_result_t = typename invoke_result<F, Ts...>::type;
 
 #undef PYCPP_INVOKE_RETURN
 
-#endif                              // HAVE_CPP17
+#endif                              // CPP17
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 // SFINAE
 // ------
@@ -392,9 +392,9 @@ constexpr bool is_invocable_v = std::is_invocable<F, Ts...>::value;
 template <class R, typename F, typename ... Ts>
 constexpr bool is_invocable_r_v = std::is_invocable_r<R, F, Ts...>::value;
 
-#endif                              // HAVE_CPP14
+#endif                              // CPP14
 
-#if defined(HAVE_CPP17)
+#if defined(PYCPP_CPP17)
 
 // SFINAE
 // ------
@@ -405,6 +405,6 @@ constexpr bool is_nothrow_invocable_v = std::is_nothrow_invocable<F, Ts...>::val
 template <class R, typename F, typename ... Ts>
 constexpr bool is_nothrow_invocable_r_v = std::is_nothrow_invocable_r<R, F, Ts...>::value;
 
-#endif                              // HAVE_CPP17
+#endif                              // CPP17
 
 PYCPP_END_NAMESPACE

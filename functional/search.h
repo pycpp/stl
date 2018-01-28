@@ -44,7 +44,7 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 template <typename BinaryPredicate, typename ForwardIter1, typename ForwardIter2>
-CPP14_CONSTEXPR
+PYCPP_CPP14_CONSTEXPR
 std::pair<ForwardIter1, ForwardIter1>
 search(
     ForwardIter1 first1,
@@ -95,7 +95,7 @@ search(
 }
 
 template <typename BinaryPredicate, typename RandomAccessIter1, typename RandomAccessIter2>
-CPP14_CONSTEXPR
+PYCPP_CPP14_CONSTEXPR
 std::pair<RandomAccessIter1, RandomAccessIter1>
 search(
     RandomAccessIter1 first1,

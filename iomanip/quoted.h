@@ -24,7 +24,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::quoted;
 

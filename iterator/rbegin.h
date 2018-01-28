@@ -37,7 +37,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::rbegin;
 using std::crbegin;
@@ -48,7 +48,7 @@ using std::crbegin;
 // ---------
 
 template <typename T, size_t N>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 std::reverse_iterator<T*>
 rbegin(
     T (&arr)[N]
@@ -58,7 +58,7 @@ rbegin(
 }
 
 template <typename E>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 std::reverse_iterator<const E*>
 rbegin(
     std::initializer_list<E> il
@@ -68,7 +68,7 @@ rbegin(
 }
 
 template <typename C>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 auto
 rbegin(
     C& c
@@ -79,7 +79,7 @@ rbegin(
 }
 
 template <typename C>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 auto
 rbegin(
     const C& c
@@ -90,7 +90,7 @@ rbegin(
 }
 
 template <typename C>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 auto
 crbegin(
     const C& c

@@ -23,7 +23,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP20)             // CPP20
+#if defined(PYCPP_CPP20)            // CPP20
 
 using std::remove_cvref;
 
@@ -37,7 +37,7 @@ struct remove_cvref
     >::type;
 };
 
-#endif                              // HAVE_CPP20
+#endif                              // CPP20
 
 template <typename T>
 using remove_cvref_t = typename remove_cvref<T>::type;

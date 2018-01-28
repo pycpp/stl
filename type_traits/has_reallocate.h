@@ -14,7 +14,7 @@
  *      template <typename T, typename R = void>
  *      using enable_reallocate_t = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool has_reallocate_v = implementation-defined;
@@ -94,7 +94,7 @@ using enable_reallocate = std::enable_if<
 template <typename T, typename R = void>
 using enable_reallocate_t = typename enable_reallocate<T, R>::type;
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -102,6 +102,6 @@ using enable_reallocate_t = typename enable_reallocate<T, R>::type;
 template <typename T>
 constexpr bool has_reallocate_v = has_reallocate<T>::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

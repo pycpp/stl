@@ -20,7 +20,7 @@
  *      template <typename T>
  *      using is_unbounded_array = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool is_array_v = implementation-defined;
@@ -78,7 +78,7 @@ template <typename T>
 struct is_unbounded_array: is_unbounded_array_impl<typename std::remove_cv<T>::type>
 {};
 
-#if defined(HAVE_CPP14)
+#if defined(PYCPP_CPP14)
 
 // SFINAE
 // ------
@@ -92,6 +92,6 @@ constexpr bool is_bounded_array_v = is_bounded_array<T>::value;
 template <typename T>
 constexpr bool is_unbounded_array_v = is_unbounded_array<T>::value;
 
-#endif          // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

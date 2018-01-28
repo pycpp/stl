@@ -9,7 +9,7 @@
  *      struct is_complete: implementation-defined
  *      {};
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool is_complete_v = implementation-defined;
@@ -42,11 +42,11 @@ template <typename T>
 struct is_complete: is_complete_impl<T>::type
 {};
 
-#if defined(HAVE_CPP14)
+#if defined(PYCPP_CPP14)
 
 template <typename T>
 constexpr bool is_complete_v = is_complete<T>::value;
 
-#endif                              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

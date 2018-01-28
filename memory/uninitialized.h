@@ -36,7 +36,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)     // HAVE_CPP17
+#if defined(PYCPP_CPP17)    // CPP17
 
 using std::uninitialized_move;
 using std::uninitialized_move_n;
@@ -45,7 +45,7 @@ using std::uninitialized_default_construct_n;
 using std::uninitialized_value_construct;
 using std::uninitialized_value_construct_n;
 
-#else                       // !HAVE_CPP17
+#else                       // !CPP17
 
 // FUNCTIONS
 // ---------
@@ -177,6 +177,6 @@ uninitialized_value_construct_n(
     }
 }
 
-#endif                      // HAVE_CPP17
+#endif                      // CPP17
 
 PYCPP_END_NAMESPACE

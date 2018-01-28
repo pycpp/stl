@@ -236,7 +236,7 @@ public:
     }
 
     // Capacity
-    CPP17_NODISCARD
+    PYCPP_CPP17_NODISCARD
     bool
     empty()
     const noexcept
@@ -412,7 +412,7 @@ public:
     }
 
     // Capacity
-    CPP17_NODISCARD
+    PYCPP_CPP17_NODISCARD
     bool
     empty()
     const noexcept

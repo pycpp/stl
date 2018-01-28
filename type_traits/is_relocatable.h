@@ -31,7 +31,7 @@
  *      template <typename R = void>
  *      using enable_virtual_relocatable_t = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool is_relocatable_v = implementation-defined;
@@ -101,7 +101,7 @@ using enable_relocatable_t = typename enable_relocatable<T, R>::type;
 template <typename R = void>
 using enable_virtual_relocatable_t = typename enable_virtual_relocatable<R>::type;
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -111,6 +111,6 @@ constexpr bool is_relocatable_v = is_relocatable<T>::value;
 
 constexpr bool is_virtual_relocatable_v = is_virtual_relocatable::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

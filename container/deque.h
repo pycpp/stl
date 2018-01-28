@@ -409,7 +409,7 @@ public:
     }
 
     // Capacity
-    CPP17_NODISCARD
+    PYCPP_CPP17_NODISCARD
     bool
     empty()
     const noexcept
@@ -652,7 +652,7 @@ struct deque
     // TODO: here..
 
     // Capacity
-    CPP17_NODISCARD
+    PYCPP_CPP17_NODISCARD
     bool
     empty()
     const noexcept

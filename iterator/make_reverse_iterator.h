@@ -21,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::make_reverse_iterator;
 
@@ -31,7 +31,7 @@ using std::make_reverse_iterator;
 // ---------
 
 template <typename Iter>
-inline CPP17_CONSTEXPR
+inline PYCPP_CPP17_CONSTEXPR
 std::reverse_iterator<Iter>
 make_reverse_iterator(
     Iter i

@@ -37,7 +37,7 @@
  *      template <typename T>
  *      using negation = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <template <typename> class T, typename ... Ts>
  *      constexpr bool type_map_and_v = implementation-defined;
@@ -169,7 +169,7 @@ template <typename T>
 struct not_: not_impl<T>
 {};
 
-#ifdef HAVE_CPP17       // CPP17
+#ifdef PYCPP_CPP17      // CPP17
 
 using std::conjucation;
 using std::disjunction;
@@ -191,7 +191,7 @@ struct negation: not_impl<T>
 
 #endif                  // CPP17
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -223,6 +223,6 @@ constexpr bool disjunction_v = disjunction<Ts...>::value;
 template <typename T>
 constexpr bool negation_v = negation<T>::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

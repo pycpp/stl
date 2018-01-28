@@ -24,7 +24,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)     // CPP14
+#if defined(PYCPP_CPP14)    // CPP14
 
 using std::make_unique;
 
@@ -49,6 +49,6 @@ make_unique(
     return std::unique_ptr<T>(new type[size]);
 }
 
-#endif                      // HAVE_CPP14
+#endif                      // CPP14
 
 PYCPP_END_NAMESPACE

@@ -22,7 +22,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::launder;
 
@@ -32,7 +32,7 @@ using std::launder;
 // ---------
 
 template <typename T>
-CPP17_NODISCARD
+PYCPP_CPP17_NODISCARD
 inline constexpr T*
 launder(T* p)
 noexcept
@@ -40,9 +40,9 @@ noexcept
     static_assert(!std::is_function<T>::value, "can't launder functions");
     static_assert(!std::is_same<void, typename std::remove_cv<T>::type>::value, "can't launder cv-void");
 
-#if HAS_BUILTIN(__builtin_launder)
+#if PYCPP_HAS_BUILTIN(__builtin_launder)
     return __builtin_launder(p);
-#elif defined(HAVE_GNUC) && (COMPILER_MAJOR_VERSION >= 7)
+#elif defined(PYCPP_GNUC) && (PYCPP_COMPILER_MAJOR_VERSION >= 7)
     return __builtin_launder(p);
 #else
     return p;

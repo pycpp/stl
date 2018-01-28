@@ -20,7 +20,7 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::lcm;
 

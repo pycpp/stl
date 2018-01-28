@@ -33,7 +33,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::plus;
 
@@ -42,7 +42,7 @@ using std::plus;
 template <typename T = void>
 struct plus: std::binary_function<T, T, bool>
 {
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     T
     operator()(
         const T& x,
@@ -60,7 +60,7 @@ struct plus<void>
     using is_transparent = void;
 
     template <typename T>
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     auto
     operator()(
         T&& x,

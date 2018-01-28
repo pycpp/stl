@@ -8,7 +8,7 @@
  *      template <typename Allocator>
  *      struct has_is_always_equal;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool has_is_always_equal_v = implementation-defined;
@@ -28,7 +28,7 @@ PYCPP_BEGIN_NAMESPACE
 
 PYCPP_HAS_MEMBER_TYPE(is_always_equal, has_is_always_equal);
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -36,6 +36,6 @@ PYCPP_HAS_MEMBER_TYPE(is_always_equal, has_is_always_equal);
 template <typename T>
 constexpr bool has_is_always_equal_v = has_is_always_equal<T>::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

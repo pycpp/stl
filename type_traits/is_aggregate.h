@@ -10,7 +10,7 @@
  *      struct is_aggregate: implementation-defined
  *      {};
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool is_aggregate_v = implementation-defined;
@@ -29,7 +29,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::is_aggregate;
 
@@ -38,28 +38,28 @@ using std::is_aggregate;
 // MACROS
 // ------
 
-#if defined(HAVE_CLANG)                     // HAVE_CLANG
-#   if HAS_EXTENSION(is_aggregate)
+#if defined(PYCPP_CLANG)                        // CLANG
+#   if PYCPP_HAS_EXTENSION(is_aggregate)
 #       define PYCPP_IS_AGGREGATE(T) __is_aggregate(T)
 #   endif
-#elif defined(HAVE_GNUC)                    // HAVE_GNUC
-#   if GNUC_MAJOR_VERSION >= 7
+#elif defined(PYCPP_GNUC)                       // GNUC
+#   if PYCPP_GNUC_MAJOR_VERSION >= 7
 #       define PYCPP_IS_AGGREGATE(T) __is_aggregate(T)
 #   endif
-#elif IS_IDENTIFIER(__is_aggregate) == 0    // __is_identifier
+#elif PYCPP_IS_IDENTIFIER(__is_aggregate) == 0  // __is_identifier
 #   define PYCPP_IS_AGGREGATE(T) __is_aggregate(T)
-#endif                                      // HAVE_CLANG
+#endif                                          // CLANG
 
 // ALIAS
 // -----
 
-#if defined(PYCPP_IS_AGGREGATE)      // PYCPP_IS_AGGREGATE
+#if defined(PYCPP_IS_AGGREGATE)      // IS_AGGREGATE
 
 template <typename T>
 struct is_aggregate: std::integral_constant<bool, PYCPP_IS_AGGREGATE(typename std::remove_cv<T>::type)>
 {};
 
-#else                               // !PYCPP_IS_AGGREGATE
+#else                               // !IS_AGGREGATE
 
 template <typename T>
 struct is_aggregate: std::false_type
@@ -67,13 +67,13 @@ struct is_aggregate: std::false_type
 
 #endif                              // PYCPP_IS_AGGREGATE
 
-#endif                              // HAVE_CPP17
+#endif                              // CPP17
 
-#if defined(HAVE_CPP14)
+#if defined(PYCPP_CPP14)
 
 template <typename T>
 constexpr bool is_aggregate_v = is_aggregate<T>::value;
 
-#endif                              // HAVE_CPP14
+#endif                              // CPP14
 
 PYCPP_END_NAMESPACE

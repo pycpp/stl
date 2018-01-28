@@ -14,7 +14,7 @@
  *      template <std::size_t N>
  *      struct in_place_index_t;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr in_place_type_t<T> in_place_type {};
@@ -36,7 +36,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::in_place;
 using std::in_place_t;
@@ -75,7 +75,7 @@ struct in_place_index_t
     explicit in_place_index_t() = default;
 };
 
-#if defined(HAVE_CPP14)             // HAVE_CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 template <typename T>
 constexpr in_place_type_t<T> in_place_type {};
@@ -83,7 +83,7 @@ constexpr in_place_type_t<T> in_place_type {};
 template <std::size_t N>
 constexpr in_place_index_t<N> in_place_index {};
 
-#endif                              // HAVE_CPP14
+#endif                              // CPP14
 
 #endif                              // CPP17
 

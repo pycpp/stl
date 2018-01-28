@@ -27,7 +27,7 @@ namespace chrono
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::chrono::ceil;
 
@@ -37,7 +37,7 @@ using std::chrono::ceil;
 // ---------
 
 template <typename ToDuration, typename Rep, typename Period>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 typename std::enable_if<
     is_duration<ToDuration>::value,
     ToDuration
@@ -54,7 +54,7 @@ ceil(
 }
 
 template <typename ToDuration, typename Clock, typename Duration>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 typename std::enable_if<
     is_duration<ToDuration>::value,
     std::chrono::time_point<Clock, ToDuration>

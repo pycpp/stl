@@ -34,7 +34,7 @@ struct pointer_traits: std::pointer_traits<T>
     using pointer = typename traits::pointer;
     using element_type = typename traits::element_type;
 
-#if !defined(HAVE_CPP20)
+#if !defined(PYCPP_CPP20)
 
     static
     element_type*
@@ -46,7 +46,7 @@ struct pointer_traits: std::pointer_traits<T>
         return PYCPP_NAMESPACE::to_address(p);
     }
 
-#endif      // !HAVE_CPP20
+#endif      // !CPP20
 };
 
 PYCPP_END_NAMESPACE

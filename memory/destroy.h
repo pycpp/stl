@@ -28,13 +28,13 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)     // HAVE_CPP17
+#if defined(PYCPP_CPP17)    // CPP17
 
 using std::destroy_at;
 using std::destroy;
 using std::destroy_n;
 
-#else                       // !HAVE_CPP17
+#else                       // !CPP17
 
 // FUNCTIONS
 // ---------
@@ -77,6 +77,6 @@ destroy_n(
     return first;
 }
 
-#endif                      // HAVE_CPP17
+#endif                      // CPP17
 
 PYCPP_END_NAMESPACE

@@ -33,7 +33,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::bit_not;
 
@@ -45,7 +45,7 @@ using std::bit_not;
 template <typename T = void>
 struct bit_not: std::unary_function<T, T>
 {
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     T
     operator()(
         const T& x
@@ -62,7 +62,7 @@ struct bit_not<void>
     using is_transparent = void;
 
     template <typename T>
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     auto
     operator()(
         T&& x

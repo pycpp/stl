@@ -63,7 +63,7 @@
  *      template <typename T>
  *      using enable_nothrow_member_swappable_t = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T1, typename T2>
  *      constexpr bool is_swappable_with_v = implementation-defined;
@@ -310,7 +310,7 @@ using enable_member_swappable_t = typename enable_member_swappable<T>::type;
 template <typename T>
 using enable_nothrow_member_swappable_t = typename enable_nothrow_member_swappable<T>::type;
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 // SFINAE
 // ------
@@ -333,6 +333,6 @@ constexpr bool is_member_swappable_v = is_member_swappable<T>::value;
 template <typename T>
 constexpr bool is_nothrow_member_swappable_v = is_nothrow_member_swappable<T>::value;
 
-#endif              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

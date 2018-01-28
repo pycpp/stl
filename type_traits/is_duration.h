@@ -9,7 +9,7 @@
  *      template <typename T>
  *      using is_duration = implementation-defined;
  *
- *      #ifdef HAVE_CPP14
+ *      #ifdef PYCPP_CPP14
  *
  *      template <typename T>
  *      constexpr bool is_duration_v = implementation-defined;
@@ -40,7 +40,7 @@ template <typename T>
 struct is_duration: is_duration_impl<remove_cvref_t<T>>
 {};
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 // SFINAE
 // ------
@@ -48,6 +48,6 @@ struct is_duration: is_duration_impl<remove_cvref_t<T>>
 template <typename T>
 constexpr bool is_duration_v = is_duration<T>::value;
 
-#endif                              // HAVE_CPP14
+#endif
 
 PYCPP_END_NAMESPACE

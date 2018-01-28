@@ -4,7 +4,7 @@
 #include <pycpp/stl/cstdlib/aligned_alloc.h>
 #include <algorithm>
 #include <cstring>
-#if defined(HAVE_MSVC)
+#if defined(PYCPP_MSVC)
 #   include <malloc.h>
 #endif
 
@@ -15,9 +15,9 @@ PYCPP_BEGIN_NAMESPACE
 
 // ALIGNED ALLOC
 
-#if !defined(HAVE_CPP17) && !defined(HAVE_ALIGNED_ALLOC)    // !CPP17 && !HAVE_ALIGNED_ALLOC
+#if !defined(PYCPP_CPP17) && !defined(HAVE_ALIGNED_ALLOC)   // !CPP17 && !HAVE_ALIGNED_ALLOC
 
-#if defined(HAVE_MSVC)                                      // HAVE_MSVC
+#if defined(PYCPP_MSVC)                                     // MSVC
 
 PYCPP_MALLOC_ATTRIBUTE
 void*
@@ -58,13 +58,13 @@ aligned_alloc(
     return std::malloc(size);
 }
 
-#endif                                                      // HAVE_MSVC
+#endif                                                      // MSVC
 
 #endif                                                      // !CPP17 && !HAVE_ALIGNED_ALLOC
 
 // ALIGNED REALLOC
 
-#if defined(HAVE_MSVC)                                    // HAVE_MSVC
+#if defined(PYCPP_MSVC)                                     // MSVC
 
 void*
 aligned_realloc(
@@ -78,8 +78,7 @@ aligned_realloc(
     return _aligned_realloc(p, new_size, alignment);
 }
 
-#else                                                       // !HAVE_MSVC
-
+#else                                                       // !MSVC
 void*
 aligned_realloc(
    void *p,
@@ -113,11 +112,11 @@ aligned_realloc(
     return pout;
 }
 
-#endif                                                      // HAVE_MSVC
+#endif                                                      // MSVC
 
 // ALIGNED FREE
 
-#if defined(HAVE_CPP17) || defined(HAVE_ALIGNED_ALLOC)      // HAVE_CPP17 || HAVE_ALIGNED_ALLOC
+#if defined(PYCPP_CPP17) || defined(HAVE_ALIGNED_ALLOC)     // CPP17 || HAVE_ALIGNED_ALLOC
 
 void
 aligned_free(
@@ -127,7 +126,7 @@ aligned_free(
     std::free(p);
 }
 
-#elif defined(HAVE_MSVC)                                    // HAVE_MSVC
+#elif defined(PYCPP_MSVC)                                   // MSVC
 
 void
 aligned_free(

@@ -21,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP17)             // CPP17
+#if defined(PYCPP_CPP17)            // CPP17
 
 using std::hardware_destructive_interference_size;
 using std::hardware_constructive_interference_size;
@@ -31,8 +31,8 @@ using std::hardware_constructive_interference_size;
 // FUNCTIONS
 // ---------
 
-static constexpr size_t hardware_destructive_interference_size = CACHELINE_SIZE;
-static constexpr size_t hardware_constructive_interference_size = CACHELINE_SIZE;
+static constexpr size_t hardware_destructive_interference_size = PYCPP_CACHELINE_SIZE;
+static constexpr size_t hardware_constructive_interference_size = PYCPP_CACHELINE_SIZE;
 
 #endif                              // CPP17
 

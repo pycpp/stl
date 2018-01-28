@@ -59,12 +59,12 @@ using std::swap;
 template <std::size_t I, typename T>
 using tuple_element_t = typename tuple_element<I, T>::type;
 
-#ifdef HAVE_CPP14
+#ifdef PYCPP_CPP14
 
 template <typename T>
 constexpr std::size_t tuple_size_v = tuple_size<T>::value;
 
-#endif      // HAVE_CPP14
+#endif
 
 // SPECIALIZATION
 // --------------

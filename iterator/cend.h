@@ -21,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::cend;
 
@@ -31,7 +31,7 @@ using std::cend;
 // ---------
 
 template <typename C>
-inline CPP14_CONSTEXPR
+inline PYCPP_CPP14_CONSTEXPR
 auto
 cend(
     const C& c

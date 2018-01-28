@@ -33,7 +33,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if defined(HAVE_CPP14)             // CPP14
+#if defined(PYCPP_CPP14)            // CPP14
 
 using std::bit_and;
 
@@ -42,7 +42,7 @@ using std::bit_and;
 template <typename T = void>
 struct bit_and: std::binary_function<T, T, bool>
 {
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     T
     operator()(
         const T& x,
@@ -60,7 +60,7 @@ struct bit_and<void>
     using is_transparent = void;
 
     template <typename T1, typename T2>
-    CPP14_CONSTEXPR
+    PYCPP_CPP14_CONSTEXPR
     auto
     operator()(
         T1&& x,
