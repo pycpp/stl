@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief <iosfwd> aliases.
  */
 
@@ -16,7 +16,10 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 // string
-using std::char_traits;
+template <typename Char>
+class char_traits;
+// TODO: inherit char traits for forward declarations
+//using std::char_traits;
 
 // memory
 using std::allocator;

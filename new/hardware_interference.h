@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief `hardware_*_interference_size` backport for C++11.
  *
  *  \synopsis

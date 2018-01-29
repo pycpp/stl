@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief C++17 backport of swappable detection.
  *
  *  Backport of `is_swappable_with`, `is_nothrow_swappable_with`,

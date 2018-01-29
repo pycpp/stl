@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/nit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief `in_place*` backports for C++11.
  *
  *  \synopsis

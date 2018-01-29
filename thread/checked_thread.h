@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief Check if application is thread-safe in debug builds.
  *
  *  Check, at runtime, if non thread-safe code if they are executed in

@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief Split buffer type to facilitate container implementations.
  *
  *  Highly optimized buffer with leading and trailing uninitialized
@@ -56,8 +56,8 @@ public:
     using size_type = make_unsigned_t<difference_type>;
     using iterator = pointer;
     using const_iterator = const_pointer;
-    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
-    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
+    using reverse_iterator = PYSTD::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYSTD::reverse_iterator<const_iterator>;
 
     // Constructors
     split_buffer_facet()

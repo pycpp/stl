@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief `shared_ptr` reference counters.
  *
  *  Shared and weak counters for `shared_ptr` and `weak_ptr`,

@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief `pointer_traits` backport for C++11.
  *
  *  \synopsis
@@ -43,7 +43,7 @@ struct pointer_traits: std::pointer_traits<T>
     )
     noexcept
     {
-        return PYCPP_NAMESPACE::to_address(p);
+        return PYSTD::to_address(p);
     }
 
 #endif      // !CPP20

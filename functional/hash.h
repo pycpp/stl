@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief Wrapper of the fast xxHash algorithm as an STL hash function.
  *
  *  Wrapper of the xxHash algorithm to be a drop-in replacement for
@@ -100,7 +100,7 @@ noexcept
         const noexcept                                                                      \
         {                                                                                   \
             using value_type = typename argument_type::value_type;                          \
-            return PYCPP_NAMESPACE::hash_string(x.data(), x.size() * sizeof(value_type));   \
+            return PYSTD::hash_string(x.data(), x.size() * sizeof(value_type));   \
         }                                                                                   \
     }
 

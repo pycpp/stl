@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license:  Boost, see licenses/boost.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief Pair that compressed empty members.
  *
  *  \synopsis
@@ -1309,20 +1309,20 @@ namespace std
 // --------------
 
 template <typename T1, typename T2>
-struct tuple_element<0, PYCPP_NAMESPACE::compressed_pair<T1, T2>>
+struct tuple_element<0, PYSTD::compressed_pair<T1, T2>>
 {
     using type = T1;
 };
 
 
 template <typename T1, typename T2>
-struct tuple_element<1, PYCPP_NAMESPACE::compressed_pair<T1, T2>>
+struct tuple_element<1, PYSTD::compressed_pair<T1, T2>>
 {
     using type = T2;
 };
 
 template <typename T1, typename T2>
-struct tuple_size<PYCPP_NAMESPACE::compressed_pair<T1, T2>>: integral_constant<size_t, 2>
+struct tuple_size<PYSTD::compressed_pair<T1, T2>>: integral_constant<size_t, 2>
 {};
 
 }   /* std */

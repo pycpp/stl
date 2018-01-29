@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief STL deque with allocator erasure from iterators.
  *
  *  \synopsis
@@ -227,8 +227,8 @@ public:
     using size_type = make_unsigned_t<difference_type>;
     using iterator = deque_iterator<pointer, block_size>;
     using const_iterator = deque_iterator<const_pointer, block_size>;
-    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
-    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
+    using reverse_iterator = PYSTD::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYSTD::reverse_iterator<const_iterator>;
     // TODO: will need to store a reference to the split_buffer's facet.
     // Disable copy assignment, allow moving? Maybe? Private then...
     // Yep, private sounds gravy...

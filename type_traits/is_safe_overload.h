@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: BSD 3-Clause, see licenses/bsd-3.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief C++17 backport of swappable detection.
  *
  *  Check if the variadic template is not the same as the initial

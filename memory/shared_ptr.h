@@ -3,7 +3,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief `shared_ptr` with single-threaded optimizations.
  *
  *  \synopsis

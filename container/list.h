@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief STL list with allocator erasure from iterators.
  *
  *  \synopsis
@@ -464,8 +464,8 @@ public:
     using size_type = make_unsigned_t<difference_type>;
     using iterator = list_iterator<value_type, void_pointer>;
     using const_iterator = list_const_iterator<value_type, void_pointer>;
-    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
-    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
+    using reverse_iterator = PYSTD::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYSTD::reverse_iterator<const_iterator>;
 
     // Constructors
     list_facet()
@@ -1150,7 +1150,7 @@ public:
     )
     noexcept
     {
-        using PYCPP_NAMESPACE::swap;
+        using PYSTD::swap;
         facet().swap(x.facet());
         swap_allocator(alloc(), x.alloc());
     }

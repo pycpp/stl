@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief General purpose allocator.
  *
  *  \synopsis
@@ -21,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 // TODO: change to a specialized allocator
 // Need to make the allocator dependent on various sizes
 template <typename T>
-struct allocator: std::allocator<T>
+class allocator: public std::allocator<T>
 {
     using std::allocator<T>::allocator;
 };

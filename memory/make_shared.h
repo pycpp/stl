@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017-2018 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 /**
- *  \addtogroup PyCPP
+ *  \addtogroup PySTD
  *  \brief `make_shared` utility functions.
  *
  *  Deleters for the shared_ptr helpers `make_shared` and
